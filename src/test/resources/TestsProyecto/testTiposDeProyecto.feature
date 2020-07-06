@@ -1,4 +1,4 @@
-Feature: Atributos de un proyecto
+Feature: Tipos de proyecto
 
   Scenario: Verifico el nombre de un proyecto
     Given un proyecto creado con cierto nombre "Nuevo Proyecto"

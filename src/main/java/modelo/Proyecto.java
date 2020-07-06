@@ -25,9 +25,6 @@ public abstract class Proyecto {
     protected Long id;
     protected RegistroDeDatos registroDeDatos = new RegistroDeDatos();
     protected String tipoDeProyecto;
-
-
-
     protected List<Fase> fases = new ArrayList<Fase>();
 
     public Proyecto(){}

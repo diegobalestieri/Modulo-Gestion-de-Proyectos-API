@@ -40,9 +40,8 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @Given("selecciono el proyecto {string}")
     public void seleccionoElProyecto(String nombreDeProyecto) {
-        System.out.print(diccionario_nombre_id.get(nombreDeProyecto));
-        Proyecto proyecto = proyectoService.getOne(diccionario_nombre_id.get(nombreDeProyecto));
-        this.proyecto = proyecto;
+        long id = diccionario_nombre_id.get(nombreDeProyecto);
+        this.proyecto =  proyectoService.getOne(id);;
     }
 
     @When("modifico su estado a {string}")
@@ -68,7 +67,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     @Then("la fecha de inicio del proyecto es {string}")
     public void laFechaDeInicioDelProyectoEs(String fecha) {
         try {
-            assertEquals(proyecto.getFechaDeInicio(), new SimpleDateFormat("dd/MM/yyyy").parse(fecha));
+            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(fecha), proyecto.getFechaDeInicio());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -127,53 +126,30 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
 
-    @When("creo una fase para el proyecto con los siguientes datos")
-    public void creoUnaFaseParaElProyectoConLosSiguientesDatos(DataTable dt) {
-        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
-        for (int i = 0; i < list.size(); i++){
-            boolean res = proyecto.crearFase( list.get(i).get("nombre"),
-                                list.get(i).get("descripcion"),
-                                list.get(i).get("fecha de inicio"),
-                                list.get(i).get("fecha de finalizacion"));
-            assertTrue(res);
-        }
+
+
+    @Given("selecciono el proyecto {string} con estado {string}")
+    public void seleccionoElProyectoConUnEstado(String nombreDeProyecto,String estado) {
+        long id = diccionario_nombre_id.get(nombreDeProyecto);
+        Proyecto proyecto = proyectoService.getOne(id);
+        proyecto.setEstado(estado);
+        this.proyecto = proyecto;
     }
 
-    @Then("la fase se agrega al proyecto con los datos correspondientes.")
-    public void laFaseSeAgregaAlProyectoConLosDatosCorrespondientes(DataTable dt) throws ParseException {
-        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
-        List<Fase> fases = proyecto.obtenerFases();
-        for (int i = 0; i < list.size(); i++) {
-            assertEquals(list.get(i).get("nombre"), fases.get(i).getNombre());
-            assertEquals(list.get(i).get("descripcion"), fases.get(i).getDescripcion());
-            assertEquals(new SimpleDateFormat("dd/MM/yyyy").parse(list.get(i).get("fecha de inicio")), fases.get(i).getFechaDeInicio());
-            assertEquals(new SimpleDateFormat("dd/MM/yyyy").parse(list.get(i).get("fecha de finalizacion")), fases.get(i).getFechaDeFinalizacion());
-        }
+    @Then("el estado del proyecto sigue siendo {string}")
+    public void elEstadoDelProyectoSigueSiendoElMismo(String estadoEsperado) {
+        assertTrue(this.proyecto.getEstado().equals(estadoEsperado));
     }
 
-    @When("creo una fase para el proyecto con los siguientes datos y lo guardo")
-    public void creoUnaFaseParaElProyectoConLosSiguientesDatosYLoGuardo(DataTable dt) {
-        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
-        for (int i = 0; i < list.size(); i++){
-            boolean res = proyecto.crearFase( list.get(i).get("nombre"),
-                    list.get(i).get("descripcion"),
-                    list.get(i).get("fecha de inicio"),
-                    list.get(i).get("fecha de finalizacion"));
-            assertTrue(res);
-        }
-        proyecto = proyectoService.saveNew(proyecto);
+    @When("le cambio el nombre a {string} y descripcion {string}")
+    public void leCambioElNombreAYDescripcion(String nuevoNombre, String nuevaDescripcion) {
+        proyecto.setNombre(nuevoNombre);
+        proyecto.setDescripcion(nuevaDescripcion);
     }
 
-    @Then("la fase guardada se agrega al proyecto con los datos correspondientes.")
-    public void laFaseGuardadaSeAgregaAlProyectoConLosDatosCorrespondientes(DataTable dt) throws ParseException {
-        List <Fase> fases = proyectoService.getOne(proyecto.getId()).obtenerFases();
-        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
-        assertEquals(list.size(), fases.size());
-        for (int i = 0; i < list.size(); i++){
-            assertEquals(list.get(i).get("nombre"), fases.get(i).getNombre());
-            assertEquals(list.get(i).get("descripcion"), fases.get(i).getDescripcion());
-            assertEquals(new SimpleDateFormat("dd/MM/yyyy").parse(list.get(i).get("fecha de inicio")), fases.get(i).getFechaDeInicio());
-            assertEquals(new SimpleDateFormat("dd/MM/yyyy").parse(list.get(i).get("fecha de finalizacion")), fases.get(i).getFechaDeFinalizacion());
-        }
-    }
+    @Then("el nombre del proyecto es {string}")
+    public void elNombreDelProyectoEs(String nombreCorrecto) { assertEquals(nombreCorrecto,proyecto.getNombre()); }
+
+    @And("la descripción es {string}")
+    public void laDescripciónEs(String descripcion) { assertEquals(descripcion,proyecto.getDescripcion()); }
 }

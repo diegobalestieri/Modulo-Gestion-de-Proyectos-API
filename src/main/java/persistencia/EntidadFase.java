@@ -65,11 +65,11 @@ public class EntidadFase {
         this.fechaDeInicio = fechaDeInicio;
     }
 
-    public Date getFechaDeFin() {
+    public Date getFechaDeFinalizacion() {
         return fechaDeFin;
     }
 
-    public void setFechaDeFin(Date fechaDeFin) {
+    public void setFechaDeFinalizacion(Date fechaDeFin) {
         this.fechaDeFin = fechaDeFin;
     }
 }

@@ -30,12 +30,12 @@ public class RegistroDeDatos {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion;}
 
     public void setFechaDeInicio(String fechaDeInicio) throws ParseException {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat format = new SimpleDateFormat("MM-dd-yyyy");
         this.fechaDeInicio = format.parse(fechaDeInicio);
     }
 
     public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat format = new SimpleDateFormat("MM-dd-yyyy");
         this.fechaDeFinalizacion = format.parse(fechaDeFinalizacion);
     }
 

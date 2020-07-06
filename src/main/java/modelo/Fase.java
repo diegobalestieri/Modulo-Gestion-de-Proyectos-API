@@ -18,7 +18,7 @@ public class Fase {
         this.setNombre(entidadFase.getNombre());
         this.setDescripcion(entidadFase.getDescripcion());
         this.setFechaDeInicio(entidadFase.getFechaDeInicio());
-        this.setFechaDeFinalizacion(entidadFase.getFechaDeFin());
+        this.setFechaDeFinalizacion(entidadFase.getFechaDeFinalizacion());
     }
 
     private void setFechaDeFinalizacion(Date fechaDeFin) {
@@ -50,7 +50,7 @@ public class Fase {
         entidad.setId(id);
         entidad.setNombre(this.getNombre());
         entidad.setDescripcion(this.getDescripcion());
-        entidad.setFechaDeFin(getFechaDeFinalizacion());
+        entidad.setFechaDeFinalizacion(getFechaDeFinalizacion());
         entidad.setFechaDeInicio(getFechaDeInicio());
         return entidad;
     }
