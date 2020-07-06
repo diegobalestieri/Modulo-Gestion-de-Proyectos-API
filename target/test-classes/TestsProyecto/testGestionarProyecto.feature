@@ -59,3 +59,12 @@ Feature: Gestionar Proyecto
     Then la fase se agrega al proyecto con los datos correspondientes.
       | nombre  | descripcion | fecha de inicio | fecha de finalizacion |
       | Fase 1 | Esta es la primera fase del proyecto | 10/09/2020 | 15/09/2020 |
+
+  Scenario: Creo una fase en un proyecto que se persiste
+    Given selecciono un proyecto
+    When creo una fase para el proyecto con los siguientes datos y lo guardo
+      | nombre  | descripcion | fecha de inicio | fecha de finalizacion |
+      | Fase 1 | Esta es la primera fase del proyecto | 10/09/2020 | 15/09/2020 |
+    Then la fase guardada se agrega al proyecto con los datos correspondientes.
+      | nombre  | descripcion | fecha de inicio | fecha de finalizacion |
+      | Fase 1 | Esta es la primera fase del proyecto | 10/09/2020 | 15/09/2020 |
