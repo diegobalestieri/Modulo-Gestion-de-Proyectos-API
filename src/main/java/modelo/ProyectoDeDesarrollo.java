@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class ProyectoDeDesarrollo extends Proyecto {
 
+    private String producto;
     public  ProyectoDeDesarrollo() {
         super();
         this.tipoDeProyecto = "Desarrollo";
@@ -19,6 +20,7 @@ public class ProyectoDeDesarrollo extends Proyecto {
     public ProyectoDeDesarrollo(EntidadProyecto proyecto) {
         super(proyecto);
         tipoDeProyecto = "Desarrollo";
+        producto = proyecto.getProducto();
     }
 
     public ProyectoDeDesarrollo(String nombre) {
@@ -27,6 +29,25 @@ public class ProyectoDeDesarrollo extends Proyecto {
     }
 
     public void actualizar(Map<String, Object> parametros) throws ParseException {
+        for (Map.Entry<String, Object> entrada : parametros.entrySet()) {
+            if (entrada.getKey().equals("producto")) {
+                this.setProducto((String) entrada.getValue());
+            }
+        }
         super.actualizar(parametros);
     }
+
+    public String getProducto() {
+        return producto;
+    }
+
+    public void setProducto(String producto) {
+        this.producto = producto;
+    }
+    @Override
+    public void ingresarDatos(EntidadProyecto entidadProyecto){
+        entidadProyecto.setProducto(producto);
+    }
+
+
 }

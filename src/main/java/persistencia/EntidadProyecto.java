@@ -22,6 +22,8 @@ public class EntidadProyecto {
     private Date fechaDeFin;
     //Solo si es de implementacion
     private String cliente;
+    //Solo si es de desarrollo
+    private String producto;
     @JsonManagedReference
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="proyecto_id", referencedColumnName="proyecto_id")
@@ -99,5 +101,13 @@ public class EntidadProyecto {
 
     public void setFases(List<EntidadFase> fases) {
         this.fases = fases;
+    }
+
+    public String getProducto() {
+        return producto;
+    }
+
+    public void setProducto(String producto) {
+        this.producto = producto;
     }
 }

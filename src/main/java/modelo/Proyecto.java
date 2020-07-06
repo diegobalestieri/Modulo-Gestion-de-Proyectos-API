@@ -113,11 +113,11 @@ public abstract class Proyecto {
         entidad.setFechaDeInicio(registroDeDatos.getFechaDeInicio());
         entidad.setFechaDeFin(registroDeDatos.getFechaDeFinalizacion());
         entidad.setFases(obtenerEntidadFases());
-        if (tipoDeProyecto.equals("Implementación")){
-            ((ProyectoDeImplementacion)this).ingresarDatos(entidad);
-        }
+        ingresarDatos(entidad);
         return entidad;
     }
+
+    protected abstract void ingresarDatos(EntidadProyecto entidad);
 
     private List<EntidadFase> obtenerEntidadFases() {
         List <EntidadFase> entidadFases = new ArrayList<EntidadFase>();

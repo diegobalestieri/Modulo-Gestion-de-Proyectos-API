@@ -50,3 +50,14 @@ Feature: Gestionar Proyecto
     Given creo un proyecto con fecha de inicio "07-10-2020"
     When lo guardo en el repositorio
     Then la fecha se guardo correctamente
+
+  Scenario: Asignar un producto a un proyecto de desarrollo
+    Given selecciono un proyecto de Desarrollo
+    When lo asocio al producto "ERP Cloud" y lo guardo
+    Then el proyecto tiene el producto asociado "ERP Cloud"
+  Scenario: Modificar el producto a un proyecto de desarrollo que ya tiene uno
+    Given selecciono un proyecto de Desarrollo
+    And lo asocio al producto "Psa BI" y lo guardo
+    When lo asocio al producto "ERP Cloud" y lo guardo
+    Then el proyecto tiene el producto asociado "ERP Cloud"
+
