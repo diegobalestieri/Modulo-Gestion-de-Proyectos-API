@@ -152,4 +152,21 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @And("la descripción es {string}")
     public void laDescripciónEs(String descripcion) { assertEquals(descripcion,proyecto.getDescripcion()); }
+
+    @Given("selecciono un proyecto de Desarrollo")
+    public void seleccionoUnProyectoDeDesarrollo() {
+        this.proyecto = new ProyectoDeDesarrollo("Proyecto Y");
+    }
+
+    @When("lo asocio al producto {string} y lo guardo")
+    public void loAsocioAlProductoYLoGuardo(String producto) {
+        ((ProyectoDeDesarrollo)proyecto).setProducto(producto);
+        proyecto = proyectoService.saveNew(proyecto);
+    }
+
+    @Then("el proyecto tiene el producto asociado {string}")
+    public void elProyectoTieneElProductoAsociado(String producto) {
+        ProyectoDeDesarrollo proyectoDeDesarrollo = (ProyectoDeDesarrollo) proyectoService.getOne(proyecto.getId());
+        assertEquals(proyectoDeDesarrollo.getProducto(), producto);
+    }
 }
