@@ -25,19 +25,19 @@ Feature: Gestionar Proyecto
 
   Scenario: Asigno la fecha de inicio de un proyecto que no la tiene
     Given selecciono el proyecto "Sistema ERP Mulesoft"
-    When asigno la fecha de inicio a "07-10-2020"
-    Then la fecha de inicio del proyecto es "07-10-2020"
+    When asigno la fecha de inicio a "2020-07-10"
+    Then la fecha de inicio del proyecto es "2020-07-10"
 
   Scenario: Reasignar fecha de inicio lanza error
-    Given selecciono un proyecto y le asigno la fecha de inicio "07-10-2020"
+    Given selecciono un proyecto y le asigno la fecha de inicio "2020-07-10"
     And cambio el estado de proyecto a activo
-    When asigno la fecha de inicio a "11-11-2020"
+    When asigno la fecha de inicio a "2020-11-11"
     Then se lanza un error indicando que la fecha de inicio no se puede modificar
-    And la fecha de inicio del proyecto es "07-10-2020"
+    And la fecha de inicio del proyecto es "2020-07-10"
 
   Scenario: Asignar una fecha de inicio con formato inválido lanza un error
     Given selecciono un proyecto
-    When asigno la fecha de inicio a "99-9a-2020"
+    When asigno la fecha de inicio a "2020-9a-99"
     Then se lanza un error indicando que la fecha de inicio ingresada no es válida
 
   Scenario:  Modificar el nombre y descripción de un proyecto los cambia correctamente
@@ -47,6 +47,6 @@ Feature: Gestionar Proyecto
     And la descripción es "Esto no es una prueba"
 
   Scenario: Guardar un proyecto con una determinada fecha de inicio se guarda correctamente
-    Given creo un proyecto con fecha de inicio "07-10-2020"
+    Given creo un proyecto con fecha de inicio "2020-07-10"
     When lo guardo en el repositorio
     Then la fecha se guardo correctamente

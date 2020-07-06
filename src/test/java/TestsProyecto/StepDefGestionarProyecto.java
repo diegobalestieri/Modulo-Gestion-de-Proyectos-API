@@ -67,7 +67,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     @Then("la fecha de inicio del proyecto es {string}")
     public void laFechaDeInicioDelProyectoEs(String fecha) {
         try {
-            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(fecha), proyecto.getFechaDeInicio());
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(fecha), proyecto.getFechaDeInicio());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -124,8 +124,6 @@ public class StepDefGestionarProyecto extends SpringTest {
     public void cambioElEstadoDeProyectoAIniciado() {
         this.proyecto.setEstado("Activo");
     }
-
-
 
 
     @Given("selecciono el proyecto {string} con estado {string}")
