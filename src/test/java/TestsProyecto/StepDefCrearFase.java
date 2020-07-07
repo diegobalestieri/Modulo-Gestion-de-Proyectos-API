@@ -43,8 +43,8 @@ public class StepDefCrearFase extends SpringTest{
         for (int i = 0; i < list.size(); i++){
             assertEquals(list.get(i).get("nombre"), fases.get(i).getNombre());
             assertEquals(list.get(i).get("descripcion"), fases.get(i).getDescripcion());
-            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(list.get(i).get("fecha de inicio")), fases.get(i).getFechaDeInicio());
-            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(list.get(i).get("fecha de finalizacion")), fases.get(i).getFechaDeFinalizacion());
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(list.get(i).get("fecha de inicio")), fases.get(i).getFechaDeInicio());
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(list.get(i).get("fecha de finalizacion")), fases.get(i).getFechaDeFinalizacion());
         }
     }
 
@@ -67,8 +67,8 @@ public class StepDefCrearFase extends SpringTest{
         for (int i = 0; i < list.size(); i++) {
             assertEquals(list.get(i).get("nombre"), fases.get(i).getNombre());
             assertEquals(list.get(i).get("descripcion"), fases.get(i).getDescripcion());
-            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(list.get(i).get("fecha de inicio")), fases.get(i).getFechaDeInicio());
-            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(list.get(i).get("fecha de finalizacion")), fases.get(i).getFechaDeFinalizacion());
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(list.get(i).get("fecha de inicio")), fases.get(i).getFechaDeInicio());
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(list.get(i).get("fecha de finalizacion")), fases.get(i).getFechaDeFinalizacion());
         }
     }
 
