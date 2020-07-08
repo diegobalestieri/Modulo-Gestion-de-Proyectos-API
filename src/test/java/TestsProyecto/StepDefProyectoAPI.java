@@ -1,90 +1,84 @@
 package TestsProyecto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controladores.ProyectoController;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import modelo.Proyecto;
 import modelo.ProyectoDeDesarrollo;
 import modelo.ProyectoDeImplementacion;
-import nonapi.io.github.classgraph.json.JSONSerializer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertTrue;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class StepDefProyectoAPI extends SpringTest{
 
-
+    List<String> ids = new ArrayList<>();
+    @Before
+    public void setup() {
+        mapper.setDateFormat(this.df);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
     @When("tengo el listado de proyectos")
     public void tengoUnListadoDeProyectos() {
     }
 
 
     @When("Creo un proyecto con nombre, descripcion y tipo")
-    public void creoUnProyectoConNombreDescripcionYTipo(DataTable dt) throws IOException {
-        URL url = null;
-        Proyecto proyecto;
-        ObjectMapper mapper = new ObjectMapper();
+    public void creoUnProyectoConNombreDescripcionYTipo(DataTable dt) throws Exception {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
-
-        url = new URL("http://localhost:8080/proyectos");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        con.setDoOutput(true);
-        con.setRequestProperty("User-Agent", "Java client");
-        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        OutputStream os = con.getOutputStream();
-        OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+        Proyecto proyecto;
         for (int i = 0; i < list.size(); i++){
             if (list.get(i).get("tipo").equals("Desarrollo")){
                 proyecto = new ProyectoDeDesarrollo();
             } else{
                 proyecto = new ProyectoDeImplementacion();
             }
-             proyecto.setNombre(list.get(i).get("nombre"));
-             proyecto.setDescripcion(list.get(i).get("descripcion"));
-             osw.write(mapper.writeValueAsString(proyecto));
+            proyecto.setNombre(list.get(i).get("nombre"));
+            proyecto.setDescripcion(list.get(i).get("descripcion"));
+            String requestJson = mapper.writeValueAsString(proyecto);
+            System.out.print(requestJson);
+            MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestJson))
+                    .andExpect(status().isCreated())
+                    .andExpect(content().json(requestJson)).andReturn();
+                    //.andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")));
+            System.out.print("Respuesta: " + requestResult.getResponse().getContentAsString());
+            String response = requestResult.getResponse().getContentAsString();
+            int inicio = response.indexOf("id");
+            int fin = response.indexOf(',',inicio);
+            String id_string = response.substring(inicio+4,fin);
+            System.out.print(id_string);
+            this.ids.add(id_string);
         }
-        osw.flush();
-        osw.close();
-        os.close();  //don't forget to close the OutputStream
-        con.connect();
-
-
     }
 
     @Then("el proyecto se crea con los datos correctos")
-    public void elProyectoSeCreaConLosDatosCorrectos(DataTable dt) throws IOException {
-        URL url = null;
-        Proyecto proyecto;
-        ObjectMapper mapper = new ObjectMapper();
+    public void elProyectoSeCreaConLosDatosCorrectos(DataTable dt) throws Exception {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
-
-        url = new URL("http://localhost:8080/proyectos");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("GET");
-        con.setDoOutput(true);
-        con.setRequestProperty("User-Agent", "Java client");
-        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        con.setUseCaches(false);
-        con.setAllowUserInteraction(false);
+        for (int i = 0; i < list.size(); i++){
+            this.mockMvc.perform(get("/proyectos")
+                    .param("id", ids.get(i)))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].nombre").value(list.get(i).get("nombre")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].descripcion").value(list.get(i).get("descripcion")));
+        }
 
     }
 }

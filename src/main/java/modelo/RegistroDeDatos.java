@@ -1,6 +1,5 @@
 package modelo;
 
-import modelo.Estado.EstadoProyecto;
 
 import java.text.DateFormat;
 import java.text.ParseException;
