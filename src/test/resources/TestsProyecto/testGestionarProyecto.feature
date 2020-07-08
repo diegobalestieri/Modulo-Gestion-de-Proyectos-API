@@ -13,15 +13,11 @@ Feature: Gestionar Proyecto
     When modifico su estado a "Finalizado"
     Then el estado del proyecto es el correcto
 
-  Scenario: Modifico el estado de un proyecto que estaba finalizado
-    Given selecciono el proyecto "ERP" con estado "Finalizado"
-    When modifico su estado a "Activo"
-    Then el estado del proyecto sigue siendo "Finalizado"
-
-  Scenario: Modifico el estado de un proyecto que estaba cancelado
-    Given selecciono el proyecto "BI" con estado "Cancelado"
-    When modifico su estado a "No Iniciado"
-    Then el estado del proyecto sigue siendo "Cancelado"
+  Scenario: Intento cambiar el estado de un proyecto iniciado a No iniciado
+    Given selecciono el proyecto "ERP" con estado "Activo"
+    When modifico su estado a "No iniciado"
+    Then se lanza un error indicando que el estado no se pudo cambiar
+    And el estado del proyecto sigue siendo "Activo"
 
   Scenario: Asigno la fecha de inicio de un proyecto que no la tiene
     Given selecciono el proyecto "Sistema ERP Mulesoft"

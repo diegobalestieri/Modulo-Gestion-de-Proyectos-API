@@ -1,5 +1,6 @@
 package TestsProyecto;
 
+import excepciones.AccionNoPermitidaException;
 import excepciones.RestriccionDeEstadoException;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -46,7 +47,8 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @When("modifico su estado a {string}")
     public void modificoSuEstadoA(String nuevoEstado) {
-        this.proyecto.setEstado(nuevoEstado);
+        try { this.proyecto.setEstado(nuevoEstado); }
+        catch(AccionNoPermitidaException e) { this.excepcion = e; }
         this.estado = nuevoEstado;
     }
 
@@ -166,5 +168,11 @@ public class StepDefGestionarProyecto extends SpringTest {
     public void elProyectoTieneElProductoAsociado(String producto) {
         ProyectoDeDesarrollo proyectoDeDesarrollo = (ProyectoDeDesarrollo) proyectoService.getOne(proyecto.getId());
         assertEquals(proyectoDeDesarrollo.getProducto(), producto);
+    }
+
+    @Then("se lanza un error indicando que el estado no se pudo cambiar")
+    public void seLanzaUnErrorIndicandoQueElEstadoNoSePudoCambiar() {
+        assertTrue(this.excepcion != null);
+        assertEquals(this.excepcion.getClass(),AccionNoPermitidaException.class);
     }
 }
