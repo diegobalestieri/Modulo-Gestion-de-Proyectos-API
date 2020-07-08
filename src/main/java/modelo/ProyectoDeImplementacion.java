@@ -44,6 +44,7 @@ public class ProyectoDeImplementacion extends Proyecto {
         }
         super.actualizar(parametros);
     }
+    @Override
     public void ingresarDatos(EntidadProyecto entidadProyecto){
         entidadProyecto.setCliente(cliente);
     }

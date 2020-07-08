@@ -2,6 +2,7 @@ package modelo;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import excepciones.AccionNoPermitidaException;
 import excepciones.RestriccionDeEstadoException;
 import modelo.Estado.EstadoProyecto;
 import persistencia.EntidadFase;
@@ -85,8 +86,10 @@ public abstract class Proyecto {
         registroDeDatos.setFechaDeFinalizacion(fechaDeFin);
     }
 
-    public boolean setEstado(String nombreDeEstado) {
-        if (this.estado == EstadoProyecto.CANCELADO || this.estado == EstadoProyecto.FINALIZADO) { return false;}
+    public boolean setEstado(String nombreDeEstado) throws AccionNoPermitidaException {
+        if (this.estado != EstadoProyecto.NO_INICIADO && nombreDeEstado.equals("No iniciado")) {
+            throw new AccionNoPermitidaException("No se puede volver al estado No iniciado");
+        }
         switch (nombreDeEstado) {
             case "No iniciado": this.estado = EstadoProyecto.NO_INICIADO;
             break;
@@ -113,11 +116,11 @@ public abstract class Proyecto {
         entidad.setFechaDeInicio(registroDeDatos.getFechaDeInicio());
         entidad.setFechaDeFin(registroDeDatos.getFechaDeFinalizacion());
         entidad.setFases(obtenerEntidadFases());
-        if (tipoDeProyecto.equals("Implementación")){
-            ((ProyectoDeImplementacion)this).ingresarDatos(entidad);
-        }
+        ingresarDatos(entidad);
         return entidad;
     }
+
+    protected abstract void ingresarDatos(EntidadProyecto entidad);
 
     private List<EntidadFase> obtenerEntidadFases() {
         List <EntidadFase> entidadFases = new ArrayList<EntidadFase>();

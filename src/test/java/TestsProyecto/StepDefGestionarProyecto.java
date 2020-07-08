@@ -1,5 +1,6 @@
 package TestsProyecto;
 
+import excepciones.AccionNoPermitidaException;
 import excepciones.RestriccionDeEstadoException;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -46,7 +47,8 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @When("modifico su estado a {string}")
     public void modificoSuEstadoA(String nuevoEstado) {
-        this.proyecto.setEstado(nuevoEstado);
+        try { this.proyecto.setEstado(nuevoEstado); }
+        catch(AccionNoPermitidaException e) { this.excepcion = e; }
         this.estado = nuevoEstado;
     }
 
@@ -67,7 +69,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     @Then("la fecha de inicio del proyecto es {string}")
     public void laFechaDeInicioDelProyectoEs(String fecha) {
         try {
-            assertEquals(new SimpleDateFormat("MM-dd-yyyy").parse(fecha), proyecto.getFechaDeInicio());
+            assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(fecha), proyecto.getFechaDeInicio());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -126,8 +128,6 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
 
-
-
     @Given("selecciono el proyecto {string} con estado {string}")
     public void seleccionoElProyectoConUnEstado(String nombreDeProyecto,String estado) {
         long id = diccionario_nombre_id.get(nombreDeProyecto);
@@ -152,4 +152,27 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @And("la descripción es {string}")
     public void laDescripciónEs(String descripcion) { assertEquals(descripcion,proyecto.getDescripcion()); }
+
+    @Given("selecciono un proyecto de Desarrollo")
+    public void seleccionoUnProyectoDeDesarrollo() {
+        this.proyecto = new ProyectoDeDesarrollo("Proyecto Y");
+    }
+
+    @When("lo asocio al producto {string} y lo guardo")
+    public void loAsocioAlProductoYLoGuardo(String producto) {
+        ((ProyectoDeDesarrollo)proyecto).setProducto(producto);
+        proyecto = proyectoService.saveNew(proyecto);
+    }
+
+    @Then("el proyecto tiene el producto asociado {string}")
+    public void elProyectoTieneElProductoAsociado(String producto) {
+        ProyectoDeDesarrollo proyectoDeDesarrollo = (ProyectoDeDesarrollo) proyectoService.getOne(proyecto.getId());
+        assertEquals(proyectoDeDesarrollo.getProducto(), producto);
+    }
+
+    @Then("se lanza un error indicando que el estado no se pudo cambiar")
+    public void seLanzaUnErrorIndicandoQueElEstadoNoSePudoCambiar() {
+        assertTrue(this.excepcion != null);
+        assertEquals(this.excepcion.getClass(),AccionNoPermitidaException.class);
+    }
 }
