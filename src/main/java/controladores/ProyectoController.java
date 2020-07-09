@@ -3,6 +3,7 @@ package controladores;
 
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
+import modelo.Fase;
 import modelo.Proyecto;
 import modelo.ProyectoDeDesarrollo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,15 @@ public class ProyectoController {
             servicio.update(proyecto, parametros);
             return new ResponseEntity<Proyecto>(proyecto, HttpStatus.OK);
         }catch (ProyectoNotFoundException | ParametrosInvalidosException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
+    }
+
+    @PostMapping("proyectos/{id}/fases")
+    ResponseEntity<?> crearFase(@PathVariable("id") Long proyectoId, @RequestBody Fase fase){
+        try{
+            return new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
+        }catch (ProyectoNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
     }

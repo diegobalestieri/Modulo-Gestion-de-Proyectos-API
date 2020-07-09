@@ -61,11 +61,7 @@ public class StepDefProyectoAPI extends SpringTest{
                     //.andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")));
             System.out.print("Respuesta: " + requestResult.getResponse().getContentAsString());
             String response = requestResult.getResponse().getContentAsString();
-            int inicio = response.indexOf("id");
-            int fin = response.indexOf(',',inicio);
-            String id_string = response.substring(inicio+4,fin);
-            System.out.print(id_string);
-            this.ids.add(id_string);
+            this.ids.add(obtenerId(response));
         }
     }
 

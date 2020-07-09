@@ -9,6 +9,7 @@ public class Fase {
     private Long id;
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 
+    public Fase() {}
     public Fase(String nombre) {
         registroDeDatos.setNombre(nombre);
     }

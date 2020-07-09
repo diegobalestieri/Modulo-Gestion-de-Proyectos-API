@@ -168,4 +168,9 @@ public abstract class Proyecto {
     public List<Fase> obtenerFases() {
         return fases;
     }
+
+    public boolean crearFase(Fase fase) {
+        fases.add(fase);
+        return true;
+    }
 }

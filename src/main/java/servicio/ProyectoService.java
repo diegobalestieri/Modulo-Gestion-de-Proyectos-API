@@ -2,6 +2,7 @@ package servicio;
 
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
+import modelo.Fase;
 import modelo.Proyecto;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,4 +71,11 @@ public class ProyectoService {
         proyectosRepository.save(conversor.obtenerEntidad(proyecto));
     }
 
+    public Fase crearFase(Long proyectoId, Fase fase) {
+        Proyecto proyecto = getOne(proyectoId);
+        proyecto.crearFase(fase);
+        EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
+        List<Fase> fasesAux = (conversor.obtenerProyecto(entidadProyecto)).obtenerFases();
+        return fasesAux.get(fasesAux.size()-1);
+    }
 }
