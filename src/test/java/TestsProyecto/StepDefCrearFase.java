@@ -115,7 +115,7 @@ public class StepDefCrearFase extends SpringTest{
             String requestJson = mapper.writeValueAsString(proyecto);
             System.out.print(requestJson);
             MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                     .content(requestJson))
                     .andExpect(status().isCreated())
                     .andExpect(content().json(requestJson)).andReturn();
@@ -139,7 +139,7 @@ public class StepDefCrearFase extends SpringTest{
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss:SSSXXXXX");
             MvcResult requestResult = this.mockMvc.perform(post(url_aux)
-                    .contentType(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                     .content(requestJson))
                     .andExpect(status().isCreated())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
@@ -157,14 +157,12 @@ public class StepDefCrearFase extends SpringTest{
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         String url = "/proyectos/{id}/fases";
         String url_aux;
-        Fase fase;
         for (int i = 0; i < list.size(); i++) {
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
             url_aux = url_aux + "/" + ids.get(i);
             System.out.print('\n' + url_aux + '\n');
             MvcResult requestResult = this.mockMvc.perform(get(url_aux)
-                    .contentType(MediaType.APPLICATION_JSON))
-                    //.param("id_fase", ids.get(i)))
+                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                     .andExpect(status().isCreated())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
@@ -179,7 +177,6 @@ public class StepDefCrearFase extends SpringTest{
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         String url = "/proyectos/{id}/fases";
         String url_aux;
-        Fase fase;
         for (int i = 0; i < list.size(); i++) {
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
             url_aux = url_aux + "/" + ids.get(i);

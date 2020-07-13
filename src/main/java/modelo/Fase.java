@@ -1,5 +1,7 @@
 package modelo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import persistencia.EntidadFase;
 
 import java.text.ParseException;
@@ -9,6 +11,7 @@ public class Fase {
 
 
     private Long id;
+    @JsonBackReference
     private Proyecto proyecto;
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 

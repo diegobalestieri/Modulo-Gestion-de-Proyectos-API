@@ -8,6 +8,7 @@ import modelo.Proyecto;
 import modelo.ProyectoDeDesarrollo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import servicio.ProyectoService;
@@ -15,6 +16,8 @@ import servicio.ProyectoService;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.springframework.http.MediaType.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -70,7 +73,7 @@ public class ProyectoController {
         }
     }
 
-    @PostMapping("proyectos/{id}/fases")
+    @PostMapping(value = "proyectos/{id}/fases")
     ResponseEntity<?> crearFase(@PathVariable("id") Long proyectoId, @RequestBody Fase fase){
         try{
             return new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);

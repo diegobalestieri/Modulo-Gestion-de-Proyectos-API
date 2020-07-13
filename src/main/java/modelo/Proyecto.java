@@ -1,5 +1,7 @@
 package modelo;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import excepciones.AccionNoPermitidaException;
@@ -27,6 +29,7 @@ public abstract class Proyecto {
     protected Long id;
     protected RegistroDeDatos registroDeDatos = new RegistroDeDatos();
     protected String tipoDeProyecto;
+    @JsonManagedReference
     protected List<Fase> fases = new ArrayList<Fase>();
 
     public Proyecto(){}

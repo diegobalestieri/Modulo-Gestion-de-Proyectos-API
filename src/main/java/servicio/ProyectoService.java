@@ -24,7 +24,7 @@ public class ProyectoService {
     @Autowired
     private FasesRepository fasesRepository;
 
-    private Conversor conversor = new Conversor();
+    private final Conversor conversor = new Conversor();
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public List<Proyecto> findAll(){
