@@ -90,4 +90,13 @@ public class ProyectoController {
     List<Fase> crearFase(@PathVariable("id_proyecto") Long proyectoId){
         return servicio.obtenerFases(proyectoId);
     }
+    @DeleteMapping("proyectos/{id_proyecto}/fases/{id_fase}")
+    ResponseEntity<String> borrarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
+        try{
+            servicio.borrarFase(proyectoId, faseId);
+        } catch (ProyectoNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Proyecto eliminado correctamente", HttpStatus.OK);
+    }
 }

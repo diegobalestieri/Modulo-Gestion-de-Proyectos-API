@@ -184,4 +184,14 @@ public abstract class Proyecto {
         }
         throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
     }
+
+    public void borrarFase(Long faseId) {
+        for (Fase fase : fases) {
+            if (fase.getId().equals(faseId)) {
+                fases.remove(fase);
+                return;
+            }
+        }
+        throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+    }
 }

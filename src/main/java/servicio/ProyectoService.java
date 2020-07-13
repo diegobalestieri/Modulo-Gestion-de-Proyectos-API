@@ -92,4 +92,11 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerFases();
     }
+
+    public void borrarFase(Long proyectoId, Long faseId) {
+        Proyecto proyecto = getOne(proyectoId);
+        proyecto.borrarFase(faseId);
+        save(proyecto);
+        fasesRepository.deleteById(faseId);
+    }
 }

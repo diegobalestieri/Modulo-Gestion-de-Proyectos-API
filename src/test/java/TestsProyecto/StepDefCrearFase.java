@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -25,8 +26,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -170,6 +170,29 @@ public class StepDefCrearFase extends SpringTest{
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00"))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
+                    .andReturn();
+        }
+    }
+
+    @And("cuando la elimino deja de existir en el proyecto")
+    public void cuandoLaEliminoDejaDeExistirEnElProyecto(DataTable dt) throws Exception {
+        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
+        String url = "/proyectos/{id}/fases";
+        String url_aux;
+        Fase fase;
+        for (int i = 0; i < list.size(); i++) {
+            url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
+            url_aux = url_aux + "/" + ids.get(i);
+            System.out.print('\n' + url_aux + '\n');
+            MvcResult requestResult = this.mockMvc.perform(delete(url_aux)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    //.param("id_fase", ids.get(i)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            requestResult = this.mockMvc.perform(get(url_aux)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    //.param("id_fase", ids.get(i)))
+                    .andExpect(status().isNotFound())
                     .andReturn();
         }
     }

@@ -33,3 +33,6 @@ Feature: Creacion de Fase
     Then cuando obtengo la fase a travez de la api tiene los datos correctos
       | nombre  | descripcion | fecha de inicio | fecha de finalizacion |
       | Fase 1 | Esta es la primera fase del proyecto | 2020-04-16 | 2020-05-24 |
+    And cuando la elimino deja de existir en el proyecto
+      | nombre  | descripcion | fecha de inicio | fecha de finalizacion |
+      | Fase 1 | Esta es la primera fase del proyecto | 2020-04-16 | 2020-05-24 |
