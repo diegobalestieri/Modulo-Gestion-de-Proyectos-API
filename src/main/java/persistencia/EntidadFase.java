@@ -72,4 +72,11 @@ public class EntidadFase {
     public void setFechaDeFinalizacion(Date fechaDeFin) {
         this.fechaDeFin = fechaDeFin;
     }
+
+    public void setProyectoPadre(EntidadProyecto proyectoPadre) {
+        this.proyecto = proyectoPadre;
+    }
+    public EntidadProyecto getProyectoPadre() {
+        return this.proyecto;
+    }
 }

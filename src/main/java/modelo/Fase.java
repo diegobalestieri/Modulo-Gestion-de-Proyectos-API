@@ -6,7 +6,10 @@ import java.text.ParseException;
 import java.util.Date;
 
 public class Fase {
+
+
     private Long id;
+    private Proyecto proyecto;
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 
     public Fase() {}
@@ -20,8 +23,15 @@ public class Fase {
         this.setDescripcion(entidadFase.getDescripcion());
         this.setFechaDeInicio(entidadFase.getFechaDeInicio());
         this.setFechaDeFinalizacion(entidadFase.getFechaDeFinalizacion());
+        //this.setProyectoPadre(new Proyecto(entidadFase.getProyectoPadre());
+    }
+    public Long getId() {
+        return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
     private void setFechaDeFinalizacion(Date fechaDeFin) {
         registroDeDatos.setFechaDeFinalizacion(fechaDeFin);
     }
@@ -53,6 +63,11 @@ public class Fase {
         entidad.setDescripcion(this.getDescripcion());
         entidad.setFechaDeFinalizacion(getFechaDeFinalizacion());
         entidad.setFechaDeInicio(getFechaDeInicio());
+        //entidad.setProyectoPadre(proyecto.obtenerEntidad());
         return entidad;
+    }
+
+    public void setProyectoPadre(Proyecto proyectoPadre) {
+        this.proyecto = proyectoPadre;
     }
 }

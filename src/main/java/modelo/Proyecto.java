@@ -3,6 +3,7 @@ package modelo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import excepciones.AccionNoPermitidaException;
+import excepciones.FaseNotFoundException;
 import excepciones.RestriccionDeEstadoException;
 import modelo.Estado.EstadoProyecto;
 import persistencia.EntidadFase;
@@ -170,7 +171,17 @@ public abstract class Proyecto {
     }
 
     public boolean crearFase(Fase fase) {
+        fase.setProyectoPadre(this);
         fases.add(fase);
         return true;
+    }
+
+    public Fase obtenerFase(Long faseId){
+        for (Fase fase : fases) {
+            if (fase.getId().equals(faseId)) {
+                return fase;
+            }
+        }
+        throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
     }
 }

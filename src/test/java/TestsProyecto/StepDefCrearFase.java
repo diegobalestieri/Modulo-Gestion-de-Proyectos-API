@@ -103,6 +103,7 @@ public class StepDefCrearFase extends SpringTest{
     @Given("tengo el siguiente proyecto creado")
     public void tengoElSiguienteProyectoCreado(DataTable dt) throws Exception {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
+        this.ids.clear();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).get("tipo").equals("Desarrollo")) {
                 proyecto = new ProyectoDeDesarrollo();
@@ -144,7 +145,7 @@ public class StepDefCrearFase extends SpringTest{
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00")) //MUY HARDCODEADO
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(new SimpleDateFormat("yyyy-MM-dd").parse(list.get(i).get("fecha de finalizacion"))))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
                     .andReturn();
             String response = requestResult.getResponse().getContentAsString();
             this.ids.add(obtenerId(response));
@@ -159,14 +160,16 @@ public class StepDefCrearFase extends SpringTest{
         Fase fase;
         for (int i = 0; i < list.size(); i++) {
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
+            url_aux = url_aux + "/" + ids.get(i);
+            System.out.print('\n' + url_aux + '\n');
             MvcResult requestResult = this.mockMvc.perform(get(url_aux)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .param("id", ids.get(i)))
+                    .contentType(MediaType.APPLICATION_JSON))
+                    //.param("id_fase", ids.get(i)))
                     .andExpect(status().isCreated())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fecha de inicio").value(list.get(i).get("fecha de inicio")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fecha de finalizacion").value(list.get(i).get("fecha de finalizacion")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00"))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
                     .andReturn();
         }
     }

@@ -6,9 +6,7 @@ import modelo.Fase;
 import modelo.Proyecto;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import persistencia.Conversor;
-import persistencia.EntidadProyecto;
-import persistencia.ProyectosRepository;
+import persistencia.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +20,9 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 public class ProyectoService {
     @Autowired
     private ProyectosRepository proyectosRepository;
+
+    @Autowired
+    private FasesRepository fasesRepository;
 
     private Conversor conversor = new Conversor();
 
@@ -74,8 +75,21 @@ public class ProyectoService {
     public Fase crearFase(Long proyectoId, Fase fase) {
         Proyecto proyecto = getOne(proyectoId);
         proyecto.crearFase(fase);
+        //List <Fase> fases = proyecto.obtenerFases();
+        //EntidadFase entidadFase =  fasesRepository.save(conversor.obtenerEntidad(fases.get(fases.size()-1)));
         EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
-        List<Fase> fasesAux = (conversor.obtenerProyecto(entidadProyecto)).obtenerFases();
-        return fasesAux.get(fasesAux.size()-1);
+        List <EntidadFase> fases = entidadProyecto.getFases();
+        return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
+        //return new Fase(entidadFase);
+    }
+
+    public Fase obtenerFase(Long proyectoId, Long faseId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerFase(faseId);
+    }
+
+    public List<Fase> obtenerFases(Long proyectoId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerFases();
     }
 }
