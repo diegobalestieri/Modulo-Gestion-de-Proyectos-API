@@ -89,9 +89,22 @@ public class ProyectoController {
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
     }
+
+    @PutMapping("proyectos/{id_proyecto}/fases/{id_fase}")
+    ResponseEntity<?> guardarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId, @RequestBody Fase fase){
+        try{
+            return new ResponseEntity<Fase>(servicio.guardarFase(proyectoId, faseId, fase), HttpStatus.OK);
+        }catch (ProyectoNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
+    }
     @GetMapping("proyectos/{id_proyecto}/fases")
-    List<Fase> crearFase(@PathVariable("id_proyecto") Long proyectoId){
-        return servicio.obtenerFases(proyectoId);
+    ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId){
+        try{
+            return new ResponseEntity<List<Fase>>(servicio.obtenerFases(proyectoId), HttpStatus.OK);
+        } catch (ProyectoNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
     }
     @DeleteMapping("proyectos/{id_proyecto}/fases/{id_fase}")
     ResponseEntity<String> borrarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){

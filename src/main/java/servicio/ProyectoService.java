@@ -99,4 +99,13 @@ public class ProyectoService {
         save(proyecto);
         fasesRepository.deleteById(faseId);
     }
+
+    public Fase guardarFase(Long proyectoId, Long faseId,Fase fase) {
+        Proyecto proyecto = getOne(proyectoId);
+        fase.setId(faseId);
+        proyecto.guardarFase(fase);
+        EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
+        List <EntidadFase> fases = entidadProyecto.getFases();
+        return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
+    }
 }

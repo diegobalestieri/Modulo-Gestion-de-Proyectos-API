@@ -197,4 +197,16 @@ public abstract class Proyecto {
         }
         throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
     }
+
+    public void guardarFase(Fase fase) {
+        for (int i = 0; i < fases.size(); ++i){
+            Fase faseActual = fases.get(i);
+            if (faseActual.getId().equals(fase.getId())){
+                fase.setId(faseActual.getId());
+                fases.set(i, fase);
+                return;
+            }
+        }
+        crearFase(fase);
+    }
 }
