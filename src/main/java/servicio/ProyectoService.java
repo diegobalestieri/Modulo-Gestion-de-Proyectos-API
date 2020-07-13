@@ -2,12 +2,11 @@ package servicio;
 
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
+import modelo.Fase;
 import modelo.Proyecto;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import persistencia.Conversor;
-import persistencia.EntidadProyecto;
-import persistencia.ProyectosRepository;
+import persistencia.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,10 @@ public class ProyectoService {
     @Autowired
     private ProyectosRepository proyectosRepository;
 
-    private Conversor conversor = new Conversor();
+    @Autowired
+    private FasesRepository fasesRepository;
+
+    private final Conversor conversor = new Conversor();
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public List<Proyecto> findAll(){
@@ -70,4 +72,31 @@ public class ProyectoService {
         proyectosRepository.save(conversor.obtenerEntidad(proyecto));
     }
 
+    public Fase crearFase(Long proyectoId, Fase fase) {
+        Proyecto proyecto = getOne(proyectoId);
+        proyecto.crearFase(fase);
+        //List <Fase> fases = proyecto.obtenerFases();
+        //EntidadFase entidadFase =  fasesRepository.save(conversor.obtenerEntidad(fases.get(fases.size()-1)));
+        EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
+        List <EntidadFase> fases = entidadProyecto.getFases();
+        return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
+        //return new Fase(entidadFase);
+    }
+
+    public Fase obtenerFase(Long proyectoId, Long faseId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerFase(faseId);
+    }
+
+    public List<Fase> obtenerFases(Long proyectoId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerFases();
+    }
+
+    public void borrarFase(Long proyectoId, Long faseId) {
+        Proyecto proyecto = getOne(proyectoId);
+        proyecto.borrarFase(faseId);
+        save(proyecto);
+        fasesRepository.deleteById(faseId);
+    }
 }

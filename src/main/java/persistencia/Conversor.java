@@ -1,5 +1,6 @@
 package persistencia;
 
+import modelo.Fase;
 import modelo.Proyecto;
 import modelo.ProyectoDeDesarrollo;
 import modelo.ProyectoDeImplementacion;
@@ -18,7 +19,9 @@ public class Conversor {
             return new ProyectoDeImplementacion(proyecto);
         }
     }
-
+    public Fase obtenerFase(EntidadFase fase){
+        return new Fase(fase);
+    }
     public List<Proyecto> obtenerProyectos(List<EntidadProyecto> all) {
         List<Proyecto> lista = new ArrayList<Proyecto>();
         for (int i = 0; i < all.size(); i++){
@@ -29,5 +32,8 @@ public class Conversor {
 
     public EntidadProyecto obtenerEntidad(Proyecto proyecto) {
         return proyecto.obtenerEntidad();
+    }
+    public EntidadFase obtenerEntidad(Fase fase) {
+        return fase.obtenerEntidad();
     }
 }
