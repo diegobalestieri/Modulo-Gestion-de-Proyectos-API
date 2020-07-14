@@ -185,23 +185,26 @@ public abstract class Proyecto {
                 return fase;
             }
         }
-        throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+        return null;
+    }
+    public boolean existeFase(Long faseId){
+        for (Fase fase : fases) {
+            if (fase.getId().equals(faseId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void borrarFase(Long faseId) {
-        for (Fase fase : fases) {
-            if (fase.getId().equals(faseId)) {
-                fases.remove(fase);
-                return;
-            }
-        }
-        throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+        fases.removeIf(fase -> fase.getId().equals(faseId));
     }
 
     public void guardarFase(Fase fase) {
         for (int i = 0; i < fases.size(); ++i){
             Fase faseActual = fases.get(i);
             if (faseActual.getId().equals(fase.getId())){
+                fase.setProyectoPadre(this);
                 fase.setId(faseActual.getId());
                 fases.set(i, fase);
                 return;

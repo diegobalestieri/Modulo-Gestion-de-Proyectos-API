@@ -1,5 +1,6 @@
 package servicio;
 
+import excepciones.FaseNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
 import modelo.Fase;
@@ -77,15 +78,20 @@ public class ProyectoService {
         proyecto.crearFase(fase);
         //List <Fase> fases = proyecto.obtenerFases();
         //EntidadFase entidadFase =  fasesRepository.save(conversor.obtenerEntidad(fases.get(fases.size()-1)));
-        EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
-        List <EntidadFase> fases = entidadProyecto.getFases();
-        return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
-        //return new Fase(entidadFase);
+        proyecto = save(proyecto);
+        //EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
+        //List <EntidadFase> fases = entidadProyecto.getFases();
+        //return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
+        return proyecto.obtenerFases().get(proyecto.obtenerFases().size()-1);
     }
 
     public Fase obtenerFase(Long proyectoId, Long faseId) {
         Proyecto proyecto = getOne(proyectoId);
-        return proyecto.obtenerFase(faseId);
+        if (proyecto.existeFase(faseId)){
+            return proyecto.obtenerFase(faseId);
+        }else {
+            throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+        }
     }
 
     public List<Fase> obtenerFases(Long proyectoId) {
@@ -95,17 +101,26 @@ public class ProyectoService {
 
     public void borrarFase(Long proyectoId, Long faseId) {
         Proyecto proyecto = getOne(proyectoId);
-        proyecto.borrarFase(faseId);
-        save(proyecto);
-        fasesRepository.deleteById(faseId);
-    }
+        if (proyecto.existeFase(faseId)){
+            proyecto.borrarFase(faseId);
+            save(proyecto);
+            fasesRepository.deleteById(faseId);
+        }else {
+            throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+        }
 
+    }
+    @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public Fase guardarFase(Long proyectoId, Long faseId,Fase fase) {
         Proyecto proyecto = getOne(proyectoId);
-        fase.setId(faseId);
-        proyecto.guardarFase(fase);
-        EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
-        List <EntidadFase> fases = entidadProyecto.getFases();
-        return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
+        //if (proyecto.existeFase(faseId)){
+            fase.setId(faseId);
+            proyecto.guardarFase(fase);
+            proyecto = save(proyecto);
+            List<Fase> fasesGuardadas = proyecto.obtenerFases();
+            return fasesGuardadas.get(fasesGuardadas.size()-1);
+        //} else{
+        //    return crearFase(proyectoId, fase);
+        //}
     }
 }
