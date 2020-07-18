@@ -1,7 +1,7 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -10,17 +10,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import modelo.Fase;
 import modelo.Proyecto;
-import modelo.ProyectoDeDesarrollo;
-import modelo.ProyectoDeImplementacion;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,13 +32,15 @@ public class StepDefCrearFase extends SpringTest{
     private List<String> ids = new ArrayList<>();
 
     @When("creo una fase para el proyecto con los siguientes datos y lo guardo")
-    public void creoUnaFaseParaElProyectoConLosSiguientesDatosYLoGuardo(DataTable dt) {
+    public void creoUnaFaseParaElProyectoConLosSiguientesDatosYLoGuardo(DataTable dt) throws ParseException {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         for (int i = 0; i < list.size(); i++){
-            boolean res = proyecto.crearFase( list.get(i).get("nombre"),
-                    list.get(i).get("descripcion"),
-                    list.get(i).get("fecha de inicio"),
-                    list.get(i).get("fecha de finalizacion"));
+            Fase aux = new Fase();
+            aux.setNombre( list.get(i).get("nombre"));
+            aux.setDescripcion(list.get(i).get("descripcion"));
+            aux.setFechaDeInicio(list.get(i).get("fecha de inicio"));
+            aux.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            boolean res = proyecto.crearFase(aux);
             assertTrue(res);
         }
         proyecto = proyectoService.saveNew(proyecto);
@@ -62,13 +60,15 @@ public class StepDefCrearFase extends SpringTest{
     }
 
     @When("creo una fase para el proyecto con los siguientes datos")
-    public void creoUnaFaseParaElProyectoConLosSiguientesDatos(DataTable dt) {
+    public void creoUnaFaseParaElProyectoConLosSiguientesDatos(DataTable dt) throws ParseException {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         for (int i = 0; i < list.size(); i++){
-            boolean res = proyecto.crearFase( list.get(i).get("nombre"),
-                    list.get(i).get("descripcion"),
-                    list.get(i).get("fecha de inicio"),
-                    list.get(i).get("fecha de finalizacion"));
+            Fase aux = new Fase();
+            aux.setNombre( list.get(i).get("nombre"));
+            aux.setDescripcion(list.get(i).get("descripcion"));
+            aux.setFechaDeInicio(list.get(i).get("fecha de inicio"));
+            aux.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            boolean res = proyecto.crearFase(aux);
             assertTrue(res);
         }
     }
@@ -88,8 +88,10 @@ public class StepDefCrearFase extends SpringTest{
 
 
     @Given("cuento con un proyecto activo")
-    public void cuentoConUnProyectoIniciado() {
-        proyecto = new ProyectoDeImplementacion("Proyecto X");
+    public void cuentoConUnProyectoIniciado() throws TipoDeProyectoInvalido {
+        proyecto = new Proyecto();
+        proyecto.setTipoDeProyecto("Implementación");
+        proyecto.setNombre("Proyecto X");
         proyecto.setEstado("Activo");
     }
 
@@ -106,9 +108,11 @@ public class StepDefCrearFase extends SpringTest{
         this.ids.clear();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).get("tipo").equals("Desarrollo")) {
-                proyecto = new ProyectoDeDesarrollo();
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Desarrollo");
             } else {
-                proyecto = new ProyectoDeImplementacion();
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Implementación");
             }
             proyecto.setNombre(list.get(i).get("nombre"));
             proyecto.setDescripcion(list.get(i).get("descripcion"));
@@ -131,7 +135,8 @@ public class StepDefCrearFase extends SpringTest{
         String url_aux;
         Fase fase;
         for (int i = 0; i < list.size(); i++) {
-            fase = new Fase(list.get(i).get("nombre"));
+            fase = new Fase();
+            fase.setNombre(list.get(i).get("nombre"));
             fase.setDescripcion(list.get(i).get("descripcion"));
             fase.setFechaDeInicio(list.get(i).get("fecha de inicio"));
             fase.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
@@ -200,7 +205,8 @@ public class StepDefCrearFase extends SpringTest{
         String url_aux;
         Fase fase;
         for (int i = 0; i < list.size(); i++) {
-            fase = new Fase(list.get(i).get("nombre"));
+            fase = new Fase();
+            fase.setNombre(list.get(i).get("nombre"));
             fase.setDescripcion(list.get(i).get("descripcion"));
             fase.setFechaDeInicio(list.get(i).get("fecha de inicio"));
             fase.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));

@@ -1,13 +1,12 @@
 package TestsProyecto;
 
+import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import modelo.TipoProyecto;
 import modelo.Proyecto;
-import modelo.ProyectoDeDesarrollo;
-import modelo.ProyectoDeImplementacion;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,16 +33,20 @@ public class StepDefTiposDeProyecto extends SpringTest{
     }
 
     @Given("un listado con proyectos cargados de distinto tipo")
-    public void unListadoConProyectosCargadosDeDistintoTipo(DataTable dt) {
+    public void unListadoConProyectosCargadosDeDistintoTipo(DataTable dt) throws TipoDeProyectoInvalido {
         List<Map<String,String>> listaDeMapas = dt.asMaps();
         Proyecto proyecto;
         Proyecto proyecto_guardado;
         for (Map<String,String> fila: listaDeMapas) {
             if (fila.get("tipo").equals("Implementación")) {
-                proyecto = new ProyectoDeImplementacion(fila.get("nombre"));
+                proyecto = new Proyecto();
+                proyecto.setNombre(fila.get("nombre"));
+                proyecto.setTipoDeProyecto("Implementación");
             }
             else {
-                proyecto = new ProyectoDeDesarrollo(fila.get("nombre"));
+                proyecto = new Proyecto();
+                proyecto.setNombre(fila.get("nombre"));
+                proyecto.setTipoDeProyecto("Desarrollo");
             }
             proyecto_guardado = proyectoService.save(proyecto);
             diccionario_nombre_id.put(fila.get("nombre"),proyecto_guardado.getId());
@@ -55,8 +58,8 @@ public class StepDefTiposDeProyecto extends SpringTest{
     public void preguntoElTipoDeCadaProyecto() {
         for (Proyecto proyecto: proyectoService.findAll()) {
             String nombre = proyecto.getNombre();
-            String tipo = proyecto.getTipoDeProyecto();
-            diccionario_nombre_tipo_proyecto.put(nombre,tipo);
+            TipoProyecto tipo = proyecto.getTipoDeProyecto();
+            diccionario_nombre_tipo_proyecto.put(nombre,tipo.getNombre());
         }
     }
 
@@ -69,25 +72,29 @@ public class StepDefTiposDeProyecto extends SpringTest{
     }
 
     @When("agrego al cliente {string} a un proyecto de Implementacion")
-    public void agregoUnClienteAUnProyectoDeImplementacion(String nombreCliente) {
-        ProyectoDeImplementacion proyecto = new ProyectoDeImplementacion("Sistema MS");
+    public void agregoUnClienteAUnProyectoDeImplementacion(String nombreCliente) throws TipoDeProyectoInvalido {
+        Proyecto proyecto = new Proyecto();
+        proyecto.setTipoDeProyecto("Implementación");
+        proyecto.setNombre("Sistema MS");
         this.proyecto = proyecto;
         proyecto.setCliente(nombreCliente);
     }
 
     @Then("el cliente {string} se agrego al proyecto correctamente")
     public void elClienteSeAgregoAlProyectoCorrectamente(String nombreCliente) {
-        assertEquals(nombreCliente,((ProyectoDeImplementacion) proyecto).getCliente());
+        assertEquals(nombreCliente,proyecto.getCliente());
     }
 
     @When("agrego al producto {string} a un proyecto de Desarrollo")
-    public void agregoAlProductoAUnProyectoDeImplementacion(String nombreDeProducto) {
-        this.proyecto = new ProyectoDeDesarrollo("ERP v 1.4");
-        ((ProyectoDeDesarrollo) this.proyecto).setProducto("ERP");
+    public void agregoAlProductoAUnProyectoDeImplementacion(String nombreDeProducto) throws TipoDeProyectoInvalido {
+        this.proyecto = new Proyecto();
+        this.proyecto.setTipoDeProyecto("Desarrollo");
+        this.proyecto.setNombre("ERP v 1.4");
+        this.proyecto.setProducto("ERP");
     }
 
     @Then("el producto {string} se agrego al proyecto correctamente")
     public void elProductoSeAgregoAlProyectoCorrectamente(String nombreDeProducto) {
-        assertEquals(nombreDeProducto,((ProyectoDeDesarrollo) proyecto).getProducto());
+        assertEquals(nombreDeProducto,proyecto.getProducto());
     }
 }

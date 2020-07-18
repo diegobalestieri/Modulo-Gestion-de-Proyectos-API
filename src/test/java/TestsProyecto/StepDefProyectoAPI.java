@@ -1,22 +1,15 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import modelo.Proyecto;
-import modelo.ProyectoDeDesarrollo;
-import modelo.ProyectoDeImplementacion;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import modelo.Proyecto;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,9 +38,11 @@ public class StepDefProyectoAPI extends SpringTest{
         Proyecto proyecto;
         for (int i = 0; i < list.size(); i++){
             if (list.get(i).get("tipo").equals("Desarrollo")){
-                proyecto = new ProyectoDeDesarrollo();
-            } else{
-                proyecto = new ProyectoDeImplementacion();
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Desarrollo");
+            } else {
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Implementación");
             }
             proyecto.setNombre(list.get(i).get("nombre"));
             proyecto.setDescripcion(list.get(i).get("descripcion"));

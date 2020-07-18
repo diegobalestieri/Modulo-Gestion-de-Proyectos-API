@@ -1,21 +1,19 @@
 package servicio;
 
-import excepciones.FaseNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
-import modelo.Fase;
-import modelo.Proyecto;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import persistencia.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import modelo.Fase;
+import persistencia.FasesRepository;
+import modelo.Proyecto;
+import persistencia.ProyectosRepository;
 
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.transaction.annotation.Propagation.REQUIRED;
 
 @Service
 public class ProyectoService {
@@ -25,35 +23,30 @@ public class ProyectoService {
     @Autowired
     private FasesRepository fasesRepository;
 
-    private final Conversor conversor = new Conversor();
-
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public List<Proyecto> findAll(){
-        return conversor.obtenerProyectos(proyectosRepository.findAll());
+        return proyectosRepository.findAll();
     }
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public Proyecto save(Proyecto proyecto){
-        EntidadProyecto entidad = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
-        return conversor.obtenerProyecto(entidad);
+        return proyectosRepository.save(proyecto);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public Proyecto saveNew(Proyecto proyecto){
         proyecto.setId(null);
-        EntidadProyecto entidad = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
-        return conversor.obtenerProyecto(entidad);
+        return proyectosRepository.save(proyecto);
     }
     public void delete(Proyecto proyecto){
-        proyectosRepository.delete(conversor.obtenerEntidad(proyecto));
+        proyectosRepository.delete(proyecto);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public Proyecto getOne(long id) {
         if (!proyectosRepository.existsById(id)){
-            throw new ProyectoNotFoundException("Proyecto con id: " + id + " no encontrado");
+            throw new ProyectoNotFoundException("El proyecto no fue encontrado");
         }
-        EntidadProyecto entidad = proyectosRepository.getOne(id);
-        return conversor.obtenerProyecto(entidad);
+        return proyectosRepository.getOne(id);
     }
 
     public void deleteById(long id) {
@@ -70,7 +63,7 @@ public class ProyectoService {
         } catch (ParseException e){
             throw new ParametrosInvalidosException(e.getMessage());
         }
-        proyectosRepository.save(conversor.obtenerEntidad(proyecto));
+        proyectosRepository.save(proyecto);
     }
 
     public Fase crearFase(Long proyectoId, Fase fase) {
@@ -78,49 +71,50 @@ public class ProyectoService {
         proyecto.crearFase(fase);
         //List <Fase> fases = proyecto.obtenerFases();
         //EntidadFase entidadFase =  fasesRepository.save(conversor.obtenerEntidad(fases.get(fases.size()-1)));
-        proyecto = save(proyecto);
-        //EntidadProyecto entidadProyecto = proyectosRepository.save(conversor.obtenerEntidad(proyecto));
-        //List <EntidadFase> fases = entidadProyecto.getFases();
-        //return new Fase(fasesRepository.getOne(fases.get(fases.size()-1).getId()));
-        return proyecto.obtenerFases().get(proyecto.obtenerFases().size()-1);
+        Proyecto entidadProyecto = proyectosRepository.save(proyecto);
+        List <Fase> fases = entidadProyecto.getFases();
+        return fases.get(fases.size()-1);
+        //return new Fase(entidadFase);
     }
-
+/*
+ProyectoService
+public void crearFase(Long proyectoId, Fase fase){
+    Proyecto proyecto = getOne(proyectoId);
+    proyecto.crearFase(fase);
+    proyectosRepository.update()
+    repo.update(p);
+}*/
     public Fase obtenerFase(Long proyectoId, Long faseId) {
         Proyecto proyecto = getOne(proyectoId);
-        if (proyecto.existeFase(faseId)){
-            return proyecto.obtenerFase(faseId);
-        }else {
-            throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
-        }
+        return proyecto.obtenerFase(faseId);
     }
 
-    public List<Fase> obtenerFases(Long proyectoId) {
+   public List<Fase> obtenerFases(Long proyectoId) {
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerFases();
     }
+ /*public List<Fase> obtenerFases(Long proyectoId) {
+     List<EntidadFase> entidades = fasesRepository.findByProyecto(proyectosRepository.getOne(proyectoId));
+     List<Fase> lista = new ArrayList<Fase>();
+     for (int i = 0; i < entidades.size(); i++){
+         lista.add(new Fase(entidades.get(i)));
+     }
+     return lista;
+ }*/
 
     public void borrarFase(Long proyectoId, Long faseId) {
         Proyecto proyecto = getOne(proyectoId);
-        if (proyecto.existeFase(faseId)){
-            proyecto.borrarFase(faseId);
-            save(proyecto);
-            fasesRepository.deleteById(faseId);
-        }else {
-            throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
-        }
-
+        proyecto.borrarFase(faseId);
+        save(proyecto);
+        fasesRepository.deleteById(faseId);
     }
-    @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
+
     public Fase guardarFase(Long proyectoId, Long faseId,Fase fase) {
         Proyecto proyecto = getOne(proyectoId);
-        //if (proyecto.existeFase(faseId)){
-            fase.setId(faseId);
-            proyecto.guardarFase(fase);
-            proyecto = save(proyecto);
-            List<Fase> fasesGuardadas = proyecto.obtenerFases();
-            return fasesGuardadas.get(fasesGuardadas.size()-1);
-        //} else{
-        //    return crearFase(proyectoId, fase);
-        //}
+        fase.setId(faseId);
+        proyecto.guardarFase(fase);
+        Proyecto entidadProyecto = proyectosRepository.save(proyecto);
+        List <Fase> fases = entidadProyecto.getFases();
+        return fases.get(fases.size()-1);
     }
 }
