@@ -1,5 +1,6 @@
 package modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import excepciones.AccionNoPermitidaException;
 import excepciones.FaseNotFoundException;
@@ -42,7 +43,8 @@ public class Proyecto {
     //Solo si es de desarrollo
     private String producto;
     //@JsonManagedReference
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
 
     public Proyecto() {}
@@ -68,9 +70,9 @@ public class Proyecto {
     }
 
     public void setTipoDeProyecto(String tipoDeProyecto) throws TipoDeProyectoInvalido {
-        if (tipoDeProyecto.equals("Desarrollo")){
+        if (tipoDeProyecto.toLowerCase().equals("desarrollo")){
             this.tipoDeProyecto = TipoProyecto.DESARROLLO;
-        } else if (tipoDeProyecto.equals("Implementación")){
+        } else if (tipoDeProyecto.toLowerCase().equals("implementación")){
             this.tipoDeProyecto = TipoProyecto.IMPLEMENTACION;
         } else{
             throw new TipoDeProyectoInvalido("El tipo " + tipoDeProyecto + " no es un tipo válido de proyecto");

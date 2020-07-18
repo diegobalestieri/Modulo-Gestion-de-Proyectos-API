@@ -44,8 +44,8 @@ public class StepDefProyectoAPI extends SpringTest{
                 proyecto = new Proyecto();
                 proyecto.setTipoDeProyecto("Implementación");
             }
-            proyecto.setNombre(list.get(i).get("nombre"));
-            proyecto.setDescripcion(list.get(i).get("descripcion"));
+            proyecto.setNombre(list.get(i).get("Nombre"));
+            proyecto.setDescripcion(list.get(i).get("Descripcion"));
             String requestJson = mapper.writeValueAsString(proyecto);
             System.out.print(requestJson);
             MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
@@ -67,8 +67,8 @@ public class StepDefProyectoAPI extends SpringTest{
             this.mockMvc.perform(get("/proyectos")
                     .param("id", ids.get(i)))
                     .andExpect(status().isOk())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].nombre").value(list.get(i).get("nombre")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].descripcion").value(list.get(i).get("descripcion")));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].nombre").value(list.get(i).get("Nombre")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$[0].descripcion").value(list.get(i).get("Descripcion")));
         }
 
     }

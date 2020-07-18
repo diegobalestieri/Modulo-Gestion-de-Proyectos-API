@@ -1,6 +1,7 @@
 package controladores;
 
 
+import excepciones.FaseNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
 import modelo.Fase;
@@ -80,7 +81,7 @@ public class ProyectoController {
     ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
         try{
             return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.CREATED);
-        }catch (ProyectoNotFoundException e){
+        }catch (FaseNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
     }
@@ -97,7 +98,7 @@ public class ProyectoController {
     ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId){
         try{
             return new ResponseEntity<List<Fase>>(servicio.obtenerFases(proyectoId), HttpStatus.OK);
-        } catch (ProyectoNotFoundException e){
+        } catch (FaseNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
     }
