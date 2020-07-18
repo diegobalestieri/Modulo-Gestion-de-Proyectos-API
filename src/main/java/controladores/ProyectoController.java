@@ -1,23 +1,19 @@
 package controladores;
 
 
+import excepciones.FaseNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
 import modelo.Fase;
-import modelo.Proyecto;
-import modelo.ProyectoDeDesarrollo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import modelo.Proyecto;
 import servicio.ProyectoService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
-import static org.springframework.http.MediaType.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -85,13 +81,26 @@ public class ProyectoController {
     ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
         try{
             return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.CREATED);
+        }catch (FaseNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
+    }
+
+    @PutMapping("proyectos/{id_proyecto}/fases/{id_fase}")
+    ResponseEntity<?> guardarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId, @RequestBody Fase fase){
+        try{
+            return new ResponseEntity<Fase>(servicio.guardarFase(proyectoId, faseId, fase), HttpStatus.OK);
         }catch (ProyectoNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
     }
     @GetMapping("proyectos/{id_proyecto}/fases")
-    List<Fase> crearFase(@PathVariable("id_proyecto") Long proyectoId){
-        return servicio.obtenerFases(proyectoId);
+    ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId){
+        try{
+            return new ResponseEntity<List<Fase>>(servicio.obtenerFases(proyectoId), HttpStatus.OK);
+        } catch (FaseNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
     }
     @DeleteMapping("proyectos/{id_proyecto}/fases/{id_fase}")
     ResponseEntity<String> borrarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){

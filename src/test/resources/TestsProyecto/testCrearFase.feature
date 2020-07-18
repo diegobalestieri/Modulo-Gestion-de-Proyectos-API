@@ -27,7 +27,7 @@ Feature: Creacion de Fase
     Given tengo el siguiente proyecto creado
       | Nombre | Descripcion | tipo |
       | Proyecto de Desarrollo | Este es un proyecto de desarrollo | Desarrollo |
-    When when creo una fase para el proyecto desde la API con los siguientes datos
+    When creo una fase para el proyecto desde la API con los siguientes datos
       | nombre  | descripcion | fecha de inicio | fecha de finalizacion |
       | Fase 1 | Esta es la primera fase del proyecto | 2020-04-16 | 2020-05-24 |
     Then cuando obtengo la fase a travez de la api tiene los datos correctos

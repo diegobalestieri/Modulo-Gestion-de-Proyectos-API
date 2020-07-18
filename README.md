@@ -1,6 +1,9 @@
 # Módulo Gestion de Proyectos API
 Este repositorio corresponde a la API del modulo de gestion de proyectos que sera deployado en Heroku
-Para acceder a la documentación de la API ir a [http://localhost:8080//swagger-ui.html](http://localhost:8080/swagger-ui.html)
+Para acceder a la documentación de la API ir a
+ - [mapache-proyectos.herokuapp.com/swagger-ui.html](mapache-proyectos.herokuapp.com/swagger-ui.html)  
+ O si se corre de forma local:
+ - [http://localhost:8080//swagger-ui.html](http://localhost:8080/swagger-ui.html)  
 
 ## Como correr Spring  
 Opción A:

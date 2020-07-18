@@ -1,11 +1,11 @@
 package TestsProyecto;
 
+import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import modelo.Proyecto;
-import modelo.ProyectoDeDesarrollo;
 
 import java.util.List;
 
@@ -19,11 +19,13 @@ public class StepDefCrearProyecto extends SpringTest {
     }
 
     @When("creo algunos proyectos con nombre e id")
-    public void creoAlgunosProyectosConNombreEId(DataTable dt) {
+    public void creoAlgunosProyectosConNombreEId(DataTable dt) throws TipoDeProyectoInvalido {
         List<List<String>> lista = dt.asLists();
         Proyecto proyecto;
         for (List<String> proyectos : lista) {
-            proyecto = new ProyectoDeDesarrollo(proyectos.get(1));
+            proyecto = new Proyecto();
+            proyecto.setTipoDeProyecto("Implementación");
+            proyecto.setNombre(proyectos.get(1));
             proyectoService.save(proyecto);
         }
     }

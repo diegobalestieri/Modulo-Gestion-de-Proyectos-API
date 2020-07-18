@@ -1,7 +1,7 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -10,17 +10,13 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import modelo.Fase;
 import modelo.Proyecto;
-import modelo.ProyectoDeDesarrollo;
-import modelo.ProyectoDeImplementacion;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,13 +32,15 @@ public class StepDefCrearFase extends SpringTest{
     private List<String> ids = new ArrayList<>();
 
     @When("creo una fase para el proyecto con los siguientes datos y lo guardo")
-    public void creoUnaFaseParaElProyectoConLosSiguientesDatosYLoGuardo(DataTable dt) {
+    public void creoUnaFaseParaElProyectoConLosSiguientesDatosYLoGuardo(DataTable dt) throws ParseException {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         for (int i = 0; i < list.size(); i++){
-            boolean res = proyecto.crearFase( list.get(i).get("nombre"),
-                    list.get(i).get("descripcion"),
-                    list.get(i).get("fecha de inicio"),
-                    list.get(i).get("fecha de finalizacion"));
+            Fase aux = new Fase();
+            aux.setNombre( list.get(i).get("nombre"));
+            aux.setDescripcion(list.get(i).get("descripcion"));
+            aux.setFechaDeInicio(list.get(i).get("fecha de inicio"));
+            aux.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            boolean res = proyecto.crearFase(aux);
             assertTrue(res);
         }
         proyecto = proyectoService.saveNew(proyecto);
@@ -62,13 +60,15 @@ public class StepDefCrearFase extends SpringTest{
     }
 
     @When("creo una fase para el proyecto con los siguientes datos")
-    public void creoUnaFaseParaElProyectoConLosSiguientesDatos(DataTable dt) {
+    public void creoUnaFaseParaElProyectoConLosSiguientesDatos(DataTable dt) throws ParseException {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         for (int i = 0; i < list.size(); i++){
-            boolean res = proyecto.crearFase( list.get(i).get("nombre"),
-                    list.get(i).get("descripcion"),
-                    list.get(i).get("fecha de inicio"),
-                    list.get(i).get("fecha de finalizacion"));
+            Fase aux = new Fase();
+            aux.setNombre( list.get(i).get("nombre"));
+            aux.setDescripcion(list.get(i).get("descripcion"));
+            aux.setFechaDeInicio(list.get(i).get("fecha de inicio"));
+            aux.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            boolean res = proyecto.crearFase(aux);
             assertTrue(res);
         }
     }
@@ -88,8 +88,10 @@ public class StepDefCrearFase extends SpringTest{
 
 
     @Given("cuento con un proyecto activo")
-    public void cuentoConUnProyectoIniciado() {
-        proyecto = new ProyectoDeImplementacion("Proyecto X");
+    public void cuentoConUnProyectoIniciado() throws TipoDeProyectoInvalido {
+        proyecto = new Proyecto();
+        proyecto.setTipoDeProyecto("Implementación");
+        proyecto.setNombre("Proyecto X");
         proyecto.setEstado("Activo");
     }
 
@@ -106,9 +108,11 @@ public class StepDefCrearFase extends SpringTest{
         this.ids.clear();
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).get("tipo").equals("Desarrollo")) {
-                proyecto = new ProyectoDeDesarrollo();
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Desarrollo");
             } else {
-                proyecto = new ProyectoDeImplementacion();
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Implementación");
             }
             proyecto.setNombre(list.get(i).get("nombre"));
             proyecto.setDescripcion(list.get(i).get("descripcion"));
@@ -124,20 +128,20 @@ public class StepDefCrearFase extends SpringTest{
         }
     }
 
-    @When("when creo una fase para el proyecto desde la API con los siguientes datos")
-    public void whenCreoUnaFaseParaElProyectoDesdeLaAPIConLosSiguientesDatos(DataTable dt) throws Exception {
+    @When("creo una fase para el proyecto desde la API con los siguientes datos")
+    public void creoUnaFaseParaElProyectoDesdeLaAPIConLosSiguientesDatos(DataTable dt) throws Exception {
         List<Map<String, String>> list = dt.asMaps(String.class, String.class);
         String url = "/proyectos/{id}/fases";
         String url_aux;
         Fase fase;
         for (int i = 0; i < list.size(); i++) {
-            fase = new Fase(list.get(i).get("nombre"));
+            fase = new Fase();
+            fase.setNombre(list.get(i).get("nombre"));
             fase.setDescripcion(list.get(i).get("descripcion"));
             fase.setFechaDeInicio(list.get(i).get("fecha de inicio"));
             fase.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
             String requestJson = mapper.writeValueAsString(fase);
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss:SSSXXXXX");
             MvcResult requestResult = this.mockMvc.perform(post(url_aux)
                     .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                     .content(requestJson))
@@ -191,6 +195,35 @@ public class StepDefCrearFase extends SpringTest{
                     //.param("id_fase", ids.get(i)))
                     .andExpect(status().isNotFound())
                     .andReturn();
+        }
+    }
+
+    @And("modifico el nombre, descripción, fecha de inicio o finalización de una fase ya creada")
+    public void modificoElNombreDescripciónFechaDeInicioOFinalizaciónDeUnaFaseYaCreada(DataTable dt) throws Exception {
+        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
+        String url = "/proyectos/{id}/fases";
+        String url_aux;
+        Fase fase;
+        for (int i = 0; i < list.size(); i++) {
+            fase = new Fase();
+            fase.setNombre(list.get(i).get("nombre"));
+            fase.setDescripcion(list.get(i).get("descripcion"));
+            fase.setFechaDeInicio(list.get(i).get("fecha de inicio"));
+            fase.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            String requestJson = mapper.writeValueAsString(fase);
+            url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
+            url_aux = url_aux + "/" + ids.get(i);
+            MvcResult requestResult = this.mockMvc.perform(put(url_aux)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                    .content(requestJson))
+                    .andExpect(status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00")) //MUY HARDCODEADO
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
+                    .andReturn();
+            String response = requestResult.getResponse().getContentAsString();
+            this.ids.add(obtenerId(response));
         }
     }
 }

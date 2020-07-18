@@ -1,16 +1,17 @@
 package modelo;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import excepciones.AccionNoPermitidaException;
 import excepciones.FaseNotFoundException;
 import excepciones.RestriccionDeEstadoException;
+import excepciones.TipoDeProyectoInvalido;
 import modelo.Estado.EstadoProyecto;
-import persistencia.EntidadFase;
-import persistencia.EntidadProyecto;
+import modelo.Fase;
+import modelo.TipoProyecto;
 
+import javax.persistence.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,124 +19,155 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "tipoDeProyecto")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ProyectoDeDesarrollo.class, name = "Desarrollo"),
-        @JsonSubTypes.Type(value = ProyectoDeImplementacion.class, name = "Implementación")
-})
-public abstract class Proyecto {
 
-    protected EstadoProyecto estado = EstadoProyecto.NO_INICIADO;
-    protected Long id;
-    protected RegistroDeDatos registroDeDatos = new RegistroDeDatos();
-    protected String tipoDeProyecto;
-    @JsonManagedReference
-    protected List<Fase> fases = new ArrayList<Fase>();
-
-    public Proyecto(){}
-    public Proyecto(String nombre){
-        this.setNombre(nombre);
-    }
+@Entity
+@Table(name = "proyectos")
+public class Proyecto {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "proyecto_id")
+    private Long id;
+    @Enumerated(EnumType.STRING)
+    private TipoProyecto tipoDeProyecto;
+    private String nombre;
+    private String descripcion;
 
 
-    public Proyecto(EntidadProyecto entidadProyecto){
-        this.id = entidadProyecto.getId();
-        this.setEstado(entidadProyecto.getEstado());
-        this.setNombre(entidadProyecto.getNombre());
-        this.setDescripcion(entidadProyecto.getDescripcion());
-        this.setFechaDeInicio(entidadProyecto.getFechaDeInicio());
-        this.setFechaDeFinalizacion(entidadProyecto.getFechaDeFin());
-        for(int i = 0; i < entidadProyecto.getFases().size(); ++i){
-            this.crearFase(entidadProyecto.getFases().get(i));
-        }
-    }
+    @Enumerated(EnumType.STRING)
+    private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
 
-    private void crearFase(EntidadFase entidadFase) {
-        fases.add(new Fase(entidadFase));
-    }
+    private Date fechaDeInicio;
+    private Date fechaDeFin;
+    //Solo si es de implementacion
+    private String cliente;
+    //Solo si es de desarrollo
+    private String producto;
+    //@JsonManagedReference
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Fase> fases = new ArrayList<>();
 
+    public Proyecto() {}
 
-    public void modificar(Proyecto proyecto){
-        registroDeDatos.setNombre(proyecto.getNombre());
-        this.tipoDeProyecto = proyecto.getTipoDeProyecto();
-    }
     public Long getId() {
         return id;
     }
 
-    public String getTipoDeProyecto() { return tipoDeProyecto; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getNombre() {
-        return registroDeDatos.getNombre();
-    }
-    public String getDescripcion() { return this.registroDeDatos.getDescripcion();}
-    public Date getFechaDeInicio() { return this.registroDeDatos.getFechaDeInicio();}
-    public Date getFechaDeFinalizacion() { return this.registroDeDatos.getFechaDeFinalizacion();}
-    public String getEstado() {
-        return estado.getNombre();
-    }
-    public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
-    public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
-    public void setFechaDeInicio(Date fechaDeInicio){ this.registroDeDatos.setFechaDeInicio(fechaDeInicio);}
-    public void setFechaDeInicio(String fechaDeInicio) throws ParseException,RestriccionDeEstadoException {
-        if (!estado.getNombre().equals("No iniciado")) {
-            throw new RestriccionDeEstadoException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
-        }
-        registroDeDatos.setFechaDeInicio(fechaDeInicio);
-    }
-    public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
-        this.registroDeDatos.setFechaDeFinalizacion(fechaDeFinalizacion);
-    }
-    private void setFechaDeFinalizacion(Date fechaDeFin) {
-        registroDeDatos.setFechaDeFinalizacion(fechaDeFin);
+        return nombre;
     }
 
-    public boolean setEstado(String nombreDeEstado) throws AccionNoPermitidaException {
-        if (this.estado != EstadoProyecto.NO_INICIADO && nombreDeEstado.equals("No iniciado")) {
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public TipoProyecto getTipoDeProyecto() {
+        return tipoDeProyecto;
+    }
+
+    public void setTipoDeProyecto(String tipoDeProyecto) throws TipoDeProyectoInvalido {
+        if (tipoDeProyecto.toLowerCase().equals("desarrollo")){
+            this.tipoDeProyecto = TipoProyecto.DESARROLLO;
+        } else if (tipoDeProyecto.toLowerCase().equals("implementación")){
+            this.tipoDeProyecto = TipoProyecto.IMPLEMENTACION;
+        } else{
+            throw new TipoDeProyectoInvalido("El tipo " + tipoDeProyecto + " no es un tipo válido de proyecto");
+        }
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getFechaDeInicio() {
+        return fechaDeInicio;
+    }
+
+    public void setFechaDeInicio(Date fechaDeInicio) {
+        if (!estadoProyecto.getNombre().equals("No iniciado")) {
+            throw new RestriccionDeEstadoException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
+        }
+        this.fechaDeInicio = fechaDeInicio;
+    }
+    public void setFechaDeInicio(String fechaDeInicio) throws ParseException {
+        if (!estadoProyecto.getNombre().equals("No iniciado")) {
+            throw new RestriccionDeEstadoException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
+        }
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        this.fechaDeInicio = format.parse(fechaDeInicio);
+    }
+
+    public Date getFechaDeFin() {
+        return fechaDeFin;
+    }
+
+    public void setFechaDeFin(Date fechaDeFin) {
+        this.fechaDeFin = fechaDeFin;
+    }
+
+    public String getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(String cliente) {
+        if (tipoDeProyecto == TipoProyecto.IMPLEMENTACION){
+            this.cliente = cliente;
+        }
+    }
+
+    public List<Fase> getFases() {
+        return fases;
+    }
+
+    public void setFases(List<Fase> fases) {
+        this.fases = fases;
+    }
+
+    public String getProducto() {
+        return producto;
+    }
+
+    public void setProducto(String producto) {
+        if (tipoDeProyecto == TipoProyecto.DESARROLLO){
+            this.producto = producto;
+        }
+    }
+    public EstadoProyecto getEstado() {
+        return estadoProyecto;
+    }
+
+    public boolean setEstado(String nombreDeEstado) {
+        if (this.estadoProyecto != EstadoProyecto.NO_INICIADO && nombreDeEstado.equals("No iniciado")) {
             throw new AccionNoPermitidaException("No se puede volver al estado No iniciado");
         }
         switch (nombreDeEstado) {
-            case "No iniciado": this.estado = EstadoProyecto.NO_INICIADO;
-            break;
-            case "Activo": this.estado = EstadoProyecto.ACTIVO;
-            break;
-            case "Suspendido": this.estado = EstadoProyecto.SUSPENDIDO;
-            break;
-            case "Cancelado": this.estado = EstadoProyecto.CANCELADO;
-            break;
-            case "Finalizado": this.estado = EstadoProyecto.FINALIZADO;
-            break;
+            case "No iniciado": this.estadoProyecto = EstadoProyecto.NO_INICIADO;
+                break;
+            case "Activo": this.estadoProyecto = EstadoProyecto.ACTIVO;
+                break;
+            case "Suspendido": this.estadoProyecto = EstadoProyecto.SUSPENDIDO;
+                break;
+            case "Cancelado": this.estadoProyecto = EstadoProyecto.CANCELADO;
+                break;
+            case "Finalizado": this.estadoProyecto = EstadoProyecto.FINALIZADO;
+                break;
         }
         return true;
     }
-
-
-    public EntidadProyecto obtenerEntidad() {
-        EntidadProyecto entidad = new EntidadProyecto();
-        entidad.setId(id);
-        entidad.setTipoDeProyecto(tipoDeProyecto);
-        entidad.setNombre(registroDeDatos.getNombre());
-        entidad.setDescripcion(registroDeDatos.getDescripcion());
-        entidad.setEstado(estado.getNombre());
-        entidad.setFechaDeInicio(registroDeDatos.getFechaDeInicio());
-        entidad.setFechaDeFin(registroDeDatos.getFechaDeFinalizacion());
-        entidad.setFases(obtenerEntidadFases());
-        ingresarDatos(entidad);
-        return entidad;
-    }
-
-    protected abstract void ingresarDatos(EntidadProyecto entidad);
-
-    private List<EntidadFase> obtenerEntidadFases() {
-        List <EntidadFase> entidadFases = new ArrayList<EntidadFase>();
-        for (Fase fase : fases) {
-            entidadFases.add(fase.obtenerEntidad());
+    public boolean setEstado(EstadoProyecto nuevoEstado) {
+        if ((this.estadoProyecto != EstadoProyecto.NO_INICIADO) && (nuevoEstado == EstadoProyecto.NO_INICIADO)) {
+            throw new AccionNoPermitidaException("No se puede volver al estado No iniciado");
         }
-        return entidadFases;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        this.estadoProyecto = nuevoEstado;
+        return true;
     }
 
     public void actualizar(Map<String, Object> parametros) throws ParseException {
@@ -145,49 +177,32 @@ public abstract class Proyecto {
                 this.setNombre((String) entrada.getValue());
             } else if (entrada.getKey().equals("descripcion")) {
                 this.setDescripcion((String) entrada.getValue());
-            } else if (entrada.getKey().equals("fechaDeInicio")) {
+           /* } else if (entrada.getKey().equals("fechaDeInicio")) {
                 this.setFechaDeInicio((String) entrada.getValue());
             } else if (entrada.getKey().equals("fechaDeFinalizacion")) {
-                this.setFechaDeFinalizacion((String) entrada.getValue());
+                this.setFechaDeFin((String) entrada.getValue());
+            */
             } else if (entrada.getKey().equals("estado")) {
                 this.setEstado((String) entrada.getValue());
+            } else if (tipoDeProyecto.equals("Desarrollo") && entrada.getKey().equals("producto")){
+                this.setProducto((String) entrada.getValue());
+            } else if (tipoDeProyecto.equals("Implementacion") && entrada.getKey().equals("cliente")){
+                this.setCliente((String) entrada.getValue());
             }
 
         }
     }
-
-    public boolean crearFase(String nombre, String descripcion, String fecha_de_inicio, String fecha_de_finalizacion) {
-        Fase aux = new Fase(nombre);
-        aux.setDescripcion(descripcion);
-        try {
-            aux.setFechaDeInicio(fecha_de_inicio);
-            aux.setFechaDeFinalizacion(fecha_de_finalizacion);
-        } catch (ParseException e) {
-            return false;
-        }
-        fases.add(aux);
-        return true;
-    }
-
-    public List<Fase> obtenerFases() {
-        return fases;
-    }
-
-    public boolean crearFase(Fase fase) {
-        fase.setProyectoPadre(this);
-        fases.add(fase);
-        return true;
-    }
-
     public Fase obtenerFase(Long faseId){
         for (Fase fase : fases) {
             if (fase.getId().equals(faseId)) {
                 return fase;
             }
         }
-        throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+        throw new FaseNotFoundException("La fase no fue encontrada");
     }
-
+    public List<Fase> obtenerFases() {
+        return fases;
+    }
     public void borrarFase(Long faseId) {
         for (Fase fase : fases) {
             if (fase.getId().equals(faseId)) {
@@ -195,6 +210,21 @@ public abstract class Proyecto {
                 return;
             }
         }
-        throw new FaseNotFoundException("Fase con id " + faseId + " no encontrada");
+        throw new FaseNotFoundException("La fase no fue encontrada");
+    }
+    public void guardarFase(Fase fase) {
+        for (int i = 0; i < fases.size(); ++i){
+            Fase faseActual = fases.get(i);
+            if (faseActual.getId().equals(fase.getId())){
+                fase.setId(faseActual.getId());
+                fases.set(i, fase);
+                return;
+            }
+        }
+        crearFase(fase);
+    }
+    public boolean crearFase(Fase fase) {
+        fases.add(fase);
+        return true;
     }
 }
