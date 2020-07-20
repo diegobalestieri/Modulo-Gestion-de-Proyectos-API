@@ -1,57 +1,91 @@
 package modelo;
 
-import persistencia.EntidadFase;
-
+import javax.persistence.*;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+@Entity
+@Table(name = "fases")
 public class Fase {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "fase_id")
     private Long id;
-    private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
+    private String nombre;
+    private String descripcion;
+    private String estado;
+    private Date fechaDeInicio;
+    private Date fechaDeFin;
 
-    public Fase(String nombre) {
-        registroDeDatos.setNombre(nombre);
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Iteracion> iteraciones = new ArrayList<>();
+
+    public Fase(){}
+
+    public Long getId() {
+        return id;
     }
 
-    public Fase(EntidadFase entidadFase) {
-        this.id = entidadFase.getId();
-        this.setNombre(entidadFase.getNombre());
-        this.setDescripcion(entidadFase.getDescripcion());
-        this.setFechaDeInicio(entidadFase.getFechaDeInicio());
-        this.setFechaDeFinalizacion(entidadFase.getFechaDeFinalizacion());
-    }
-
-    private void setFechaDeFinalizacion(Date fechaDeFin) {
-        registroDeDatos.setFechaDeFinalizacion(fechaDeFin);
-    }
-
-    private void setFechaDeInicio(Date fechaDeInicio) {
-        registroDeDatos.setFechaDeInicio(fechaDeInicio);
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNombre() {
-        return registroDeDatos.getNombre();
-    }
-    public String getDescripcion() { return this.registroDeDatos.getDescripcion();}
-    public Date getFechaDeInicio() { return this.registroDeDatos.getFechaDeInicio();}
-    public Date getFechaDeFinalizacion() { return this.registroDeDatos.getFechaDeFinalizacion();}
-
-    public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
-    public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
-    public void setFechaDeInicio(String fechaDeInicio) throws ParseException {
-        this.registroDeDatos.setFechaDeInicio(fechaDeInicio);
-    }
-    public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
-        this.registroDeDatos.setFechaDeFinalizacion(fechaDeFinalizacion);
+        return nombre;
     }
 
-    public EntidadFase obtenerEntidad() {
-        EntidadFase entidad = new EntidadFase();
-        entidad.setId(id);
-        entidad.setNombre(this.getNombre());
-        entidad.setDescripcion(this.getDescripcion());
-        entidad.setFechaDeFinalizacion(getFechaDeFinalizacion());
-        entidad.setFechaDeInicio(getFechaDeInicio());
-        return entidad;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public Date getFechaDeInicio() {
+        return fechaDeInicio;
+    }
+
+    public void setFechaDeInicio(Date fechaDeInicio) {
+        this.fechaDeInicio = fechaDeInicio;
+    }
+
+    public Date getFechaDeFinalizacion() {
+        return fechaDeFin;
+    }
+
+    public void setFechaDeFinalizacion(Date fechaDeFin) {
+        this.fechaDeFin = fechaDeFin;
+    }
+
+    public void setFechaDeInicio(String fecha_de_inicio) throws ParseException {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        this.fechaDeInicio = format.parse(fecha_de_inicio);
+    }
+    public void setFechaDeFinalizacion(String fecha_de_fin) throws ParseException {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        this.fechaDeFin = format.parse(fecha_de_fin);
+    }
+
+    public boolean agregarIteracion(Iteracion iteracion) {
+        return this.iteraciones.add(iteracion);
+    }
+
+    public List<Iteracion> getIteraciones() { return this.iteraciones;  }
 }

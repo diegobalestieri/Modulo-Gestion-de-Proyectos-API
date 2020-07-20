@@ -2,63 +2,79 @@ package TestsProyecto;
 
 import excepciones.AccionNoPermitidaException;
 import excepciones.RestriccionDeEstadoException;
+import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import modelo.*;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import modelo.Proyecto;
 
 import io.cucumber.datatable.DataTable;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.*;
-
 public class StepDefGestionarProyecto extends SpringTest {
 
-    private Proyecto proyecto;
+    private long id;
+    private Date fecha;
     private String estado;
     private Map<String,Long> diccionario_nombre_id = new HashMap<>();
     private Exception excepcion;
 
     @Given("un listado con proyectos cargados")
-    public void unListadoConProyectosCargados(DataTable dt) {
+    @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
+    public void unListadoConProyectosCargados(DataTable dt) throws TipoDeProyectoInvalido {
         List<Map<String,String>> listaDeMapas = dt.asMaps();
         for (Map<String, String> fila : listaDeMapas) {
             Proyecto proyecto;
             Proyecto proyecto_guardado;
             String nombre = fila.get("nombre");
             if (fila.get("tipo").equals("Desarrollo")) {
-                proyecto = new ProyectoDeDesarrollo(nombre);
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Desarrollo");
+                proyecto.setNombre(nombre);
             }
-            else { proyecto = new ProyectoDeImplementacion(nombre); }
+            else {
+                proyecto = new Proyecto();
+                proyecto.setTipoDeProyecto("Implementación");
+                proyecto.setNombre(nombre);
+            }
             proyecto_guardado = proyectoService.save(proyecto);
             diccionario_nombre_id.put(fila.get("nombre"),proyecto_guardado.getId());
         }
     }
 
     @Given("selecciono el proyecto {string}")
+    @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public void seleccionoElProyecto(String nombreDeProyecto) {
         long id = diccionario_nombre_id.get(nombreDeProyecto);
-        this.proyecto =  proyectoService.getOne(id);;
+        this.id =  id;
     }
 
     @When("modifico su estado a {string}")
     public void modificoSuEstadoA(String nuevoEstado) {
-        try { this.proyecto.setEstado(nuevoEstado); }
+        Proyecto proyecto = proyectoService.getOne(id);
+        try { proyecto.setEstado(nuevoEstado); }
         catch(AccionNoPermitidaException e) { this.excepcion = e; }
         this.estado = nuevoEstado;
     }
 
     @Then("el estado del proyecto es el correcto")
     public void elEstadoDelProyectoEsElCorrecto() {
-        assertEquals(estado,proyecto.getEstado());
+        Proyecto proyecto = proyectoService.getOne(id);
+        assertEquals(estado,proyecto.getEstado().getNombre());
     }
 
+    @Transactional
     @When("asigno la fecha de inicio a {string}")
     public void asignoLaFechaDeInicioA(String fecha) {
+        Proyecto proyecto = proyectoService.getOne(id);
         try {
             proyecto.setFechaDeInicio(fecha);
         } catch (ParseException|RestriccionDeEstadoException e) {
@@ -68,6 +84,7 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @Then("la fecha de inicio del proyecto es {string}")
     public void laFechaDeInicioDelProyectoEs(String fecha) {
+        Proyecto proyecto = proyectoService.getOne(id);
         try {
             assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse(fecha), proyecto.getFechaDeInicio());
         } catch (ParseException e) {
@@ -76,10 +93,13 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
     @Given("selecciono un proyecto y le asigno la fecha de inicio {string}")
-    public void seleccionoUnProyectoYLeAsignoLaFechaDeInicio(String fecha) throws ParseException {
-        this.proyecto = new ProyectoDeDesarrollo("Proyecto X");
+    public void seleccionoUnProyectoYLeAsignoLaFechaDeInicio(String fecha) throws ParseException, TipoDeProyectoInvalido {
+        Proyecto proyecto = proyectoService.save(new Proyecto());
+        proyecto.setTipoDeProyecto("Desarrollo");
+        proyecto.setNombre("Proyecto X");
+        proyecto.setFechaDeInicio(fecha);
         excepcion = null;
-        this.proyecto.setFechaDeInicio(fecha);
+        this.id = proyecto.getId();
     }
 
     @Then("se lanza un error indicando que la fecha de inicio no se puede modificar")
@@ -95,36 +115,46 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
     @Given("selecciono un proyecto")
-    public void seleccionoUnProyecto() {
-        this.proyecto = new ProyectoDeDesarrollo("Proyecto X");
+    public void seleccionoUnProyecto() throws TipoDeProyectoInvalido {
+        Proyecto proyecto = proyectoService.save(new Proyecto());
+        proyecto.setNombre("Proyecto X");
+        proyecto.setTipoDeProyecto("Desarrollo");
         excepcion = null;
+        this.id = proyecto.getId();
     }
 
     @Given("creo un proyecto con fecha de inicio {string}")
-    public void creoUnProyectoConFechaDeInicio(String fecha) {
-        this.proyecto = new ProyectoDeDesarrollo("Proyecto Y");
+    public void creoUnProyectoConFechaDeInicio(String fecha) throws TipoDeProyectoInvalido {
+        Proyecto proyecto = proyectoService.save(new Proyecto());
+        proyecto.setNombre("Proyecto Y");
+        proyecto.setTipoDeProyecto("Desarrollo");
         try {
-            this.proyecto.setFechaDeInicio(fecha);
+            proyecto.setFechaDeInicio(fecha);
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        this.id = proyecto.getId();
     }
 
-    @When("lo guardo en el repositorio")
+    @When("pregunto la fecha de inicio del proyecto")
     public void loGuardoEnElRepositorio() {
-        proyecto = proyectoService.saveNew(proyecto);
+        Proyecto proyecto = proyectoService.getOne(id);
+        this.fecha = proyecto.getFechaDeInicio();
     }
 
-    @Then("la fecha se guardo correctamente")
-    public void laFechaSeGuardoCorrectamente() {
-        Proyecto proyectoGuardado = proyectoService.getOne(proyecto.getId());
-        assertEquals(proyecto.getFechaDeInicio().getClass(), Date.class);
-        assertEquals(proyecto.getFechaDeInicio(),proyectoGuardado.getFechaDeInicio());
+    @Then("la fecha {string} se guardo correctamente")
+    public void laFechaSeGuardoCorrectamente(String fechaDeInicio) throws ParseException {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaCorrecta = format.parse(fechaDeInicio);
+        Proyecto proyecto = proyectoService.getOne(id);
+        assertEquals(proyecto.getFechaDeInicio().getClass(), java.sql.Timestamp.class);
+        assertEquals(fechaCorrecta,proyecto.getFechaDeInicio());
     }
 
     @And("cambio el estado de proyecto a activo")
     public void cambioElEstadoDeProyectoAIniciado() {
-        this.proyecto.setEstado("Activo");
+        Proyecto proyecto = proyectoService.getOne(id);
+        proyecto.setEstado("Activo");
     }
 
 
@@ -133,43 +163,57 @@ public class StepDefGestionarProyecto extends SpringTest {
         long id = diccionario_nombre_id.get(nombreDeProyecto);
         Proyecto proyecto = proyectoService.getOne(id);
         proyecto.setEstado(estado);
-        this.proyecto = proyecto;
+        this.id = id;
     }
 
     @Then("el estado del proyecto sigue siendo {string}")
     public void elEstadoDelProyectoSigueSiendoElMismo(String estadoEsperado) {
-        assertTrue(this.proyecto.getEstado().equals(estadoEsperado));
+        Proyecto proyecto = proyectoService.getOne(id);
+        assertEquals(proyecto.getEstado().getNombre(), estadoEsperado);
     }
 
     @When("le cambio el nombre a {string} y descripcion {string}")
+    @Transactional
     public void leCambioElNombreAYDescripcion(String nuevoNombre, String nuevaDescripcion) {
+        Proyecto proyecto = proyectoService.getOne(id);
         proyecto.setNombre(nuevoNombre);
         proyecto.setDescripcion(nuevaDescripcion);
     }
 
     @Then("el nombre del proyecto es {string}")
-    public void elNombreDelProyectoEs(String nombreCorrecto) { assertEquals(nombreCorrecto,proyecto.getNombre()); }
+    public void elNombreDelProyectoEs(String nombreCorrecto) {
+        Proyecto proyecto = proyectoService.getOne(id);
+        assertEquals(nombreCorrecto,proyecto.getNombre());
+    }
 
     @And("la descripción es {string}")
-    public void laDescripciónEs(String descripcion) { assertEquals(descripcion,proyecto.getDescripcion()); }
+    public void laDescripciónEs(String descripcion) {
+        Proyecto proyecto = proyectoService.getOne(id);
+        assertEquals(descripcion,proyecto.getDescripcion());
+    }
 
     @Given("selecciono un proyecto de Desarrollo")
-    public void seleccionoUnProyectoDeDesarrollo() {
-        this.proyecto = new ProyectoDeDesarrollo("Proyecto Y");
+    public void seleccionoUnProyectoDeDesarrollo() throws TipoDeProyectoInvalido {
+        Proyecto proyecto = proyectoService.save(new Proyecto());
+        proyecto.setNombre("Proyecto Y");
+        proyecto.setTipoDeProyecto("Desarrollo");
+        this.id = proyecto.getId();
     }
 
     @When("lo asocio al producto {string} y lo guardo")
     public void loAsocioAlProductoYLoGuardo(String producto) {
-        ((ProyectoDeDesarrollo)proyecto).setProducto(producto);
-        proyecto = proyectoService.saveNew(proyecto);
+        Proyecto proyecto = proyectoService.getOne(id);
+        proyecto.setProducto(producto);
+        this.id = proyecto.getId();
     }
 
     @Then("el proyecto tiene el producto asociado {string}")
     public void elProyectoTieneElProductoAsociado(String producto) {
-        ProyectoDeDesarrollo proyectoDeDesarrollo = (ProyectoDeDesarrollo) proyectoService.getOne(proyecto.getId());
-        assertEquals(proyectoDeDesarrollo.getProducto(), producto);
+        Proyecto proyecto = proyectoService.getOne(id);
+        assertEquals(producto,proyecto.getProducto());
     }
 
+    @Transactional
     @Then("se lanza un error indicando que el estado no se pudo cambiar")
     public void seLanzaUnErrorIndicandoQueElEstadoNoSePudoCambiar() {
         assertTrue(this.excepcion != null);

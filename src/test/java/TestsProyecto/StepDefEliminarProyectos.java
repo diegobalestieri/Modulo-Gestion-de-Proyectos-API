@@ -1,11 +1,11 @@
 package TestsProyecto;
 
+import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import modelo.Proyecto;
-import modelo.ProyectoDeImplementacion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,10 +23,12 @@ public class StepDefEliminarProyectos extends SpringTest{
         proyectoService.deleteAll();
     }
     @Given("existen {int} proyectos cargados en el sistema")
-    public void existenProyectosCargadosEnElSistema(int cantidadDeProyectos) {
+    public void existenProyectosCargadosEnElSistema(int cantidadDeProyectos) throws TipoDeProyectoInvalido {
         Proyecto proyecto;
         for (int i = 1; i <= cantidadDeProyectos; i++) {
-            proyecto = new ProyectoDeImplementacion("Proyecto "+i);
+            proyecto = new Proyecto();
+            proyecto.setTipoDeProyecto("Implementación");
+            proyecto.setNombre("Proyecto "+i);
             proyecto_guardado = proyectoService.save(proyecto);
             diccionario_nombre_id.put("Proyecto "+i,proyecto_guardado.getId());
         }
