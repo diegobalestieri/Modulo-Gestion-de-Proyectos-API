@@ -10,16 +10,19 @@ import java.util.Date;
 
 public class Tarea {
 
-    private @JsonTypeId final long id;
+    private @JsonTypeId long id;
 
     private RegistroDeDatos registroDeDatos;
     private String responsable;
+    private String prioridad;
     private EstadoTarea estado;
 
     public Tarea(long id, String nombre) {
         this.id = id;
         this.registroDeDatos = new RegistroDeDatos(nombre);
     }
+
+    public Tarea(){}
 
     public String getNombre() {
         return registroDeDatos.getNombre();
@@ -38,5 +41,11 @@ public class Tarea {
     }
 
 
+    public String getPrioridad() {
+        return prioridad;
+    }
 
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
 }
