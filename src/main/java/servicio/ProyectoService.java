@@ -69,12 +69,9 @@ public class ProyectoService {
     public Fase crearFase(Long proyectoId, Fase fase) {
         Proyecto proyecto = getOne(proyectoId);
         proyecto.crearFase(fase);
-        //List <Fase> fases = proyecto.obtenerFases();
-        //EntidadFase entidadFase =  fasesRepository.save(conversor.obtenerEntidad(fases.get(fases.size()-1)));
         Proyecto entidadProyecto = proyectosRepository.save(proyecto);
         List <Fase> fases = entidadProyecto.getFases();
         return fases.get(fases.size()-1);
-        //return new Fase(entidadFase);
     }
 /*
 ProyectoService

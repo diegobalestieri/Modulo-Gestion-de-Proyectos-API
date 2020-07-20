@@ -95,7 +95,7 @@ public class ProyectoController {
         }
     }
     @GetMapping("proyectos/{id_proyecto}/fases")
-    ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId){
+    ResponseEntity<?> obtenerFases(@PathVariable("id_proyecto") Long proyectoId){
         try{
             return new ResponseEntity<List<Fase>>(servicio.obtenerFases(proyectoId), HttpStatus.OK);
         } catch (FaseNotFoundException e){
@@ -109,6 +109,6 @@ public class ProyectoController {
         } catch (ProyectoNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
-        return new ResponseEntity<String>("Proyecto eliminado correctamente", HttpStatus.OK);
+        return new ResponseEntity<String>("Fase eliminada correctamente", HttpStatus.OK);
     }
 }
