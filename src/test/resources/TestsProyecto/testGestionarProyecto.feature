@@ -44,8 +44,8 @@ Feature: Gestionar Proyecto
 
   Scenario: Guardar un proyecto con una determinada fecha de inicio se guarda correctamente
     Given creo un proyecto con fecha de inicio "2020-07-10"
-    When lo guardo en el repositorio
-    Then la fecha se guardo correctamente
+    When pregunto la fecha de inicio del proyecto
+    Then la fecha "2020-07-10" se guardo correctamente
 
   Scenario: Asignar un producto a un proyecto de desarrollo
     Given selecciono un proyecto de Desarrollo
