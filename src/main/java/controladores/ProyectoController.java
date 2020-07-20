@@ -5,6 +5,7 @@ import excepciones.FaseNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
 import modelo.Fase;
+import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,5 +111,14 @@ public class ProyectoController {
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Fase eliminada correctamente", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "proyectos/{id}/tareas")
+    ResponseEntity<?> crearTarea(@PathVariable("id") Long proyectoId, @RequestBody Tarea tarea){
+        try{
+            return new ResponseEntity<Tarea>(servicio.crearTarea(proyectoId, tarea), HttpStatus.CREATED);
+        }catch (ProyectoNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
     }
 }

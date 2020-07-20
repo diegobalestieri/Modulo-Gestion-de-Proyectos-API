@@ -3,24 +3,21 @@ package modelo;
 import com.fasterxml.jackson.annotation.JsonTypeId;
 import modelo.Estado.EstadoTarea;
 
-import java.text.DateFormat;
+import javax.persistence.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Entity
+@Table(name = "tareas")
 public class Tarea {
-
-    private @JsonTypeId long id;
-
-    private RegistroDeDatos registroDeDatos;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @Embedded
+    private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
     private String responsable;
     private String prioridad;
     private EstadoTarea estado;
-
-    public Tarea(long id, String nombre) {
-        this.id = id;
-        this.registroDeDatos = new RegistroDeDatos(nombre);
-    }
 
     public Tarea(){}
 

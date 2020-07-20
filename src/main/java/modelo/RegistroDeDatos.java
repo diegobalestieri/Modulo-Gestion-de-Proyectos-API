@@ -1,20 +1,22 @@
 package modelo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.persistence.Embeddable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+@Embeddable
 public class RegistroDeDatos {
 
     private String nombre;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date fechaDeInicio;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date fechaDeFinalizacion;
     private String descripcion;
-    public RegistroDeDatos(String nombre) {
-        this.setNombre(nombre);
-    }
 
     public RegistroDeDatos() {
 

@@ -1,14 +1,10 @@
 package modelo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import excepciones.AccionNoPermitidaException;
 import excepciones.FaseNotFoundException;
 import excepciones.RestriccionDeEstadoException;
 import excepciones.TipoDeProyectoInvalido;
 import modelo.Estado.EstadoProyecto;
-import modelo.Fase;
-import modelo.TipoProyecto;
 
 import javax.persistence.*;
 import java.text.DateFormat;
@@ -42,10 +38,13 @@ public class Proyecto {
     private String cliente;
     //Solo si es de desarrollo
     private String producto;
-    //@JsonManagedReference
-    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
+
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Tarea> tareas = new ArrayList<>();
 
     public Proyecto() {}
 
@@ -72,7 +71,7 @@ public class Proyecto {
     public void setTipoDeProyecto(String tipoDeProyecto) throws TipoDeProyectoInvalido {
         if (tipoDeProyecto.toLowerCase().equals("desarrollo")){
             this.tipoDeProyecto = TipoProyecto.DESARROLLO;
-        } else if (tipoDeProyecto.toLowerCase().equals("implementación")){
+        } else if (tipoDeProyecto.toLowerCase().equals("implementación") || tipoDeProyecto.toLowerCase().equals("implementacion")){
             this.tipoDeProyecto = TipoProyecto.IMPLEMENTACION;
         } else{
             throw new TipoDeProyectoInvalido("El tipo " + tipoDeProyecto + " no es un tipo válido de proyecto");
@@ -121,6 +120,13 @@ public class Proyecto {
         if (tipoDeProyecto == TipoProyecto.IMPLEMENTACION){
             this.cliente = cliente;
         }
+    }
+    public List<Tarea> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<Tarea> tareas) {
+        this.tareas = tareas;
     }
 
     public List<Fase> getFases() {
@@ -186,7 +192,7 @@ public class Proyecto {
                 this.setEstado((String) entrada.getValue());
             } else if (tipoDeProyecto.equals("Desarrollo") && entrada.getKey().equals("producto")){
                 this.setProducto((String) entrada.getValue());
-            } else if (tipoDeProyecto.equals("Implementacion") && entrada.getKey().equals("cliente")){
+            } else if (tipoDeProyecto.equals("Implementación") && entrada.getKey().equals("cliente")){
                 this.setCliente((String) entrada.getValue());
             }
 
@@ -226,5 +232,13 @@ public class Proyecto {
     public boolean crearFase(Fase fase) {
         fases.add(fase);
         return true;
+    }
+
+    public void crearTarea(Tarea tarea) {
+        tareas.add(tarea);
+    }
+
+    public List<Tarea> obtenerTareas() {
+        return tareas;
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class StepDefGestionDeTareas extends SpringTest{
     private String idProyecto;
-    private List<String> idsTareas;
+    private List<String> idsTareas = new ArrayList<>();
     private String urlPostTarea = "/proyectos/{id}/tareas";
     public void setup() {
         mapper.setDateFormat(this.df);
@@ -34,12 +35,13 @@ public class StepDefGestionDeTareas extends SpringTest{
 
     @Given("tengo un proyecto creado")
     public void tengoUnProyectoCreado() throws Exception {
+        setup();
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre("Proyecto ERP");
         proyecto.setTipoDeProyecto("Implementación");
         String requestJson = mapper.writeValueAsString(proyecto);
         MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(requestJson)).andReturn();
@@ -74,10 +76,10 @@ public class StepDefGestionDeTareas extends SpringTest{
         MvcResult requestResult = this.mockMvc.perform(get(aux)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.model().attribute("id", "id"))
                 .andReturn();
-        String response = requestResult.getResponse().getContentAsString();
-        //assertEquals(obtenerId(response), id);
+        for (int i = 0; i <= idsTareas.size(); ++i ){
+            MockMvcResultMatchers.jsonPath("$[" + i + "].id", idsTareas.get(0));
+        }
     }
 
     @And("contiene los datos correspondientes")
