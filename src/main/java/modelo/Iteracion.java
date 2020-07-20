@@ -4,26 +4,19 @@ import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "fases")
-public class Fase {
+@Table(name = "iteraciones")
+public class Iteracion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "fase_id")
     private Long id;
     private String nombre;
-    private String descripcion;
     private Date fechaDeInicio;
     private Date fechaDeFin;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Iteracion> iteraciones = new ArrayList<>();
-
-    public Fase(){}
+    public Iteracion(){}
 
     public Long getId() {
         return id;
@@ -40,15 +33,6 @@ public class Fase {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
 
     public Date getFechaDeInicio() {
         return fechaDeInicio;
@@ -74,10 +58,4 @@ public class Fase {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.fechaDeFin = format.parse(fecha_de_fin);
     }
-
-    public boolean agregarIteracion(Iteracion iteracion) {
-        return this.iteraciones.add(iteracion);
-    }
-
-    public List<Iteracion> getIteraciones() { return this.iteraciones;  }
 }
