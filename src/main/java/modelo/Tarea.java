@@ -1,9 +1,13 @@
 package modelo;
 
 import com.fasterxml.jackson.annotation.JsonTypeId;
+import excepciones.AccionNoPermitidaException;
+import excepciones.FechaInvalidaException;
+import modelo.Estado.EstadoProyecto;
 import modelo.Estado.EstadoTarea;
 
 import javax.persistence.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Objects;
@@ -21,14 +25,15 @@ public class Tarea {
     private EstadoTarea estado = EstadoTarea.TO_DO;
 
     public Tarea(){
+    public Tarea(String nombre) {
+        this.nombre = nombre;
+    }
+        this.estado = EstadoTarea.TO_DO;
     }
 
     public String getNombre() {
-        return registroDeDatos.getNombre();
+        return nombre;
     }
-    public String getDescripcion() { return this.registroDeDatos.getDescripcion();}
-    public Date getFechaDeInicio() { return this.registroDeDatos.getFechaDeInicio();}
-    public Date getFechaDeFinalizacion() { return this.registroDeDatos.getFechaDeFinalizacion();}
 
     public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
     public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
@@ -79,5 +84,17 @@ public class Tarea {
     @Override
     public int hashCode() {
         return Objects.hash(id, registroDeDatos, responsable, prioridad, estado);
+    }
+    public void setEstado(String nombreDeEstado) {
+        switch (nombreDeEstado) {
+            case "Por hacer": this.estado = EstadoTarea.TO_DO;
+                break;
+            case "En progreso": this.estado = EstadoTarea.IN_PROGRESS;
+            case "Bloqueada": this.estado = EstadoTarea.BLOCKED;
+                break;
+                break;
+            case "Finalizada": this.estado = EstadoTarea.DONE;
+                break;
+        }
     }
 }
