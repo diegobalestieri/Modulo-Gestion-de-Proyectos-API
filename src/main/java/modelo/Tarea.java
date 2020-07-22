@@ -1,13 +1,8 @@
 package modelo;
 
-import com.fasterxml.jackson.annotation.JsonTypeId;
-import excepciones.AccionNoPermitidaException;
-import excepciones.FechaInvalidaException;
-import modelo.Estado.EstadoProyecto;
 import modelo.Estado.EstadoTarea;
 
 import javax.persistence.*;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Objects;
@@ -22,11 +17,14 @@ public class Tarea {
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
     private String responsable;
     private String prioridad;
-    private EstadoTarea estado = EstadoTarea.TO_DO;
+    private EstadoTarea estado = EstadoTarea.NO_INICIADA;
 
-    public Tarea(){}
+    public Tarea(){
+        setFechaDeInicio(new Date());
+    }
     public Tarea(String nombre) {
         setNombre(nombre);
+        setFechaDeInicio(new Date());
     }
 
 
@@ -86,10 +84,13 @@ public class Tarea {
     }
     public void setEstado(String nombreDeEstado) {
         switch (nombreDeEstado) {
-            case "Por hacer": this.estado = EstadoTarea.TO_DO;
-            case "En progreso": this.estado = EstadoTarea.IN_PROGRESS;
-            case "Bloqueada": this.estado = EstadoTarea.BLOCKED;
-            case "Finalizada": this.estado = EstadoTarea.DONE;
+            case "No iniciada": this.estado = EstadoTarea.NO_INICIADA;
+                break;
+            case "En curso": this.estado = EstadoTarea.EN_CURSO;
+                break;
+            case "Bloqueada": this.estado = EstadoTarea.BLOQUEADA;
+                break;
+            case "Finalizada": this.estado = EstadoTarea.FINALIZADA;
         }
     }
 

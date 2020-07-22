@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum EstadoTarea {
 
-    TO_DO("Por hacer"),
-    IN_PROGRESS("En progreso"),
-    BLOCKED("Bloqueada"),
-    DONE("Finalizada");
+    NO_INICIADA("No iniciada"),
+    EN_CURSO("En curso"),
+    BLOQUEADA("Bloqueada"),
+    FINALIZADA("Finalizada");
 
     protected String nombre;
 

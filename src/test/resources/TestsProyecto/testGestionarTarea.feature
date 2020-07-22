@@ -6,12 +6,12 @@ Feature: Creacion de Tarea
   Scenario: Verifico los datos de la tarea
     When pregunto el nombre y el estado de la tarea
     Then el nombre de la tarea es "Validar requisitos"
-    And el estado de la tarea es "Por hacer"
+    And el estado de la tarea es "No iniciada"
 
 
   Scenario: Modifico el estado de la tarea
-    When modifico el estado de la tarea a "En progreso"
-    Then el estado de la tarea es "En progreso"
+    When modifico el estado de la tarea a "En curso"
+    Then el estado de la tarea es "En curso"
 
   Scenario: Modifico los datos de la tarea
     When modifico el nombre de la tarea a "Iniciar fase de Desarrollo"

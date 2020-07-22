@@ -1,8 +1,6 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import excepciones.TipoDeProyectoInvalido;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -13,7 +11,6 @@ import modelo.Proyecto;
 import modelo.Tarea;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +101,7 @@ public class StepDefGestionDeTareas extends SpringTest{
     @And("su estado es “No iniciado”")
     public void suEstadoEsNoIniciado() {
         for (Tarea tarea : tareas){
-            assertEquals(tarea.getEstado(), EstadoTarea.TO_DO);
+            assertEquals(tarea.getEstado(), EstadoTarea.NO_INICIADA);
         }
 
     }
