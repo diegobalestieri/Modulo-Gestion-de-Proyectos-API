@@ -76,7 +76,7 @@ public class StepDefGestionarTarea extends SpringTest {
     @When("asigno la fecha de inicio de la tarea a {string}")
     public void asignoLaFechaDeInicioDeLaTareaA(String fechaDeInicio) {
         try {
-            tarea.setFechaDeInicio(fechaDeInicio);
+            tarea.setFechaDeInicio(df.parse(fechaDeInicio));
             this.fechaDeInicio = tarea.getFechaDeInicio();
         }
         catch(ParseException e) { this.excepcion = e; }

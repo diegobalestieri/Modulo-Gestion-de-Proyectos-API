@@ -24,15 +24,14 @@ public class Tarea {
     private String prioridad;
     private EstadoTarea estado = EstadoTarea.TO_DO;
 
-    public Tarea(){
+    public Tarea(){}
     public Tarea(String nombre) {
-        this.nombre = nombre;
-    }
-        this.estado = EstadoTarea.TO_DO;
+        setNombre(nombre);
     }
 
+
     public String getNombre() {
-        return nombre;
+        return registroDeDatos.getNombre();
     }
 
     public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
@@ -88,13 +87,19 @@ public class Tarea {
     public void setEstado(String nombreDeEstado) {
         switch (nombreDeEstado) {
             case "Por hacer": this.estado = EstadoTarea.TO_DO;
-                break;
             case "En progreso": this.estado = EstadoTarea.IN_PROGRESS;
             case "Bloqueada": this.estado = EstadoTarea.BLOCKED;
-                break;
-                break;
             case "Finalizada": this.estado = EstadoTarea.DONE;
-                break;
         }
+    }
+
+    public String getDescripcion() {
+        return registroDeDatos.getDescripcion();
+    }
+
+    public Date getFechaDeInicio() { return registroDeDatos.getFechaDeInicio();
+    }
+
+    public Date getFechaDeFinalizacion() {return registroDeDatos.getFechaDeInicio();
     }
 }

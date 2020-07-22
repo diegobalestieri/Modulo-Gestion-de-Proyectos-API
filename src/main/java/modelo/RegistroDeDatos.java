@@ -3,6 +3,7 @@ package modelo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import excepciones.FechaInvalidaException;
 
 import javax.persistence.Embeddable;
 import java.text.DateFormat;
@@ -37,7 +38,12 @@ public class RegistroDeDatos {
     }
     public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        this.fechaDeFinalizacion = format.parse(fechaDeFinalizacion);
+        Date nuevaFechadeFinalizacion = format.parse(fechaDeFinalizacion);
+        if (this.fechaDeInicio != null && nuevaFechadeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
+            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
+        }
+        this.fechaDeFinalizacion  = nuevaFechadeFinalizacion;
+
     }
 
     public void setFechaDeInicio(Date fechaDeInicio) {
