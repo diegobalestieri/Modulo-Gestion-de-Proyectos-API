@@ -16,6 +16,10 @@ public class Iteracion {
     private Date fechaDeInicio;
     private Date fechaDeFin;
 
+    public Iteracion(String nombre){
+        this.nombre = nombre;
+    }
+
     public Iteracion(){}
 
     public Long getId() {
