@@ -1,23 +1,26 @@
 package modelo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.Embeddable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
+@Embeddable
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RegistroDeDatos {
 
     private String nombre;
     private Date fechaDeInicio;
     private Date fechaDeFinalizacion;
     private String descripcion;
-    public RegistroDeDatos(String nombre) {
-        this.setNombre(nombre);
-    }
 
     public RegistroDeDatos() {
-
     }
 
     public String getNombre() { return nombre;}
@@ -32,15 +35,29 @@ public class RegistroDeDatos {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.fechaDeInicio = format.parse(fechaDeInicio);
     }
-
     public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.fechaDeFinalizacion = format.parse(fechaDeFinalizacion);
     }
 
-
     public void setFechaDeInicio(Date fechaDeInicio) {
         this.fechaDeInicio = fechaDeInicio;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RegistroDeDatos)) return false;
+        RegistroDeDatos that = (RegistroDeDatos) o;
+        return Objects.equals(nombre, that.nombre) &&
+                Objects.equals(fechaDeInicio, that.fechaDeInicio) &&
+                Objects.equals(fechaDeFinalizacion, that.fechaDeFinalizacion) &&
+                Objects.equals(descripcion, that.descripcion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre, fechaDeInicio, fechaDeFinalizacion, descripcion);
     }
 
     public void setFechaDeFinalizacion(Date fechaDeFin) {
