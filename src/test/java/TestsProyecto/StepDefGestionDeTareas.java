@@ -8,6 +8,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import modelo.Estado.EstadoTarea;
 import modelo.Proyecto;
 import modelo.Tarea;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,10 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StepDefGestionDeTareas extends SpringTest{
     private String idProyecto;
     private List<String> idsTareas = new ArrayList<>();
+    private List<Tarea> tareas = new ArrayList<>();
     private String urlPostTarea = "/proyectos/{id}/tareas";
+    private List<Map<String, String>> list;
     public void setup() {
         mapper.setDateFormat(this.df);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
     }
 
     @Given("tengo un proyecto creado")
@@ -51,7 +57,8 @@ public class StepDefGestionDeTareas extends SpringTest{
 
     @When("creo una tarea con fecha de finalización, nombre, descripción y prioridad")
     public void creoUnaTareaConFechaDeFinalizaciónNombreDescripciónYPrioridad(DataTable dt) throws Exception {
-        List<Map<String, String>> list = dt.asMaps(String.class, String.class);
+        setup();
+        list = dt.asMaps(String.class, String.class);
         String aux = urlPostTarea.replace("{id}", idProyecto);
         for (Map<String, String> stringStringMap : list) {
             Tarea tarea = new Tarea();
@@ -64,31 +71,41 @@ public class StepDefGestionDeTareas extends SpringTest{
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestJson))
                     .andExpect(status().isCreated())
-                    .andExpect(content().json(requestJson)).andReturn();
+                    .andReturn();
             String response = requestResult.getResponse().getContentAsString();
+            tareas.add(mapper.readValue(response, Tarea.class));
             idsTareas.add(obtenerId(response));
         }
     }
 
     @Then("la tarea se agrega al proyect backlog")
     public void laTareaSeAgregaAlProyectBacklog() throws Exception {
-        String aux = urlPostTarea.replace("{id}", idProyecto);
-        MvcResult requestResult = this.mockMvc.perform(get(aux)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-        for (int i = 0; i <= idsTareas.size(); ++i ){
-            MockMvcResultMatchers.jsonPath("$[" + i + "].id", idsTareas.get(0));
-        }
+        assertEquals(tareas.size(), list.size());
+
     }
 
     @And("contiene los datos correspondientes")
-    public void contieneLosDatosCorrespondientes() {
-
+    public void contieneLosDatosCorrespondientes() throws Exception {
+        String aux = urlPostTarea.replace("{id}", idProyecto);
+        for (int i = 0; i < list.size() ; i++) {
+            MvcResult requestResult = this.mockMvc.perform(get(aux + "/" + tareas.get(i).getId())
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            Tarea tareaAux = new Tarea();
+            tareaAux.setNombre(list.get(i).get("nombre"));
+            tareaAux.setDescripcion(list.get(i).get("descripcion"));
+            tareaAux.setPrioridad(list.get(i).get("descripcion"));
+            tareaAux.setFechaDeFinalizacion(list.get(i).get("fecha de fin"));
+            assertTrue(tareaAux.equals(tareas.get(i)));
+        }
     }
 
     @And("su estado es “No iniciado”")
     public void suEstadoEsNoIniciado() {
+        for (Tarea tarea : tareas){
+            assertEquals(tarea.getEstado(), EstadoTarea.TO_DO);
+        }
 
     }
 

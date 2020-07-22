@@ -74,14 +74,7 @@ public class ProyectoService {
         List <Fase> fases = proyectoGuardado.getFases();
         return fases.get(fases.size()-1);
     }
-/*
-ProyectoService
-public void crearFase(Long proyectoId, Fase fase){
-    Proyecto proyecto = getOne(proyectoId);
-    proyecto.crearFase(fase);
-    proyectosRepository.update()
-    repo.update(p);
-}*/
+
     public Fase obtenerFase(Long proyectoId, Long faseId) {
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerFase(faseId);
@@ -91,14 +84,6 @@ public void crearFase(Long proyectoId, Fase fase){
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerFases();
     }
- /*public List<Fase> obtenerFases(Long proyectoId) {
-     List<EntidadFase> entidades = fasesRepository.findByProyecto(proyectosRepository.getOne(proyectoId));
-     List<Fase> lista = new ArrayList<Fase>();
-     for (int i = 0; i < entidades.size(); i++){
-         lista.add(new Fase(entidades.get(i)));
-     }
-     return lista;
- }*/
 
     public void borrarFase(Long proyectoId, Long faseId) {
         Proyecto proyecto = getOne(proyectoId);
@@ -122,5 +107,15 @@ public void crearFase(Long proyectoId, Fase fase){
         proyecto = proyectosRepository.save(proyecto);
         List<Tarea> tareas = proyecto.obtenerTareas();
         return tareas.get(tareas.size()-1);
+    }
+
+    public List<Tarea> obtenerTareas(Long proyectoId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerTareas();
+    }
+
+    public Tarea obtenerTarea(Long proyectoId, Long tareaId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerTarea(tareaId);
     }
 }

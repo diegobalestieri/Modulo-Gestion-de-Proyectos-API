@@ -1,9 +1,6 @@
 package modelo;
 
-import excepciones.AccionNoPermitidaException;
-import excepciones.FaseNotFoundException;
-import excepciones.RestriccionDeEstadoException;
-import excepciones.TipoDeProyectoInvalido;
+import excepciones.*;
 import modelo.Estado.EstadoProyecto;
 
 import javax.persistence.*;
@@ -240,5 +237,14 @@ public class Proyecto {
 
     public List<Tarea> obtenerTareas() {
         return tareas;
+    }
+
+    public Tarea obtenerTarea(Long tareaId) {
+        for (Tarea tarea : tareas){
+            if (tarea.getId().equals(tareaId)){
+                return tarea;
+            }
+        }
+        throw new TareaNotFoundException("La tarea no fue encontrada");
     }
 }
