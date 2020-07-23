@@ -39,7 +39,7 @@ public class RegistroDeDatos {
     public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date nuevaFechadeFinalizacion = format.parse(fechaDeFinalizacion);
-        if (this.fechaDeInicio != null && nuevaFechadeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
+        if (nuevaFechadeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
             throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
         }
         this.fechaDeFinalizacion  = nuevaFechadeFinalizacion;
@@ -52,12 +52,13 @@ public class RegistroDeDatos {
 
     @Override
     public boolean equals(Object o) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         if (this == o) return true;
         if (!(o instanceof RegistroDeDatos)) return false;
         RegistroDeDatos that = (RegistroDeDatos) o;
         return Objects.equals(nombre, that.nombre) &&
-                Objects.equals(fechaDeInicio, that.fechaDeInicio) &&
-                Objects.equals(fechaDeFinalizacion, that.fechaDeFinalizacion) &&
+                format.format(fechaDeInicio).equals(format.format(that.fechaDeInicio)) &&
+                format.format(fechaDeFinalizacion).equals(format.format(that.fechaDeFinalizacion)) &&
                 Objects.equals(descripcion, that.descripcion);
     }
 

@@ -20,11 +20,11 @@ public class Tarea {
     private EstadoTarea estado = EstadoTarea.NO_INICIADA;
 
     public Tarea(){
-        setFechaDeInicio(new Date());
+        registroDeDatos.setFechaDeInicio(new Date());
     }
     public Tarea(String nombre) {
         setNombre(nombre);
-        setFechaDeInicio(new Date());
+        registroDeDatos.setFechaDeInicio(new Date());
     }
 
 
@@ -34,9 +34,7 @@ public class Tarea {
 
     public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
     public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
-    public void setFechaDeInicio(Date fechaDeInicio){
-        registroDeDatos.setFechaDeInicio(fechaDeInicio);
-    }
+    //public void setFechaDeInicio(Date fechaDeInicio){ registroDeDatos.setFechaDeInicio(fechaDeInicio); }
     public void setFechaDeFinalizacion(Date fechaDeFinalizacion){
         registroDeDatos.setFechaDeFinalizacion(fechaDeFinalizacion);
     }
@@ -101,6 +99,8 @@ public class Tarea {
     public Date getFechaDeInicio() { return registroDeDatos.getFechaDeInicio();
     }
 
-    public Date getFechaDeFinalizacion() {return registroDeDatos.getFechaDeInicio();
+    public Date getFechaDeFinalizacion() {return registroDeDatos.getFechaDeFinalizacion();
     }
+
+
 }

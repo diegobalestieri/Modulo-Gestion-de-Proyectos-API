@@ -19,17 +19,8 @@ Feature: Creacion de Tarea
     Then el nombre de la tarea es "Iniciar fase de Desarrollo"
     And la descripcion de la tarea es "Empieza el desarrollo de codigo"
 
-  Scenario: Asigno una fecha de inicio valida a una tarea
-    When asigno la fecha de inicio de la tarea a "2020-07-15"
-    Then la tarea tiene la fecha de inicio correcta
-
-  Scenario: Asigno una fecha de inicio invalida a una tarea
-    When asigno la fecha de inicio de la tarea a "202x-07-15"
-    Then se lanza un error indicando que la fecha ingresada no es valida
-    And la fecha de inicio de la tarea no se modificó
-
   Scenario: Asigno una fecha de finalizacion valida a una tarea
-    When asigno la fecha de finalizacion de la tarea a "2020-07-19"
+    When asigno la fecha de finalizacion de la tarea a "2020-07-25"
     Then la tarea tiene la fecha de finalizacion correcta
 
   Scenario: Asigno una fecha de finalizacion erronea a una tarea
@@ -37,8 +28,7 @@ Feature: Creacion de Tarea
     Then se lanza un error indicando que la fecha ingresada no es valida
     And la fecha de finalizacion de la tarea no se modificó
 
-  Scenario: Asigno una fecha de finalizacion a una tarea anterior a la de su inicio
-    When asigno la fecha de inicio de la tarea a "2020-07-15"
-    And asigno la fecha de finalizacion de la tarea a "2020-07-13"
+  Scenario: Asigno una fecha de finalizacion a una tarea anterior a la de su creacion
+    When asigno la fecha de finalizacion de la tarea a "2020-07-13"
     Then se lanza un error indicando que la fecha de finalizacion no puede ser anterior a la de inicio
     And la fecha de finalizacion de la tarea no se modificó

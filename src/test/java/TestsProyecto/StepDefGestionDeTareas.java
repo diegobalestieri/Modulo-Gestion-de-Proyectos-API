@@ -1,14 +1,19 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+
 import modelo.Estado.EstadoTarea;
 import modelo.Proyecto;
 import modelo.Tarea;
+
+
+
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -16,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Long.parseLong;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,7 +67,7 @@ public class StepDefGestionDeTareas extends SpringTest{
             Tarea tarea = new Tarea();
             tarea.setNombre(stringStringMap.get("nombre"));
             tarea.setDescripcion(stringStringMap.get("descripcion"));
-            tarea.setPrioridad(stringStringMap.get("descripcion"));
+            tarea.setPrioridad(stringStringMap.get("prioridad"));
             tarea.setFechaDeFinalizacion(stringStringMap.get("fecha de fin"));
             String requestJson = mapper.writeValueAsString(tarea);
             MvcResult requestResult = this.mockMvc.perform(post(aux)
@@ -70,7 +76,9 @@ public class StepDefGestionDeTareas extends SpringTest{
                     .andExpect(status().isCreated())
                     .andReturn();
             String response = requestResult.getResponse().getContentAsString();
-            tareas.add(mapper.readValue(response, Tarea.class));
+            long id_tarea = parseLong(obtenerId(response));
+            tarea.setId(id_tarea);
+            tareas.add(tarea);
             idsTareas.add(obtenerId(response));
         }
     }
@@ -92,7 +100,7 @@ public class StepDefGestionDeTareas extends SpringTest{
             Tarea tareaAux = new Tarea();
             tareaAux.setNombre(list.get(i).get("nombre"));
             tareaAux.setDescripcion(list.get(i).get("descripcion"));
-            tareaAux.setPrioridad(list.get(i).get("descripcion"));
+            tareaAux.setPrioridad(list.get(i).get("prioridad"));
             tareaAux.setFechaDeFinalizacion(list.get(i).get("fecha de fin"));
             assertTrue(tareaAux.equals(tareas.get(i)));
         }
