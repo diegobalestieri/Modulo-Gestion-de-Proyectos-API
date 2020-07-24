@@ -118,4 +118,13 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerTarea(tareaId);
     }
+
+    public Tarea guardarTarea(Long proyectoId, Long tareaId, Tarea tarea) {
+        Proyecto proyecto = getOne(proyectoId);
+        tarea.setId(tareaId);
+        proyecto.guardarTarea(tarea);
+        Proyecto entidadProyecto = proyectosRepository.save(proyecto);
+        List <Tarea> tareas = entidadProyecto.getTareas();
+        return tareas.get(tareas.size()-1);
+    }
 }

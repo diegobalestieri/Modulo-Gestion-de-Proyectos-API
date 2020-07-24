@@ -247,4 +247,16 @@ public class Proyecto {
         }
         throw new TareaNotFoundException("La tarea no fue encontrada");
     }
+
+    public void guardarTarea(Tarea tarea) {
+        for (int i = 0; i < tareas.size(); ++i){
+            Tarea tareaActual = tareas.get(i);
+            if (tareaActual.getId().equals(tarea.getId())){
+                tarea.setId(tareaActual.getId());
+                tareas.set(i, tarea);
+                return;
+            }
+        }
+        crearTarea(tarea);
+    }
 }

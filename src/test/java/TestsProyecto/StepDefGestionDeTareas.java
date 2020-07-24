@@ -17,6 +17,7 @@ import modelo.Tarea;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,7 @@ import java.util.Map;
 import static java.lang.Long.parseLong;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,8 +88,8 @@ public class StepDefGestionDeTareas extends SpringTest{
 
     }
 
-    @And("contiene los datos correspondientes")
-    public void contieneLosDatosCorrespondientes() throws Exception {
+    @And("la tarea contiene los datos correspondientes")
+    public void laTareacontieneLosDatosCorrespondientes() throws Exception {
         String aux = urlPostTarea.replace("{id}", idProyecto);
         for (int i = 0; i < list.size() ; i++) {
             String get_result = aux + "/" + tareas.get(i).getId();
@@ -118,4 +118,43 @@ public class StepDefGestionDeTareas extends SpringTest{
     public void suFechaDeCreaciónEsLaDelDíaDeLaFechaEnQueFueCreada() {
 
     }
+
+    @Given("cuento con una tarea cargada en el proyecto")
+    public void tengoUnProyectoCreadoConUnaTareaCargada() throws Exception {
+        String aux = urlPostTarea.replace("{id}", idProyecto);
+        Tarea tarea = new Tarea();
+        tarea.setNombre("Actualizar documentacion");
+        tarea.setDescripcion("Una descripcion generica");
+        tarea.setPrioridad("Muy alta");
+        tarea.setFechaDeFinalizacion("2020-08-09");
+        String requestJson = mapper.writeValueAsString(tarea);
+        MvcResult requestResult = this.mockMvc.perform(post(aux)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        idsTareas.add(obtenerId(response));
+    }
+
+    @When("modifico los siguientes datos de la tarea")
+    public void modificoLosSiguientesDatosDeLaTarea(DataTable dt) throws Exception {
+        list = dt.asMaps(String.class, String.class);
+        Map<String,String> fila = list.get(0);
+        Tarea tarea = new Tarea(fila.get("nombre"));
+        tarea.setDescripcion(fila.get("descripcion"));
+        tarea.setFechaDeFinalizacion(fila.get("fecha de fin"));
+        tarea.setPrioridad(fila.get("prioridad"));
+        String requestJson = mapper.writeValueAsString(tarea);
+        String url_put = urlPostTarea.replace("{id}", idProyecto) + "/" + idsTareas.get(0);
+        MvcResult requestResult = this.mockMvc.perform(put(url_put)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        Tarea nuevaTarea = mapper.readValue(response,Tarea.class);
+        tareas.add(nuevaTarea);
+    }
+
 }
