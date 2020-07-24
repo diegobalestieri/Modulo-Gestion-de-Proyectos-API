@@ -75,7 +75,8 @@ public class ProyectoController {
     @PostMapping(value = "proyectos/{id}/fases")
     ResponseEntity<?> crearFase(@PathVariable("id") Long proyectoId, @RequestBody Fase fase){
         try{
-            return new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
+            ResponseEntity<Fase> fase_nueva = new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
+            return fase_nueva;
         }catch (ProyectoNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }

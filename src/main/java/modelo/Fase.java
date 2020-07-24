@@ -1,9 +1,7 @@
 package modelo;
 
 import javax.persistence.*;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,15 +13,15 @@ public class Fase {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "fase_id")
     private Long id;
-    private String nombre;
-    private String descripcion;
-    private Date fechaDeInicio;
-    private Date fechaDeFin;
+    @Embedded
+    private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Iteracion> iteraciones = new ArrayList<>();
 
     public Fase(){}
+
+    //public int hashCode() {  return Objects.hash(id, registroDeDatos, iteraciones); }
 
     public Long getId() {
         return id;
@@ -33,46 +31,31 @@ public class Fase {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public String getNombre() { return registroDeDatos.getNombre(); }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public void setNombre(String nombre) { registroDeDatos.setNombre(nombre);  }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public String getDescripcion() { return registroDeDatos.getDescripcion(); }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
+    public void setDescripcion(String descripcion) { registroDeDatos.setDescripcion(descripcion); }
 
     public Date getFechaDeInicio() {
-        return fechaDeInicio;
+        return registroDeDatos.getFechaDeInicio();
     }
 
-    public void setFechaDeInicio(Date fechaDeInicio) {
-        this.fechaDeInicio = fechaDeInicio;
-    }
+    public void setFechaDeInicio(Date fechaDeInicio) { registroDeDatos.setFechaDeInicio(fechaDeInicio); }
 
     public Date getFechaDeFinalizacion() {
-        return fechaDeFin;
+        return registroDeDatos.getFechaDeFinalizacion();
     }
 
-    public void setFechaDeFinalizacion(Date fechaDeFin) {
-        this.fechaDeFin = fechaDeFin;
-    }
+    public void setFechaDeFinalizacion(Date fechaDeFin) { registroDeDatos.setFechaDeFinalizacion(fechaDeFin); }
 
-    public void setFechaDeInicio(String fecha_de_inicio) throws ParseException {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        this.fechaDeInicio = format.parse(fecha_de_inicio);
+    public void asignarFechaDeInicio(String fecha_de_inicio) throws ParseException {
+        registroDeDatos.asignarFechaDeInicio(fecha_de_inicio);
     }
-    public void setFechaDeFinalizacion(String fecha_de_fin) throws ParseException {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        this.fechaDeFin = format.parse(fecha_de_fin);
+    public void asignarFechaDeFinalizacion(String fecha_de_finalizacion) throws ParseException {
+        registroDeDatos.asignarFechaDeFinalizacion(fecha_de_finalizacion);
     }
 
     public boolean agregarIteracion(Iteracion iteracion) {

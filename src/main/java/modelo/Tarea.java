@@ -46,7 +46,7 @@ public class Tarea {
     }
 
     public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
-        this.registroDeDatos.setFechaDeFinalizacion(fechaDeFinalizacion);
+        this.registroDeDatos.asignarFechaDeFinalizacion(fechaDeFinalizacion);
     }
 
     public Long getId() {

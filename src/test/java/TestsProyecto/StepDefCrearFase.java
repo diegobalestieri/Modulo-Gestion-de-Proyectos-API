@@ -38,8 +38,8 @@ public class StepDefCrearFase extends SpringTest{
             Fase aux = new Fase();
             aux.setNombre( list.get(i).get("nombre"));
             aux.setDescripcion(list.get(i).get("descripcion"));
-            aux.setFechaDeInicio(list.get(i).get("fecha de inicio"));
-            aux.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            aux.asignarFechaDeInicio(list.get(i).get("fecha de inicio"));
+            aux.asignarFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
             boolean res = proyecto.crearFase(aux);
             assertTrue(res);
         }
@@ -66,8 +66,8 @@ public class StepDefCrearFase extends SpringTest{
             Fase aux = new Fase();
             aux.setNombre( list.get(i).get("nombre"));
             aux.setDescripcion(list.get(i).get("descripcion"));
-            aux.setFechaDeInicio(list.get(i).get("fecha de inicio"));
-            aux.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            aux.asignarFechaDeInicio(list.get(i).get("fecha de inicio"));
+            aux.asignarFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
             boolean res = proyecto.crearFase(aux);
             assertTrue(res);
         }
@@ -99,6 +99,8 @@ public class StepDefCrearFase extends SpringTest{
     public void setup() {
         mapper.setDateFormat(this.df);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
     }
 
 
@@ -138,8 +140,8 @@ public class StepDefCrearFase extends SpringTest{
             fase = new Fase();
             fase.setNombre(list.get(i).get("nombre"));
             fase.setDescripcion(list.get(i).get("descripcion"));
-            fase.setFechaDeInicio(list.get(i).get("fecha de inicio"));
-            fase.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            fase.asignarFechaDeInicio(list.get(i).get("fecha de inicio"));
+            fase.asignarFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
             String requestJson = mapper.writeValueAsString(fase);
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
             MvcResult requestResult = this.mockMvc.perform(post(url_aux)
@@ -148,8 +150,8 @@ public class StepDefCrearFase extends SpringTest{
                     .andExpect(status().isCreated())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00")) //MUY HARDCODEADO
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T00:00:00.000+00:00")) //MUY HARDCODEADO
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T00:00:00.000+00:00"))
                     .andReturn();
             String response = requestResult.getResponse().getContentAsString();
             this.ids.add(obtenerId(response));
@@ -170,8 +172,8 @@ public class StepDefCrearFase extends SpringTest{
                     .andExpect(status().isCreated())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00"))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T00:00:00.000+00:00"))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T00:00:00.000+00:00"))
                     .andReturn();
         }
     }
@@ -208,8 +210,8 @@ public class StepDefCrearFase extends SpringTest{
             fase = new Fase();
             fase.setNombre(list.get(i).get("nombre"));
             fase.setDescripcion(list.get(i).get("descripcion"));
-            fase.setFechaDeInicio(list.get(i).get("fecha de inicio"));
-            fase.setFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
+            fase.asignarFechaDeInicio(list.get(i).get("fecha de inicio"));
+            fase.asignarFechaDeFinalizacion(list.get(i).get("fecha de finalizacion"));
             String requestJson = mapper.writeValueAsString(fase);
             url_aux = url.replace("{id}", String.valueOf(proyecto.getId()));
             url_aux = url_aux + "/" + ids.get(i);
@@ -219,8 +221,8 @@ public class StepDefCrearFase extends SpringTest{
                     .andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T03:00:00.000+00:00")) //MUY HARDCODEADO
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T03:00:00.000+00:00"))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T00:00:00.000+00:00")) //MUY HARDCODEADO
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeFinalizacion").value(list.get(i).get("fecha de finalizacion") + "T00:00:00.000+00:00"))
                     .andReturn();
             String response = requestResult.getResponse().getContentAsString();
             this.ids.add(obtenerId(response));

@@ -30,7 +30,7 @@ public class Proyecto {
     private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
 
     private Date fechaDeInicio;
-    private Date fechaDeFin;
+    private Date fechaDeFinalizacion;
     //Solo si es de implementacion
     private String cliente;
     //Solo si es de desarrollo
@@ -100,12 +100,12 @@ public class Proyecto {
         this.fechaDeInicio = format.parse(fechaDeInicio);
     }
 
-    public Date getFechaDeFin() {
-        return fechaDeFin;
+    public Date getFechaDeFinalizacion() {
+        return fechaDeFinalizacion;
     }
 
-    public void setFechaDeFin(Date fechaDeFin) {
-        this.fechaDeFin = fechaDeFin;
+    public void setFechaDeFinalizacion(Date fechaDeFin) {
+        this.fechaDeFinalizacion = fechaDeFin;
     }
 
     public String getCliente() {

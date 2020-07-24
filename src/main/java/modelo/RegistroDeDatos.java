@@ -26,17 +26,16 @@ public class RegistroDeDatos {
 
     public String getNombre() { return nombre;}
     public String getDescripcion() { return descripcion;}
-    public Date getFechaDeInicio() { return fechaDeInicio;}
-    public Date getFechaDeFinalizacion() { return fechaDeFinalizacion;}
+
 
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion;}
 
-    public void setFechaDeInicio(String fechaDeInicio) throws ParseException {
+    public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.fechaDeInicio = format.parse(fechaDeInicio);
     }
-    public void setFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
+    public void asignarFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date nuevaFechadeFinalizacion = format.parse(fechaDeFinalizacion);
         if (nuevaFechadeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
@@ -46,8 +45,20 @@ public class RegistroDeDatos {
 
     }
 
+    public Date getFechaDeInicio() {
+        return fechaDeInicio;
+    }
+
+    public Date getFechaDeFinalizacion() {
+        return fechaDeFinalizacion;
+    }
+
     public void setFechaDeInicio(Date fechaDeInicio) {
         this.fechaDeInicio = fechaDeInicio;
+    }
+
+    public void setFechaDeFinalizacion(Date fechaDeFinalizacion) {
+        this.fechaDeFinalizacion = fechaDeFinalizacion;
     }
 
     @Override
@@ -65,9 +76,5 @@ public class RegistroDeDatos {
     @Override
     public int hashCode() {
         return Objects.hash(nombre, fechaDeInicio, fechaDeFinalizacion, descripcion);
-    }
-
-    public void setFechaDeFinalizacion(Date fechaDeFin) {
-        this.fechaDeFinalizacion = fechaDeFin;
     }
 }
