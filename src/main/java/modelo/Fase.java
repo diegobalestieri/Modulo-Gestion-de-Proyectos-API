@@ -17,7 +17,6 @@ public class Fase {
     private Long id;
     private String nombre;
     private String descripcion;
-    private String estado;
     private Date fechaDeInicio;
     private Date fechaDeFin;
 
@@ -50,13 +49,6 @@ public class Fase {
         this.descripcion = descripcion;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
 
     public Date getFechaDeInicio() {
         return fechaDeInicio;
