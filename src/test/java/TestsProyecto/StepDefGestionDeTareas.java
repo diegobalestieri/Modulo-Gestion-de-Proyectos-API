@@ -76,9 +76,8 @@ public class StepDefGestionDeTareas extends SpringTest{
                     .andExpect(status().isCreated())
                     .andReturn();
             String response = requestResult.getResponse().getContentAsString();
-            long id_tarea = parseLong(obtenerId(response));
-            tarea.setId(id_tarea);
-            tareas.add(tarea);
+            Tarea nuevaTarea = mapper.readValue(response,Tarea.class);
+            tareas.add(nuevaTarea);
             idsTareas.add(obtenerId(response));
         }
     }
@@ -93,7 +92,8 @@ public class StepDefGestionDeTareas extends SpringTest{
     public void contieneLosDatosCorrespondientes() throws Exception {
         String aux = urlPostTarea.replace("{id}", idProyecto);
         for (int i = 0; i < list.size() ; i++) {
-            MvcResult requestResult = this.mockMvc.perform(get(aux + "/" + tareas.get(i).getId())
+            String get_result = aux + "/" + tareas.get(i).getId();
+            MvcResult requestResult = this.mockMvc.perform(get(get_result)
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andReturn();
