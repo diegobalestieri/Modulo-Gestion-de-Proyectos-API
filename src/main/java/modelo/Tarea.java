@@ -34,7 +34,7 @@ public class Tarea {
 
     public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
     public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
-    //public void setFechaDeInicio(Date fechaDeInicio){ registroDeDatos.setFechaDeInicio(fechaDeInicio); }
+    public void setFechaDeInicio(Date fechaDeInicio){ registroDeDatos.setFechaDeInicio(fechaDeInicio); }
     public void setFechaDeFinalizacion(Date fechaDeFinalizacion){
         registroDeDatos.setFechaDeFinalizacion(fechaDeFinalizacion);
     }

@@ -11,6 +11,7 @@ import modelo.Fase;
 import persistencia.FasesRepository;
 import modelo.Proyecto;
 import persistencia.ProyectosRepository;
+import persistencia.TareasRepository;
 
 import java.text.ParseException;
 import java.util.List;
@@ -23,6 +24,8 @@ public class ProyectoService {
 
     @Autowired
     private FasesRepository fasesRepository;
+    @Autowired
+    private TareasRepository tareasRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public List<Proyecto> findAll(){
@@ -117,5 +120,21 @@ public class ProyectoService {
     public Tarea obtenerTarea(Long proyectoId, Long tareaId) {
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerTarea(tareaId);
+    }
+
+    public Tarea guardarTarea(Long proyectoId, Long tareaId, Tarea tarea) {
+        Proyecto proyecto = getOne(proyectoId);
+        tarea.setId(tareaId);
+        proyecto.guardarTarea(tarea);
+        Proyecto entidadProyecto = proyectosRepository.save(proyecto);
+        List <Tarea> tareas = entidadProyecto.getTareas();
+        return tareas.get(tareas.size()-1);
+    }
+
+    public void borrarTarea(Long proyectoId, Long tareaId) {
+        Proyecto proyecto = getOne(proyectoId);
+        proyecto.borrarTarea(tareaId);
+        save(proyecto);
+        tareasRepository.deleteById(tareaId);
     }
 }
