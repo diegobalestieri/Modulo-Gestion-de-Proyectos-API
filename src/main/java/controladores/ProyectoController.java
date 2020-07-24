@@ -4,6 +4,7 @@ package controladores;
 import excepciones.FaseNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
+import excepciones.TareaNotFoundException;
 import modelo.Fase;
 import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,7 +136,7 @@ public class ProyectoController {
     ResponseEntity<?> obtenerTarea(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_tarea") Long tareaId){
         try{
             return new ResponseEntity<Tarea>(servicio.obtenerTarea(proyectoId, tareaId), HttpStatus.OK);
-        } catch (ProyectoNotFoundException e){
+        } catch (ProyectoNotFoundException | TareaNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
     }
@@ -146,6 +147,15 @@ public class ProyectoController {
         } catch (ProyectoNotFoundException e){
             return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
         }
+    }
+    @DeleteMapping("proyectos/{id_proyecto}/tareas/{id_tarea}")
+    ResponseEntity<String> borrarTarea(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_tarea") Long tareaId){
+        try{
+            servicio.borrarTarea(proyectoId, tareaId);
+        } catch (ProyectoNotFoundException e){
+            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Tarea eliminada correctamente", HttpStatus.OK);
     }
 
 }

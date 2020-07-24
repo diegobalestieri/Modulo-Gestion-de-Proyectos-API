@@ -18,3 +18,8 @@ Feature: Gestion de tareas
 			| fecha de fin | nombre | descripcion | prioridad |
 			| 2020-09-22 | Definir alcance | Definir el alcance del sprint | Alta |
 		Then la tarea contiene los datos correspondientes
+
+	Scenario: Eliminar una tarea
+		Given cuento con una tarea cargada en el proyecto
+		When elimino la tarea
+		Then la tarea ya no se encuentra en el proyecto

@@ -157,4 +157,21 @@ public class StepDefGestionDeTareas extends SpringTest{
         tareas.add(nuevaTarea);
     }
 
+    @When("elimino la tarea")
+    public void eliminoLaTarea() throws Exception {
+        String url_delete = urlPostTarea.replace("{id}", idProyecto) + "/" + idsTareas.get(0);
+        MvcResult requestResult = this.mockMvc.perform(delete(url_delete)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("la tarea ya no se encuentra en el proyecto")
+    public void laTareaYaNoSeEncuentraEnElProyecto() throws Exception {
+        String url_get = urlPostTarea.replace("{id}", idProyecto) + "/" + idsTareas.get(0);
+        MvcResult requestResult = this.mockMvc.perform(get(url_get)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
 }

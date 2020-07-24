@@ -39,7 +39,6 @@ public class Proyecto {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
 
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Tarea> tareas = new ArrayList<>();
 
@@ -258,5 +257,14 @@ public class Proyecto {
             }
         }
         crearTarea(tarea);
+    }
+    public void borrarTarea(Long tareaId) {
+        for (Tarea tarea : tareas) {
+            if (tarea.getId().equals(tareaId)) {
+                tareas.remove(tarea);
+                return;
+            }
+        }
+        throw new TareaNotFoundException("La tarea no fue encontrada");
     }
 }
