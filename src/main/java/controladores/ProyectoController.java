@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import modelo.Proyecto;
+import modelo.Error;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 import servicio.ProyectoService;
 
@@ -41,7 +42,7 @@ public class ProyectoController {
         try {
             return new ResponseEntity<Proyecto>(servicio.getOne(id), HttpStatus.OK);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
 
@@ -52,11 +53,11 @@ public class ProyectoController {
     }
 
     @DeleteMapping("proyectos/{id}")
-    ResponseEntity<String> borrarProyecto(@PathVariable(value="id") Long id){
+    ResponseEntity<?> borrarProyecto(@PathVariable(value="id") Long id){
         try{
             servicio.deleteById(id);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Proyecto eliminado correctamente", HttpStatus.OK);
     }
@@ -68,7 +69,7 @@ public class ProyectoController {
             servicio.update(proyecto, parametros);
             return new ResponseEntity<Proyecto>(proyecto, HttpStatus.OK);
         }catch (ProyectoNotFoundException | ParametrosInvalidosException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
 
@@ -78,7 +79,7 @@ public class ProyectoController {
             ResponseEntity<Fase> fase_nueva = new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
             return fase_nueva;
         }catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}")
@@ -86,7 +87,7 @@ public class ProyectoController {
         try{
             return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.CREATED);
         }catch (ProyectoNotFoundException | FaseNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
 
@@ -95,7 +96,7 @@ public class ProyectoController {
         try{
             return new ResponseEntity<Fase>(servicio.guardarFase(proyectoId, faseId, fase), HttpStatus.OK);
         }catch (ProyectoNotFoundException | FaseNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
     @GetMapping("proyectos/{id_proyecto}/fases")
@@ -103,15 +104,15 @@ public class ProyectoController {
         try{
             return new ResponseEntity<List<Fase>>(servicio.obtenerFases(proyectoId), HttpStatus.OK);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
     @DeleteMapping("proyectos/{id_proyecto}/fases/{id_fase}")
-    ResponseEntity<String> borrarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
+    ResponseEntity<?> borrarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
         try{
             servicio.borrarFase(proyectoId, faseId);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Fase eliminada correctamente", HttpStatus.OK);
     }
@@ -121,7 +122,7 @@ public class ProyectoController {
         try{
             return new ResponseEntity<Tarea>(servicio.crearTarea(proyectoId, tarea), HttpStatus.CREATED);
         }catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
 
@@ -130,7 +131,7 @@ public class ProyectoController {
         try{
             return new ResponseEntity<List<Tarea>>(servicio.obtenerTareas(proyectoId), HttpStatus.OK);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
     @GetMapping("proyectos/{id_proyecto}/tareas/{id_tarea}")
@@ -138,7 +139,7 @@ public class ProyectoController {
         try{
             return new ResponseEntity<Tarea>(servicio.obtenerTarea(proyectoId, tareaId), HttpStatus.OK);
         } catch (ProyectoNotFoundException | TareaNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
     @PutMapping("proyectos/{id_proyecto}/tareas/{id_tarea}")
@@ -146,15 +147,15 @@ public class ProyectoController {
         try{
             return new ResponseEntity<Tarea>(servicio.guardarTarea(proyectoId, tareaId,tarea), HttpStatus.OK);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
     @DeleteMapping("proyectos/{id_proyecto}/tareas/{id_tarea}")
-    ResponseEntity<String> borrarTarea(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_tarea") Long tareaId){
+    ResponseEntity<?> borrarTarea(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_tarea") Long tareaId){
         try{
             servicio.borrarTarea(proyectoId, tareaId);
         } catch (ProyectoNotFoundException e){
-            return new ResponseEntity<String>(e.getMessage(), e.getResponseStatus());
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Tarea eliminada correctamente", HttpStatus.OK);
     }
