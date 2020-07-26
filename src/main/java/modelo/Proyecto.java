@@ -1,5 +1,6 @@
 package modelo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import excepciones.*;
 import modelo.Estado.EstadoProyecto;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "proyectos")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Proyecto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -95,6 +97,8 @@ public class Proyecto {
     public void setFechaDeInicio(String fechaDeInicio) throws ParseException {
         if (!estadoProyecto.getNombre().equals("No iniciado")) {
             throw new RestriccionDeEstadoException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
+        } else if (fechaDeInicio.isEmpty() || (fechaDeInicio.compareTo("0000-00-00") < 0)){
+            fechaDeInicio = null;
         }
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.fechaDeInicio = format.parse(fechaDeInicio);
@@ -105,7 +109,10 @@ public class Proyecto {
     }
 
     public void setFechaDeFinalizacion(Date fechaDeFin) {
-        this.fechaDeFinalizacion = fechaDeFin;
+        if (fechaDeFin.compareTo(this.fechaDeInicio) < 0) {
+            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
+        }
+        this.fechaDeFinalizacion  = fechaDeFin;
     }
 
     public String getCliente() {
