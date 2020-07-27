@@ -94,13 +94,14 @@ public class Fase {
             }
         }
     }
-
+    /*
     public void borrarIteracion(long iteracionId) throws AccionNoPermitidaException {
         if (!iteraciones.contains(iteracionId)) {return;}
         Iteracion iteracion = obtenerIteracion(iteracionId);
-        if (iteracion.obtenerTareas() != null) {
+        if (!iteracion.obtenerTareas().isEmpty()) {
             throw new AccionNoPermitidaException("No se puede eliminar una iteracion con tareas");
         }
         eliminarIteracion(iteracionId);
     }
+    */
 }

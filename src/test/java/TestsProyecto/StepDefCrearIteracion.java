@@ -20,8 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -216,4 +215,52 @@ public class StepDefCrearIteracion extends SpringTest {
     public void seMeDevuelvenLasTareasCorrectas() {
         assertEquals(tareas_cargadas,tareas_obtenidas);
     }
+
+    @Given("creo una iteracion en una fase")
+    public void creoUnaIteracionEnUnaFase() throws Exception {
+        Iteracion iteracion = new Iteracion();
+        iteracion.setNombre("Iteracion 1");
+        iteracion.asignarFechaDeInicio("2020-04-15");
+        iteracion.asignarFechaDeFinalizacion("2020-04-20");
+        String url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones";
+        String requestJson = mapper.writeValueAsString(iteracion);
+
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = requestResult.getResponse().getContentAsString();
+        Iteracion nuevaIteracion = mapper.readValue(response,Iteracion.class);
+        iteracion_obtenida = nuevaIteracion;
+        idIteracion = nuevaIteracion.getId();
+
+    }
+
+
+    @When("borro la iteracion")
+    public void borroLaIteracion() throws Exception {
+        String url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones/" + idIteracion;
+        MvcResult requestResult = this.mockMvc.perform(delete(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("la fase ya no cuenta con la iteracion")
+    public void laFaseYaNoCuentaConLaIteracion() throws Exception {
+        String url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones";
+
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        String response = requestResult.getResponse().getContentAsString();
+        List<Iteracion> listaDeIteraciones = Arrays.asList(mapper.readValue(response,Iteracion[].class));
+        assertFalse(listaDeIteraciones.contains(iteracion_obtenida));
+
+    }
+
 }

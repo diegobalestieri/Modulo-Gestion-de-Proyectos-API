@@ -204,7 +204,7 @@ public class ProyectoController {
         } catch (ProyectoNotFoundException | AccionNoPermitidaException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
-        return new ResponseEntity<String>("Tarea eliminada correctamente", HttpStatus.OK);
+        return new ResponseEntity<String>("Iteracion eliminada correctamente", HttpStatus.OK);
     }
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
     ResponseEntity<?> obtenerTareasDeIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,

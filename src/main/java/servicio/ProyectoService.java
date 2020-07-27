@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import modelo.Fase;
 import persistencia.FasesRepository;
 import modelo.Proyecto;
+import persistencia.IteracionesRepository;
 import persistencia.ProyectosRepository;
 import persistencia.TareasRepository;
 
@@ -31,7 +32,7 @@ public class ProyectoService {
     @Autowired
     private TareasRepository tareasRepository;
     @Autowired
-    private TareasRepository iteracionesRepository;
+    private IteracionesRepository iteracionesRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public List<Proyecto> findAll(){
@@ -178,7 +179,7 @@ public class ProyectoService {
     public void borrarIteracion(Long proyectoId, Long faseId,Long iteracionId) throws AccionNoPermitidaException {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
-        fase.borrarIteracion(iteracionId);
+        fase.eliminarIteracion(iteracionId);
         save(proyecto);
         iteracionesRepository.deleteById(iteracionId);
     }
