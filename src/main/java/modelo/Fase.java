@@ -1,5 +1,7 @@
 package modelo;
 
+import excepciones.AccionNoPermitidaException;
+
 import javax.persistence.*;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -62,5 +64,44 @@ public class Fase {
         return this.iteraciones.add(iteracion);
     }
 
-    public List<Iteracion> getIteraciones() { return this.iteraciones;  }
+    public List<Iteracion> obtenerIteraciones() { return this.iteraciones;  }
+
+    public Iteracion obtenerIteracion(Long idIteracion) {
+        for (Iteracion iteracion : iteraciones) {
+            if (iteracion.getId() == idIteracion)
+                return iteracion;
+        }
+        return null;
+    }
+
+    public void guardarIteracion(Iteracion nuevaIteracion) {
+        for (int i = 0; i < iteraciones.size(); ++i){
+            Iteracion iteracion = iteraciones.get(i);
+            if (iteracion.getId().equals(nuevaIteracion.getId())){
+                iteraciones.set(i, nuevaIteracion);
+                return;
+            }
+        }
+        agregarIteracion(nuevaIteracion);
+    }
+
+    public void eliminarIteracion(long idIteracion) {
+        for (int i = 0; i < iteraciones.size(); ++i){
+            Iteracion iteracion = iteraciones.get(i);
+            if (iteracion.getId().equals(idIteracion)){
+                iteraciones.remove(i);
+                return;
+            }
+        }
+    }
+    /*
+    public void borrarIteracion(long iteracionId) throws AccionNoPermitidaException {
+        if (!iteraciones.contains(iteracionId)) {return;}
+        Iteracion iteracion = obtenerIteracion(iteracionId);
+        if (!iteracion.obtenerTareas().isEmpty()) {
+            throw new AccionNoPermitidaException("No se puede eliminar una iteracion con tareas");
+        }
+        eliminarIteracion(iteracionId);
+    }
+    */
 }

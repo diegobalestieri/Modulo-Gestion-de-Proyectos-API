@@ -32,17 +32,16 @@ public class RegistroDeDatos {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion;}
 
     public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException {
+        if (fechaDeInicio == null || fechaDeInicio.equals("")) {return;}
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        this.fechaDeInicio = format.parse(fechaDeInicio);
+        Date nuevaFechaDeInicio = format.parse(fechaDeInicio);
+        setFechaDeInicio(nuevaFechaDeInicio);
     }
-    public void asignarFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
+    public void asignarFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException,FechaInvalidaException {
+        if (fechaDeFinalizacion == null || fechaDeFinalizacion.equals("")) {return;}
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date nuevaFechadeFinalizacion = format.parse(fechaDeFinalizacion);
-        if (nuevaFechadeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
-            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
-        }
-        this.fechaDeFinalizacion  = nuevaFechadeFinalizacion;
-
+        setFechaDeFinalizacion(nuevaFechadeFinalizacion);
     }
 
     public Date getFechaDeInicio() {
@@ -57,24 +56,34 @@ public class RegistroDeDatos {
         this.fechaDeInicio = fechaDeInicio;
     }
 
-    public void setFechaDeFinalizacion(Date fechaDeFinalizacion) {
+    public void setFechaDeFinalizacion(Date fechaDeFinalizacion) throws FechaInvalidaException {
+        if (this.fechaDeInicio != null && fechaDeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
+            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
+        }
         this.fechaDeFinalizacion = fechaDeFinalizacion;
     }
 
     @Override
     public boolean equals(Object o) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
         if (this == o) return true;
         if (!(o instanceof RegistroDeDatos)) return false;
         RegistroDeDatos that = (RegistroDeDatos) o;
         return Objects.equals(nombre, that.nombre) &&
-                format.format(fechaDeInicio).equals(format.format(that.fechaDeInicio)) &&
-                format.format(fechaDeFinalizacion).equals(format.format(that.fechaDeFinalizacion)) &&
+                lasFechasSonIguales(fechaDeInicio,that.fechaDeInicio) &&
+                lasFechasSonIguales(fechaDeFinalizacion,that.fechaDeFinalizacion) &&
                 Objects.equals(descripcion, that.descripcion);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(nombre, fechaDeInicio, fechaDeFinalizacion, descripcion);
+    }
+
+    public boolean lasFechasSonIguales(Date fecha_1,Date fecha_2) {
+        if (fecha_1 == null && fecha_2 == null) { return true; }
+        if (fecha_1 == null || fecha_2 == null) { return false; }
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return (format.format(fecha_1).equals(format.format(fecha_2)));
     }
 }

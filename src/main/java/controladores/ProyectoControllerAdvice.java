@@ -18,7 +18,12 @@ public class ProyectoControllerAdvice {
 
     @ExceptionHandler(JsonMappingException.class)
     public ResponseEntity<Error> handleJsonMappingException(JsonMappingException e){
-        System.out.print(e.getClass() + ": " + e.getMessage());
+        // se puede sacar el nombre de la excepcion que origina la JsonMapping Exception con
+        // e.getCause().getClass().getName() -> Ej: excepciones.FechaInvalidaException
+        //System.out.print(e.getClass() + ": " + e.getMessage());
+        //if (e.getCause().getClass().getName().contains("ParseError")) {
+           // return new ResponseEntity<Error>(new Error("Error de parseo", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        //}
         String newMessage = e.getMessage().substring(0, e.getMessage().indexOf("\n at"));
         return new ResponseEntity<Error>(new Error(newMessage, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }

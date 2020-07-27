@@ -1,7 +1,10 @@
 package servicio;
 
+import excepciones.AccionNoPermitidaException;
+import excepciones.FechaInvalidaException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
+import modelo.Iteracion;
 import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import modelo.Fase;
 import persistencia.FasesRepository;
 import modelo.Proyecto;
+import persistencia.IteracionesRepository;
 import persistencia.ProyectosRepository;
 import persistencia.TareasRepository;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +31,8 @@ public class ProyectoService {
     private FasesRepository fasesRepository;
     @Autowired
     private TareasRepository tareasRepository;
+    @Autowired
+    private IteracionesRepository iteracionesRepository;
 
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
     public List<Proyecto> findAll(){
@@ -70,7 +77,7 @@ public class ProyectoService {
         proyectosRepository.save(proyecto);
     }
 
-    public Fase crearFase(Long proyectoId, Fase fase) {
+    public Fase crearFase(Long proyectoId, Fase fase) throws FechaInvalidaException, ParseException {
         Proyecto proyecto = getOne(proyectoId);
         proyecto.crearFase(fase);
         Proyecto proyectoGuardado = proyectosRepository.save(proyecto);
@@ -137,4 +144,52 @@ public class ProyectoService {
         save(proyecto);
         tareasRepository.deleteById(tareaId);
     }
+
+    public List<Iteracion> obtenerIteraciones(Long proyectoId, Long faseId) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        return fase.obtenerIteraciones();
+    }
+
+    public Iteracion obtenerIteracion(Long proyectoId, Long faseId, Long iteracionId) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        return fase.obtenerIteracion(iteracionId);
+    }
+
+    public Iteracion crearIteracion(Long proyectoId, Long faseId,Iteracion iteracion) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        List <Iteracion> iteraciones = fase.obtenerIteraciones();
+        fase.agregarIteracion(iteracion);
+        proyecto = proyectosRepository.save(proyecto);
+        return iteraciones.get(iteraciones.size()-1);
+    }
+
+    public Iteracion guardarIteracion(Long proyectoId, Long faseId, Long iteracionId, Iteracion iteracion) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        iteracion.setId(iteracionId);
+        fase.guardarIteracion(iteracion);
+        Proyecto entidadProyecto = proyectosRepository.save(proyecto);
+        List <Iteracion> iteraciones = entidadProyecto.obtenerFase(faseId).obtenerIteraciones();
+        return iteraciones.get(iteraciones.size()-1);
+    }
+
+    public void borrarIteracion(Long proyectoId, Long faseId,Long iteracionId) throws AccionNoPermitidaException {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        fase.eliminarIteracion(iteracionId);
+        save(proyecto);
+        iteracionesRepository.deleteById(iteracionId);
+    }
+
+    public List<Tarea> obtenerTareasDeIteracion(Long proyectoId, Long faseId, Long iteracionId) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        return iteracion.obtenerTareasDeIteracion(proyecto.obtenerTareas());
+    }
+
+
 }
