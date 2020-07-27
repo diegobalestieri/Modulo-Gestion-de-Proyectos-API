@@ -57,6 +57,7 @@ public class RegistroDeDatos {
     }
 
     public void setFechaDeFinalizacion(Date fechaDeFinalizacion) throws FechaInvalidaException {
+        if (fechaDeFinalizacion == null) {return;}
         if (this.fechaDeInicio != null && fechaDeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
             throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
         }
