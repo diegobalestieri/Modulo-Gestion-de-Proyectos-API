@@ -1,10 +1,7 @@
 package controladores;
 
 
-import excepciones.FaseNotFoundException;
-import excepciones.ParametrosInvalidosException;
-import excepciones.ProyectoNotFoundException;
-import excepciones.TareaNotFoundException;
+import excepciones.*;
 import modelo.Fase;
 import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,7 @@ import modelo.Error;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 import servicio.ProyectoService;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -78,9 +76,12 @@ public class ProyectoController {
         try{
             ResponseEntity<Fase> fase_nueva = new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
             return fase_nueva;
-        }catch (ProyectoNotFoundException e){
+        }catch (ProyectoNotFoundException | FechaInvalidaException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
+        catch (ParseException e) {
+           return new ResponseEntity<Error>(new Error(e.getMessage()), HttpStatus.valueOf(0)); // POLEMICO
+       }
     }
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}")
     ResponseEntity<?> crearFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
@@ -133,6 +134,7 @@ public class ProyectoController {
         } catch (ProyectoNotFoundException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
+
     }
     @GetMapping("proyectos/{id_proyecto}/tareas/{id_tarea}")
     ResponseEntity<?> obtenerTarea(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_tarea") Long tareaId){

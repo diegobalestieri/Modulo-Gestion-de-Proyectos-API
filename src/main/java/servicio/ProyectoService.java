@@ -1,5 +1,6 @@
 package servicio;
 
+import excepciones.FechaInvalidaException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.ProyectoNotFoundException;
 import modelo.Tarea;
@@ -70,7 +71,7 @@ public class ProyectoService {
         proyectosRepository.save(proyecto);
     }
 
-    public Fase crearFase(Long proyectoId, Fase fase) {
+    public Fase crearFase(Long proyectoId, Fase fase) throws FechaInvalidaException, ParseException {
         Proyecto proyecto = getOne(proyectoId);
         proyecto.crearFase(fase);
         Proyecto proyectoGuardado = proyectosRepository.save(proyecto);

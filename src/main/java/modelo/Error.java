@@ -14,6 +14,12 @@ public class Error {
         this.error = error;
         this.status = status.value();
     }
+    public Error(String error){
+        this.timestamp = new Date();
+        this.error = error;
+        this.status = 0;
+    }
+
     public Error(){}
     public String getError() {
         return error;

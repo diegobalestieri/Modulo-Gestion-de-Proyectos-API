@@ -32,17 +32,16 @@ public class RegistroDeDatos {
     public void setDescripcion(String descripcion) { this.descripcion = descripcion;}
 
     public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException {
+        if (fechaDeInicio == null || fechaDeInicio.equals("")) {return;}
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        this.fechaDeInicio = format.parse(fechaDeInicio);
+        Date nuevaFechaDeInicio = format.parse(fechaDeInicio);
+        setFechaDeInicio(nuevaFechaDeInicio);
     }
-    public void asignarFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException {
+    public void asignarFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException,FechaInvalidaException {
+        if (fechaDeFinalizacion == null || fechaDeFinalizacion.equals("")) {return;}
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Date nuevaFechadeFinalizacion = format.parse(fechaDeFinalizacion);
-        if (nuevaFechadeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
-            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
-        }
-        this.fechaDeFinalizacion  = nuevaFechadeFinalizacion;
-
+        setFechaDeFinalizacion(nuevaFechadeFinalizacion);
     }
 
     public Date getFechaDeInicio() {
@@ -57,7 +56,10 @@ public class RegistroDeDatos {
         this.fechaDeInicio = fechaDeInicio;
     }
 
-    public void setFechaDeFinalizacion(Date fechaDeFinalizacion) {
+    public void setFechaDeFinalizacion(Date fechaDeFinalizacion) throws FechaInvalidaException {
+        if (this.fechaDeInicio != null && fechaDeFinalizacion.compareTo(this.fechaDeInicio) < 0) {
+            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
+        }
         this.fechaDeFinalizacion = fechaDeFinalizacion;
     }
 
