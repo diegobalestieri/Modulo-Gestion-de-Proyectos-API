@@ -18,6 +18,7 @@ public class Tarea {
     private String responsable;
     private String prioridad;
     private EstadoTarea estado = EstadoTarea.NO_INICIADA;
+    private long id_iteracion;
 
     public Tarea(){
         registroDeDatos.setFechaDeInicio(new Date());
@@ -78,7 +79,7 @@ public class Tarea {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, registroDeDatos, responsable, prioridad, estado);
+        return Objects.hash(id, registroDeDatos, responsable, prioridad, estado, id_iteracion);
     }
     public void setEstado(String nombreDeEstado) {
         switch (nombreDeEstado) {
@@ -101,6 +102,10 @@ public class Tarea {
 
     public Date getFechaDeFinalizacion() {return registroDeDatos.getFechaDeFinalizacion();
     }
+
+    public void setIteracion(long id_iteracion) { this.id_iteracion = id_iteracion;}
+
+    public long getIteracion() { return id_iteracion;}
 
 
 }
