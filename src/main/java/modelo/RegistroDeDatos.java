@@ -65,18 +65,25 @@ public class RegistroDeDatos {
 
     @Override
     public boolean equals(Object o) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
         if (this == o) return true;
         if (!(o instanceof RegistroDeDatos)) return false;
         RegistroDeDatos that = (RegistroDeDatos) o;
         return Objects.equals(nombre, that.nombre) &&
-                format.format(fechaDeInicio).equals(format.format(that.fechaDeInicio)) &&
-                format.format(fechaDeFinalizacion).equals(format.format(that.fechaDeFinalizacion)) &&
+                lasFechasSonIguales(fechaDeInicio,that.fechaDeInicio) &&
+                lasFechasSonIguales(fechaDeFinalizacion,that.fechaDeFinalizacion) &&
                 Objects.equals(descripcion, that.descripcion);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(nombre, fechaDeInicio, fechaDeFinalizacion, descripcion);
+    }
+
+    public boolean lasFechasSonIguales(Date fecha_1,Date fecha_2) {
+        if (fecha_1 == null && fecha_2 == null) { return true; }
+        if (fecha_1 == null || fecha_2 == null) { return false; }
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return (format.format(fecha_1).equals(format.format(fecha_2)));
     }
 }
