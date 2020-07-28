@@ -81,7 +81,7 @@ public class Fase {
 
     public Iteracion obtenerIteracion(Long idIteracion) {
         for (Iteracion iteracion : iteraciones) {
-            if (iteracion.getId() == idIteracion)
+            if (iteracion.getId().equals(idIteracion))
                 return iteracion;
         }
         throw new IteracionNotFoundException("No se pudo encontrar la iteracion");
