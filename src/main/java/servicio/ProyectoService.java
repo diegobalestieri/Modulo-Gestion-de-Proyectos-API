@@ -1,9 +1,6 @@
 package servicio;
 
-import excepciones.AccionNoPermitidaException;
-import excepciones.FechaInvalidaException;
-import excepciones.ParametrosInvalidosException;
-import excepciones.ProyectoNotFoundException;
+import excepciones.*;
 import modelo.Iteracion;
 import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class ProyectoService {
@@ -189,6 +188,31 @@ public class ProyectoService {
         Fase fase = proyecto.obtenerFase(faseId);
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
         return iteracion.obtenerTareasDeIteracion(proyecto.obtenerTareas());
+    }
+
+    public Iteracion agregarTareaAIteracion(Long proyectoId, Long faseId, Long iteracionId, Long tareaId) {
+        Tarea tarea = getOne(proyectoId).obtenerTarea(tareaId);
+        if (tarea.getIteracion() != 0) {
+            throw new AccionNoPermitidaException("La tarea ya está asignada a una iteración");
+        }
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        iteracion.agregarTarea(tareaId);
+        tarea.setIteracion(iteracionId);
+        Proyecto entidadProyecto = proyectosRepository.save(proyecto);
+        List <Iteracion> iteraciones = entidadProyecto.obtenerFase(faseId).obtenerIteraciones();
+        return iteraciones.get(iteraciones.size()-1);
+    }
+
+    public void borrarTareaDeIteracion(Long proyectoId, Long faseId,Long iteracionId, Long tareaId) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        iteracion.eliminarTarea(tareaId);
+        proyecto.obtenerTarea(tareaId).setIteracion(0);
+        save(proyecto);
+
     }
 
 

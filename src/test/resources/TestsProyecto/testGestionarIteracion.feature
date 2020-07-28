@@ -23,7 +23,12 @@ Feature: Creacion de Iteracion
     When consulto las tareas de la iteracion
     Then se me devuelven las tareas correctas
 
-  Scenario:Borro una iteracion
+  Scenario: Borro una iteracion
     Given creo una iteracion en una fase
     When borro la iteracion
     Then la fase ya no cuenta con la iteracion
+
+ Scenario: Elimino tareas de una iteracion
+    Given creo una iteracion y le agrego las tareas del proyecto
+    When elimino las tareas de la iteracion
+    Then la iteracion no cuenta con las tareas cargadas

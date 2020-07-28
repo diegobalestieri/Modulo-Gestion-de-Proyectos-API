@@ -1,6 +1,7 @@
 package modelo;
 
 import excepciones.AccionNoPermitidaException;
+import excepciones.IteracionNotFoundException;
 
 import javax.persistence.*;
 import java.text.ParseException;
@@ -71,7 +72,7 @@ public class Fase {
             if (iteracion.getId() == idIteracion)
                 return iteracion;
         }
-        return null;
+        throw new IteracionNotFoundException("No se pudo encontrar la iteracion");
     }
 
     public void guardarIteracion(Iteracion nuevaIteracion) {
