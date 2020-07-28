@@ -18,7 +18,7 @@ public class Tarea {
     private String responsable;
     private String prioridad;
     private EstadoTarea estado = EstadoTarea.NO_INICIADA;
-    private long id_iteracion;
+    private long id_iteracion = 0;
 
     public Tarea(){
         registroDeDatos.setFechaDeInicio(new Date());

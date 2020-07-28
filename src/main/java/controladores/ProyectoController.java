@@ -172,7 +172,7 @@ public class ProyectoController {
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones")
     ResponseEntity<?> obtenerIteraciones(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId) {
         try{
-            return new ResponseEntity<List<Iteracion>>(servicio.obtenerIteraciones(proyectoId, faseId), HttpStatus.CREATED);
+            return new ResponseEntity<List<Iteracion>>(servicio.obtenerIteraciones(proyectoId, faseId), HttpStatus.OK);
         }catch (ProyectoNotFoundException | FaseNotFoundException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
@@ -215,6 +215,28 @@ public class ProyectoController {
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
+    @PostMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
+    ResponseEntity<?> agregarTareaAIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
+                                             @PathVariable("id_iteracion") Long iteracionId, @RequestParam long id_tarea) {
+        try{
+            servicio.agregarTareaAIteracion(proyectoId, faseId,iteracionId,id_tarea);
+        }catch (ProyectoNotFoundException | FaseNotFoundException | TareaNotFoundException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Tarea cargada a la iteracion correctamente", HttpStatus.OK);
+    }
+    @DeleteMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas/{id_tarea}")
+    ResponseEntity<?> borrarTareaDeIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
+                                      @PathVariable("id_iteracion") Long iteracionId,@PathVariable("id_tarea") Long tareaId){
+        try{
+            servicio.borrarTareaDeIteracion(proyectoId, faseId,iteracionId,tareaId);
+        } catch (ProyectoNotFoundException | AccionNoPermitidaException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Tarea eliminada de la iteracion correctamente", HttpStatus.OK);
+    }
+
+
 
 
 }

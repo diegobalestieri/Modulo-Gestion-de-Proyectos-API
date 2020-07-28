@@ -1,5 +1,7 @@
 package modelo;
 
+import excepciones.TareaNotFoundException;
+
 import javax.persistence.*;
 import java.text.ParseException;
 import java.util.*;
@@ -83,5 +85,12 @@ public class Iteracion {
                 listaADevolver.add(tarea);
         }
         return listaADevolver;
+    }
+
+    public void eliminarTarea(long idTarea) {
+        if (!idsTareas.contains(idTarea)) {
+            throw new TareaNotFoundException("La tarea no se encontraba cargada a esta iteracion");
+        }
+        idsTareas.remove(idTarea);
     }
 }
