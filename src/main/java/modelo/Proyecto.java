@@ -2,6 +2,7 @@ package modelo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import excepciones.*;
+import modelo.Estado.EstadoFase;
 import modelo.Estado.EstadoProyecto;
 
 import javax.persistence.*;
@@ -203,13 +204,10 @@ public class Proyecto {
         return fases;
     }
     public void borrarFase(Long faseId) {
-        for (Fase fase : fases) {
-            if (fase.getId().equals(faseId)) {
-                fases.remove(fase);
-                return;
-            }
-        }
-        throw new FaseNotFoundException("La fase no fue encontrada");
+        Fase fase = obtenerFase(faseId);
+        if (!fase.getEstado().equals(EstadoFase.CREADA))
+            throw new AccionNoPermitidaException("No se puede eliminar una fase activa o finalizada");
+        fases.remove(fase);
     }
     public void guardarFase(Fase fase) {
         for (int i = 0; i < fases.size(); ++i){
@@ -263,5 +261,14 @@ public class Proyecto {
             }
         }
         throw new TareaNotFoundException("La tarea no fue encontrada");
+    }
+
+    public List<Tarea> obtenerTareasSinIteracion() {
+        List<Tarea> nuevaLista = new ArrayList();
+        for (Tarea tarea : tareas) {
+            if (tarea.getIteracion() == 0)
+                nuevaLista.add(tarea);
+        }
+        return nuevaLista;
     }
 }

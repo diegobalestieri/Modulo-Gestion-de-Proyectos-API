@@ -1,6 +1,9 @@
 package modelo;
 
+import excepciones.AccionNoPermitidaException;
+import excepciones.RestriccionDeEstadoException;
 import excepciones.TareaNotFoundException;
+import modelo.Estado.EstadoIteracion;
 
 import javax.persistence.*;
 import java.text.ParseException;
@@ -20,6 +23,8 @@ public class Iteracion {
     @CollectionTable(name="ids_tareas",joinColumns = @JoinColumn(name="iteracion_id"))
     private List<Long> idsTareas = new ArrayList<>();
 
+    private EstadoIteracion estado = EstadoIteracion.CREADA;
+
     public Iteracion(String nombre) { registroDeDatos.setNombre(nombre);   }
 
     public Iteracion(){}
@@ -36,7 +41,12 @@ public class Iteracion {
         this.id = id;
     }
 
-    public void agregarTarea(long idDeTarea) { idsTareas.add(idDeTarea);  }
+    public void agregarTarea(long idDeTarea) throws AccionNoPermitidaException {
+        if (estado.equals(EstadoIteracion.FINALIZADA))
+            throw new AccionNoPermitidaException("La iteracion no se encuentra activa");
+        setEstado(EstadoIteracion.ACTIVA);
+        idsTareas.add(idDeTarea);
+    }
 
     //public void setIdsTareas(String nuevasTareas) {idsTareas = nuevasTareas;}
 
@@ -69,6 +79,14 @@ public class Iteracion {
         registroDeDatos.asignarFechaDeFinalizacion(fecha_de_finalizacion);
     }
 
+    public EstadoIteracion getEstado() { return estado; }
+
+    public void setEstado(EstadoIteracion nuevoEstado) { estado = nuevoEstado;}
+
+    public void finalizar() {
+        setFechaDeFinalizacion(new Date());
+        setEstado(EstadoIteracion.FINALIZADA); }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,9 +106,10 @@ public class Iteracion {
     }
 
     public void eliminarTarea(long idTarea) {
-        if (!idsTareas.contains(idTarea)) {
+        if (!estado.equals(EstadoIteracion.ACTIVA))
+            throw new AccionNoPermitidaException("La iteracion no se encuentra activa");
+        if (!idsTareas.contains(idTarea))
             throw new TareaNotFoundException("La tarea no se encontraba cargada a esta iteracion");
-        }
         idsTareas.remove(idTarea);
     }
 }

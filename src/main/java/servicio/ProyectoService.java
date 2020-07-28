@@ -123,6 +123,11 @@ public class ProyectoService {
         return proyecto.obtenerTareas();
     }
 
+    public List<Tarea> obtenerTareasSinIteracion(Long proyectoId) {
+        Proyecto proyecto = getOne(proyectoId);
+        return proyecto.obtenerTareasSinIteracion();
+    }
+
     public Tarea obtenerTarea(Long proyectoId, Long tareaId) {
         Proyecto proyecto = getOne(proyectoId);
         return proyecto.obtenerTarea(tareaId);
@@ -213,6 +218,14 @@ public class ProyectoService {
         proyecto.obtenerTarea(tareaId).setIteracion(0);
         save(proyecto);
 
+    }
+
+    public void finalizarIteracion(Long proyectoId, Long faseId,Long iteracionId) {
+        Proyecto proyecto = getOne(proyectoId);
+        Fase fase = proyecto.obtenerFase(faseId);
+        Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        iteracion.finalizar();
+        save(proyecto);
     }
 
 
