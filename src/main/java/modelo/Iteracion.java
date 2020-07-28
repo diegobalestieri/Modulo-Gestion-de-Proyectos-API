@@ -14,11 +14,17 @@ public class Iteracion {
     @Embedded
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 
-    private String idsTareas = "";
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="ids_tareas",joinColumns = @JoinColumn(name="iteracion_id"))
+    private List<Long> idsTareas = new ArrayList<>();
 
     public Iteracion(String nombre) { registroDeDatos.setNombre(nombre);   }
 
     public Iteracion(){}
+
+    public List<Long> getIdsTareas() {return idsTareas;} // SOLO PARA JACKSON
+
+    public void setIdsTareas(List<Long> lista) {idsTareas = lista;} // SOLO PARA JACKSON
 
     public Long getId() {
         return id;
@@ -28,20 +34,15 @@ public class Iteracion {
         this.id = id;
     }
 
-    public void agregarTarea(String idDeTarea) {
-        if (idsTareas.equals("")) { idsTareas += idDeTarea;}
-        else { idsTareas += ","+idDeTarea; }
-    }
+    public void agregarTarea(long idDeTarea) { idsTareas.add(idDeTarea);  }
 
-    public void setIdsTareas(String nuevasTareas) {idsTareas = nuevasTareas;}
+    //public void setIdsTareas(String nuevasTareas) {idsTareas = nuevasTareas;}
 
-    public String getIdsTareas() {return this.idsTareas;}
+    //public String getIdsTareas() {return this.idsTareas;}
 
-    public List<String> obtenerTareas() {
-        return Arrays.asList(idsTareas.split(","));
-    }
+    public List<Long> obtenerTareas() { return new ArrayList<>(this.idsTareas);    }
 
-    public boolean contiene(String idDeTarea) { return obtenerTareas().contains(idDeTarea); }
+    public boolean contiene(String idDeTarea) { return idsTareas.contains(idDeTarea); }
 
     public String getNombre() { return registroDeDatos.getNombre(); }
 
@@ -77,8 +78,8 @@ public class Iteracion {
     public List<Tarea> obtenerTareasDeIteracion(List<Tarea> listadoDeTareas) {
         List<Tarea> listaADevolver = new ArrayList();
         for (Tarea tarea : listadoDeTareas) {
-            String id_tarea = tarea.getId().toString();
-            if (obtenerTareas().contains(id_tarea))
+            long id_tarea = tarea.getId();
+            if (idsTareas.contains(id_tarea))
                 listaADevolver.add(tarea);
         }
         return listaADevolver;

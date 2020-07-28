@@ -177,7 +177,8 @@ public class StepDefCrearIteracion extends SpringTest {
         String url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones";
 
         for (String id_tarea : idsTareas) {
-            iteracion.agregarTarea(id_tarea);
+            long id_tarea_long = Long.parseLong(id_tarea);
+            iteracion.agregarTarea(id_tarea_long);
         }
         String requestJson = mapper.writeValueAsString(iteracion);
         iteracion_creada = iteracion;
