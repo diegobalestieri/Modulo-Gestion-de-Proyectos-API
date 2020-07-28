@@ -69,12 +69,13 @@ public class ProyectoController {
         }
     }
 
+    //FASES
+
     @PostMapping(value = "proyectos/{id}/fases")
     ResponseEntity<?> crearFase(@PathVariable("id") Long proyectoId, @RequestBody Fase fase){
         try{
-            ResponseEntity<Fase> fase_nueva = new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
-            return fase_nueva;
-        }catch (ProyectoNotFoundException | FechaInvalidaException e){
+            return new ResponseEntity<Fase>(servicio.crearFase(proyectoId, fase), HttpStatus.CREATED);
+        }catch (ProyectoNotFoundException | FechaInvalidaException | AccionNoPermitidaException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         catch (ParseException e) {
@@ -110,12 +111,14 @@ public class ProyectoController {
     ResponseEntity<?> borrarFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
         try{
             servicio.borrarFase(proyectoId, faseId);
-        } catch (ProyectoNotFoundException e){
+        } catch (ProyectoNotFoundException | AccionNoPermitidaException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Fase eliminada correctamente", HttpStatus.OK);
     }
+
 //TAREAS
+
     @PostMapping(value = "proyectos/{id}/tareas")
     ResponseEntity<?> crearTarea(@PathVariable("id") Long proyectoId, @RequestBody Tarea tarea){
         try{
@@ -159,6 +162,17 @@ public class ProyectoController {
         }
         return new ResponseEntity<String>("Tarea eliminada correctamente", HttpStatus.OK);
     }
+    @GetMapping("proyectos/{id_proyecto}/tareas_sin_iteracion")
+    ResponseEntity<?> obtenerTareasSinIteracion(@PathVariable("id_proyecto") Long proyectoId){
+        try{
+            return new ResponseEntity<List<Tarea>>(servicio.obtenerTareasSinIteracion(proyectoId), HttpStatus.OK);
+        } catch (ProyectoNotFoundException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+
+    }
+
+    //ITERACIONES
 
     @PostMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones")
     ResponseEntity<?> crearIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId, @RequestBody Iteracion iteracion) {
@@ -172,7 +186,7 @@ public class ProyectoController {
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones")
     ResponseEntity<?> obtenerIteraciones(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId) {
         try{
-            return new ResponseEntity<List<Iteracion>>(servicio.obtenerIteraciones(proyectoId, faseId), HttpStatus.CREATED);
+            return new ResponseEntity<List<Iteracion>>(servicio.obtenerIteraciones(proyectoId, faseId), HttpStatus.OK);
         }catch (ProyectoNotFoundException | FaseNotFoundException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
@@ -215,5 +229,40 @@ public class ProyectoController {
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
+    @PostMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
+    ResponseEntity<?> agregarTareaAIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
+                                             @PathVariable("id_iteracion") Long iteracionId, @RequestParam long id_tarea) {
+        try{
+            servicio.agregarTareaAIteracion(proyectoId, faseId,iteracionId,id_tarea);
+        }catch (ProyectoNotFoundException | FaseNotFoundException | TareaNotFoundException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Tarea cargada a la iteracion correctamente", HttpStatus.OK);
+    }
+    @DeleteMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas/{id_tarea}")
+    ResponseEntity<?> borrarTareaDeIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
+                                      @PathVariable("id_iteracion") Long iteracionId,@PathVariable("id_tarea") Long tareaId){
+        try{
+            servicio.borrarTareaDeIteracion(proyectoId, faseId,iteracionId,tareaId);
+        } catch (ProyectoNotFoundException | AccionNoPermitidaException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Tarea eliminada de la iteracion correctamente", HttpStatus.OK);
+    }
+    @PutMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/finalizar")
+    ResponseEntity<?> finalizarIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
+                                       @PathVariable("id_iteracion") Long iteracionId){
+        try{
+            servicio.finalizarIteracion(proyectoId, faseId,iteracionId);
+        } catch (ProyectoNotFoundException | FaseNotFoundException | IteracionNotFoundException | AccionNoPermitidaException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+        return new ResponseEntity<String>("Iteracion finalizada correctamente", HttpStatus.OK);
+    }
+
+
+
+
+
 
 }

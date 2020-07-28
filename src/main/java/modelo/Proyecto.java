@@ -2,6 +2,7 @@ package modelo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import excepciones.*;
+import modelo.Estado.EstadoFase;
 import modelo.Estado.EstadoProyecto;
 
 import javax.persistence.*;
@@ -24,15 +25,10 @@ public class Proyecto {
     private Long id;
     @Enumerated(EnumType.STRING)
     private TipoProyecto tipoDeProyecto;
-    private String nombre;
-    private String descripcion;
-
 
     @Enumerated(EnumType.STRING)
     private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
 
-    private Date fechaDeInicio;
-    private Date fechaDeFinalizacion;
     //Solo si es de implementacion
     private String cliente;
     //Solo si es de desarrollo
@@ -43,6 +39,9 @@ public class Proyecto {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Tarea> tareas = new ArrayList<>();
+
+    @Embedded
+    private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 
     public Proyecto() {}
 
@@ -55,12 +54,10 @@ public class Proyecto {
     }
 
     public String getNombre() {
-        return nombre;
+        return registroDeDatos.getNombre();
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public void setNombre(String nombre) { registroDeDatos.setNombre(nombre); }
 
     public TipoProyecto getTipoDeProyecto() {
         return tipoDeProyecto;
@@ -77,42 +74,36 @@ public class Proyecto {
     }
 
     public String getDescripcion() {
-        return descripcion;
+        return registroDeDatos.getDescripcion();
     }
 
     public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+        registroDeDatos.setDescripcion(descripcion);
     }
 
     public Date getFechaDeInicio() {
-        return fechaDeInicio;
+        return registroDeDatos.getFechaDeInicio();
     }
 
     public void setFechaDeInicio(Date fechaDeInicio) {
-        if (!estadoProyecto.getNombre().equals("No iniciado")) {
-            throw new RestriccionDeEstadoException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
-        }
-        this.fechaDeInicio = fechaDeInicio;
+        registroDeDatos.setFechaDeInicio(fechaDeInicio);
     }
-    public void setFechaDeInicio(String fechaDeInicio) throws ParseException {
-        if (!estadoProyecto.getNombre().equals("No iniciado")) {
-            throw new RestriccionDeEstadoException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
-        } else if (fechaDeInicio.isEmpty() || (fechaDeInicio.compareTo("0000-00-00") < 0)){
-            fechaDeInicio = null;
-        }
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        this.fechaDeInicio = format.parse(fechaDeInicio);
+    public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException,AccionNoPermitidaException {
+        if (!estadoProyecto.equals(EstadoProyecto.NO_INICIADO))
+            throw new AccionNoPermitidaException("No se puede cambiar el estado de un proyecto iniciado");
+        registroDeDatos.asignarFechaDeInicio(fechaDeInicio);
     }
 
     public Date getFechaDeFinalizacion() {
-        return fechaDeFinalizacion;
+        return registroDeDatos.getFechaDeFinalizacion();
     }
 
     public void setFechaDeFinalizacion(Date fechaDeFin) {
-        if (fechaDeFin.compareTo(this.fechaDeInicio) < 0) {
-            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
-        }
-        this.fechaDeFinalizacion  = fechaDeFin;
+        registroDeDatos.setFechaDeFinalizacion(fechaDeFin);
+    }
+
+    public void asignarFechaDeFinalizacion(String fechaDeFinalizacion) throws ParseException,FechaInvalidaException {
+        registroDeDatos.asignarFechaDeFinalizacion(fechaDeFinalizacion);
     }
 
     public String getCliente() {
@@ -213,13 +204,10 @@ public class Proyecto {
         return fases;
     }
     public void borrarFase(Long faseId) {
-        for (Fase fase : fases) {
-            if (fase.getId().equals(faseId)) {
-                fases.remove(fase);
-                return;
-            }
-        }
-        throw new FaseNotFoundException("La fase no fue encontrada");
+        Fase fase = obtenerFase(faseId);
+        if (!fase.getEstado().equals(EstadoFase.CREADA))
+            throw new AccionNoPermitidaException("No se puede eliminar una fase activa o finalizada");
+        fases.remove(fase);
     }
     public void guardarFase(Fase fase) {
         for (int i = 0; i < fases.size(); ++i){
@@ -273,5 +261,14 @@ public class Proyecto {
             }
         }
         throw new TareaNotFoundException("La tarea no fue encontrada");
+    }
+
+    public List<Tarea> obtenerTareasSinIteracion() {
+        List<Tarea> nuevaLista = new ArrayList();
+        for (Tarea tarea : tareas) {
+            if (tarea.getIteracion() == 0)
+                nuevaLista.add(tarea);
+        }
+        return nuevaLista;
     }
 }

@@ -76,8 +76,8 @@ public class StepDefGestionarProyecto extends SpringTest {
     public void asignoLaFechaDeInicioA(String fecha) {
         Proyecto proyecto = proyectoService.getOne(id);
         try {
-            proyecto.setFechaDeInicio(fecha);
-        } catch (ParseException|RestriccionDeEstadoException e) {
+            proyecto.asignarFechaDeInicio(fecha);
+        } catch (ParseException|AccionNoPermitidaException e) {
             this.excepcion = e;
         }
     }
@@ -97,7 +97,7 @@ public class StepDefGestionarProyecto extends SpringTest {
         Proyecto proyecto = proyectoService.save(new Proyecto());
         proyecto.setTipoDeProyecto("Desarrollo");
         proyecto.setNombre("Proyecto X");
-        proyecto.setFechaDeInicio(fecha);
+        proyecto.asignarFechaDeInicio(fecha);
         excepcion = null;
         this.id = proyecto.getId();
     }
@@ -105,7 +105,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     @Then("se lanza un error indicando que la fecha de inicio no se puede modificar")
     public void seLanzaUnErrorIndicandoQueLaFechaDeInicioNoSePuedeModificar() {
         assertNotNull(excepcion);
-        assertEquals(excepcion.getClass(), RestriccionDeEstadoException.class);
+        assertEquals(excepcion.getClass(), AccionNoPermitidaException.class);
     }
 
     @Then("se lanza un error indicando que la fecha de inicio ingresada no es válida")
@@ -129,7 +129,7 @@ public class StepDefGestionarProyecto extends SpringTest {
         proyecto.setNombre("Proyecto Y");
         proyecto.setTipoDeProyecto("Desarrollo");
         try {
-            proyecto.setFechaDeInicio(fecha);
+            proyecto.asignarFechaDeInicio(fecha);
         } catch (ParseException e) {
             e.printStackTrace();
         }

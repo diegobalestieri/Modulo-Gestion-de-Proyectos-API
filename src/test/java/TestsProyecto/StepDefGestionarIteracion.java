@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class StepDefCrearIteracion extends SpringTest {
+public class StepDefGestionarIteracion extends SpringTest {
 
     private Proyecto proyecto;
 
@@ -176,9 +176,6 @@ public class StepDefCrearIteracion extends SpringTest {
         iteracion.asignarFechaDeFinalizacion("2020-04-20");
         String url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones";
 
-        for (String id_tarea : idsTareas) {
-            iteracion.agregarTarea(id_tarea);
-        }
         String requestJson = mapper.writeValueAsString(iteracion);
         iteracion_creada = iteracion;
 
@@ -190,9 +187,33 @@ public class StepDefCrearIteracion extends SpringTest {
                 .andReturn();
 
         String response = requestResult.getResponse().getContentAsString();
+        idIteracion = Long.parseLong(obtenerId(response));
+
+        for (int i = 0; i < idsTareas.size(); i++) {
+
+            url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones/" + idIteracion + "/tareas/?id_tarea=";
+
+            String id_tarea = idsTareas.get(i);
+            url += id_tarea;
+            requestResult = this.mockMvc.perform(post(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(requestJson))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+        }
+
+        url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones/" + idIteracion;
+
+        requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        response = requestResult.getResponse().getContentAsString();
         Iteracion nuevaIteracion = mapper.readValue(response,Iteracion.class);
         iteracion_obtenida = nuevaIteracion;
-        idIteracion = nuevaIteracion.getId();
     }
 
     @When("consulto las tareas de la iteracion")
@@ -254,7 +275,7 @@ public class StepDefCrearIteracion extends SpringTest {
 
         MvcResult requestResult = this.mockMvc.perform(get(url)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andReturn();
 
         String response = requestResult.getResponse().getContentAsString();
@@ -263,4 +284,33 @@ public class StepDefCrearIteracion extends SpringTest {
 
     }
 
+    @When("elimino las tareas de la iteracion")
+    public void eliminoLasTareasDeLaIteracion() throws Exception {
+        String url;
+
+        for (int i = 0; i < idsTareas.size(); ++i) {
+            url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones/" + idIteracion +
+                    "/tareas/" + idsTareas.get(i);
+            MvcResult requestResult = this.mockMvc.perform(delete(url)
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+        }
+    }
+
+    @Then("la iteracion no cuenta con las tareas cargadas")
+    public void laIteracionNoCuentaConLasTareasCargadas() throws Exception {
+        String url = "/proyectos/" + idProyecto + "/fases/" + idFase + "/iteraciones/" + idIteracion;
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = requestResult.getResponse().getContentAsString();
+        Iteracion nuevaIteracion = mapper.readValue(response,Iteracion.class);
+        assertTrue(nuevaIteracion.getIdsTareas().isEmpty());
+
+
+    }
 }
