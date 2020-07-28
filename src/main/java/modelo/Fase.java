@@ -2,6 +2,8 @@ package modelo;
 
 import excepciones.AccionNoPermitidaException;
 import excepciones.IteracionNotFoundException;
+import modelo.Estado.EstadoFase;
+import modelo.Estado.EstadoIteracion;
 
 import javax.persistence.*;
 import java.text.ParseException;
@@ -18,6 +20,8 @@ public class Fase {
     private Long id;
     @Embedded
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
+
+    private EstadoFase estado = EstadoFase.CREADA;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Iteracion> iteraciones = new ArrayList<>();
@@ -61,8 +65,16 @@ public class Fase {
         registroDeDatos.asignarFechaDeFinalizacion(fecha_de_finalizacion);
     }
 
-    public boolean agregarIteracion(Iteracion iteracion) {
-        return this.iteraciones.add(iteracion);
+    public EstadoFase getEstado() { return estado; }
+
+    public void setEstado(EstadoFase nuevoEstado) { estado = nuevoEstado;}
+
+
+    public void agregarIteracion(Iteracion iteracion) {
+        if (estado.equals(EstadoFase.FINALIZADA))
+            throw new AccionNoPermitidaException("La fase se encuentra finalizada");
+        setEstado(EstadoFase.ACTIVA);
+        this.iteraciones.add(iteracion);
     }
 
     public List<Iteracion> obtenerIteraciones() { return this.iteraciones;  }
@@ -87,13 +99,12 @@ public class Fase {
     }
 
     public void eliminarIteracion(long idIteracion) {
-        for (int i = 0; i < iteraciones.size(); ++i){
-            Iteracion iteracion = iteraciones.get(i);
-            if (iteracion.getId().equals(idIteracion)){
-                iteraciones.remove(i);
-                return;
-            }
-        }
+        if (!estado.equals(EstadoFase.ACTIVA))
+            throw new AccionNoPermitidaException("La fase no se encuentra activa");
+        Iteracion iteracion = obtenerIteracion(idIteracion);
+        if (!iteracion.getEstado().equals(EstadoIteracion.CREADA))
+            throw new AccionNoPermitidaException("No se puede eliminar una iteracion activa o finalizada");
+        iteraciones.remove(iteracion);
     }
     /*
     public void borrarIteracion(long iteracionId) throws AccionNoPermitidaException {

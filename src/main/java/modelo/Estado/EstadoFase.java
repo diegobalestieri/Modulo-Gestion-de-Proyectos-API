@@ -2,16 +2,15 @@ package modelo.Estado;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum EstadoTarea {
+public enum EstadoFase {
 
-    NO_INICIADA("No iniciada"),
-    EN_CURSO("En curso"),
-    BLOQUEADA("Bloqueada"),
+    CREADA("Creada"),
+    ACTIVA("Activa"),
     FINALIZADA("Finalizada");
 
     protected String nombre;
 
-    EstadoTarea(String nombre) { this.nombre = nombre; }
+    EstadoFase(String nombre) { this.nombre = nombre; }
 
     @JsonValue
     public String toValue() {
