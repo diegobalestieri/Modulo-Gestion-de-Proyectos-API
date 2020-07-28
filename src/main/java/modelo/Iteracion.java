@@ -105,7 +105,7 @@ public class Iteracion {
         return listaADevolver;
     }
 
-    public void eliminarTarea(long idTarea) {
+    public void eliminarTarea(long idTarea,boolean sePasaAOtraIteracion) { // el boolean es para el tema de tickets!
         if (!estado.equals(EstadoIteracion.ACTIVA))
             throw new AccionNoPermitidaException("La iteracion no se encuentra activa");
         if (!idsTareas.contains(idTarea))

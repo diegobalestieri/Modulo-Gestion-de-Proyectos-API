@@ -71,6 +71,9 @@ public class Fase {
 
 
     public void agregarIteracion(Iteracion iteracion) {
+        long indiceDeIteracion = iteraciones.size()+1;
+        String nombreIteracion = "Iteracion " + indiceDeIteracion;
+        iteracion.setNombre(nombreIteracion);
         if (estado.equals(EstadoFase.FINALIZADA))
             throw new AccionNoPermitidaException("La fase se encuentra finalizada");
         setEstado(EstadoFase.ACTIVA);

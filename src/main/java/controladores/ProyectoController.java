@@ -52,7 +52,7 @@ public class ProyectoController {
     ResponseEntity<?> borrarProyecto(@PathVariable(value="id") Long id){
         try{
             servicio.deleteById(id);
-        } catch (ProyectoNotFoundException e){
+        } catch (ProyectoNotFoundException | AccionNoPermitidaException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Proyecto eliminado correctamente", HttpStatus.OK);
@@ -234,7 +234,7 @@ public class ProyectoController {
                                              @PathVariable("id_iteracion") Long iteracionId, @RequestParam long id_tarea) {
         try{
             servicio.agregarTareaAIteracion(proyectoId, faseId,iteracionId,id_tarea);
-        }catch (ProyectoNotFoundException | FaseNotFoundException | TareaNotFoundException e){
+        }catch (ProyectoNotFoundException | FaseNotFoundException | TareaNotFoundException | AccionNoPermitidaException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
         return new ResponseEntity<String>("Tarea cargada a la iteracion correctamente", HttpStatus.OK);
