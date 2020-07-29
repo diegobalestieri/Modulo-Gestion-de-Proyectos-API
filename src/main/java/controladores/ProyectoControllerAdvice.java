@@ -25,6 +25,6 @@ public class ProyectoControllerAdvice {
         //if (e.getCause().getClass().getName().contains("ParseError")) {
            // return new ResponseEntity<Error>(new Error("Error de parseo", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         //}
-        return new ResponseEntity<Error>(new Error("Error en el parseo de fechas", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<Error>(new Error(e.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 }
