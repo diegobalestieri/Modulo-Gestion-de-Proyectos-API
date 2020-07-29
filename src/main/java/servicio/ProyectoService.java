@@ -2,6 +2,7 @@ package servicio;
 
 import excepciones.*;
 import modelo.Estado.EstadoProyecto;
+import modelo.Estado.EstadoTarea;
 import modelo.Iteracion;
 import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,7 +208,7 @@ public class ProyectoService {
         Fase fase = proyecto.obtenerFase(faseId);
         if (tarea.getIteracion() != 0) {
             Iteracion iteracionAnterior = fase.obtenerIteracion(tarea.getIteracion());
-            iteracionAnterior.eliminarTarea(tareaId,true);
+            iteracionAnterior.eliminarTarea(tareaId);
         }
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
         iteracion.agregarTarea(tareaId);
@@ -221,7 +222,7 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
-        iteracion.eliminarTarea(tareaId,false);
+        iteracion.eliminarTarea(tareaId);
         proyecto.obtenerTarea(tareaId).setIteracion(0);
         save(proyecto);
 
@@ -231,8 +232,28 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        List<Tarea> tareasDeLaIteracion = obtenerTareasDeIteracion(proyectoId,faseId,iteracionId);
+        eliminarTareasDeLaIteracion(iteracion,tareasDeLaIteracion);
         iteracion.finalizar();
         save(proyecto);
+    }
+
+    public void eliminarTareasDeLaIteracion(Iteracion iteracion, List<Tarea> tareasDeLaIteracion) {
+        for (Tarea tarea : tareasDeLaIteracion) {
+            if (!tarea.getEstado().equals(EstadoTarea.FINALIZADA)) {
+                iteracion.eliminarTarea(tarea.getId());
+                tarea.setIteracion(0);
+            }
+        }
+    }
+
+    public List<Tarea> obtenerTareasDeResponsable(String responsableId) {
+        List<Tarea> listaADevolver = new ArrayList();
+        for (Proyecto proyecto : findAll()) {
+            List<Tarea> tareasDelProyecto = proyecto.obtenerTareasDelResponsable(responsableId);
+            listaADevolver.addAll(tareasDelProyecto);
+        }
+        return listaADevolver;
     }
 
 

@@ -66,6 +66,10 @@ public class Tarea {
         this.estado = estado;
     }
 
+    public String getResponsable() { return responsable;}
+
+    public void setResponsable(String nuevoResponsable) { responsable = nuevoResponsable; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
