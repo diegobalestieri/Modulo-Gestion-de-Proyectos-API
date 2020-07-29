@@ -59,10 +59,7 @@ public class Iteracion {
 
     public String getNombre() { return registroDeDatos.getNombre(); }
 
-    public void setNombre(String nombre) {
-        if (nombre == null || nombre.equals(""))
-            throw new ParametrosInvalidosException("No se puede crear una iteracion sin nombre.");
-        registroDeDatos.setNombre(nombre);  }
+    public void setNombre(String nombre) { registroDeDatos.setNombre(nombre);  }
 
     public Date getFechaDeInicio() {
         return registroDeDatos.getFechaDeInicio();

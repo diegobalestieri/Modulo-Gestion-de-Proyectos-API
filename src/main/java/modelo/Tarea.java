@@ -36,7 +36,7 @@ public class Tarea {
 
     public void setNombre(String nombre) {
         if (nombre == null || nombre.equals(""))
-            throw new ParametrosInvalidosException("No se puede crear una tarea sin nombre.");
+            throw new ParametrosInvalidosException("No se puede crear una tarea sin nombre");
         this.registroDeDatos.setNombre(nombre);}
     public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
     public void setFechaDeInicio(Date fechaDeInicio){ registroDeDatos.setFechaDeInicio(fechaDeInicio); }

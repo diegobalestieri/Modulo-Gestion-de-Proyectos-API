@@ -2,7 +2,7 @@ package excepciones;
 
 import org.springframework.http.HttpStatus;
 
-public class ParametrosInvalidosException extends RequestException {
+public class ParametrosInvalidosException extends CustomException {
 
     public ParametrosInvalidosException(String mensaje) {
         super(mensaje);

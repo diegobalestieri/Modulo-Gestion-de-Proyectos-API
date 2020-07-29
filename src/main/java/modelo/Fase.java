@@ -23,6 +23,7 @@ public class Fase {
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
 
     private EstadoFase estado = EstadoFase.CREADA;
+    private long cantidadDeIteraciones = 0;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Iteracion> iteraciones = new ArrayList<>();
@@ -43,8 +44,9 @@ public class Fase {
 
     public void setNombre(String nombre) {
         if (nombre == null || nombre.equals(""))
-            throw new ParametrosInvalidosException("No se puede crear una fase sin nombre.");
-        registroDeDatos.setNombre(nombre);  }
+            throw new ParametrosInvalidosException("No se puede crear una fase sin nombre");
+        registroDeDatos.setNombre(nombre);
+    }
 
     public String getDescripcion() { return registroDeDatos.getDescripcion(); }
 
@@ -73,15 +75,19 @@ public class Fase {
 
     public void setEstado(EstadoFase nuevoEstado) { estado = nuevoEstado;}
 
+    public long getCantidadDeIteraciones() { return cantidadDeIteraciones;}
+
+    public void setCantidadDeIteraciones(long nuevaCantidad) { cantidadDeIteraciones = nuevaCantidad; }
 
     public void agregarIteracion(Iteracion iteracion) {
-        long indiceDeIteracion = iteraciones.size()+1;
+        long indiceDeIteracion = cantidadDeIteraciones+1;
         String nombreIteracion = "Iteracion " + indiceDeIteracion;
         iteracion.setNombre(nombreIteracion);
         if (estado.equals(EstadoFase.FINALIZADA))
             throw new AccionNoPermitidaException("La fase se encuentra finalizada");
         setEstado(EstadoFase.ACTIVA);
         this.iteraciones.add(iteracion);
+        cantidadDeIteraciones++;
     }
 
     public List<Iteracion> obtenerIteraciones() { return this.iteraciones;  }
