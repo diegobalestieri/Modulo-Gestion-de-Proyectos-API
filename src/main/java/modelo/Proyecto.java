@@ -271,4 +271,13 @@ public class Proyecto {
         }
         return nuevaLista;
     }
+
+    public List<Tarea> obtenerTareasDelResponsable(String responsableId) {
+        List<Tarea> listaADevolver = new ArrayList();
+        for (Tarea tarea : tareas) {
+            if (responsableId.equals(tarea.getResponsable()))
+                listaADevolver.add(tarea);
+        }
+        return listaADevolver;
+    }
 }

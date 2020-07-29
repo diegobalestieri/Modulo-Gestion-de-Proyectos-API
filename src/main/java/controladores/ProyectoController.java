@@ -260,6 +260,16 @@ public class ProyectoController {
         return new ResponseEntity<String>("Iteracion finalizada correctamente", HttpStatus.OK);
     }
 
+    //PARA RECURSOS: RESPONSABLE DE TAREAS
+
+    @GetMapping("responsables/{legajo_responsable}/tareas")
+    ResponseEntity<?> obtenerTareasDeResponsable(@PathVariable("legajo_responsable") String responsableId) {
+        try{
+            return new ResponseEntity<List<Tarea>>(servicio.obtenerTareasDeResponsable(responsableId), HttpStatus.OK);
+        } catch (CustomException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+    }
 
 
 

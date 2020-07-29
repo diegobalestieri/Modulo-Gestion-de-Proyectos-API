@@ -247,5 +247,14 @@ public class ProyectoService {
         }
     }
 
+    public List<Tarea> obtenerTareasDeResponsable(String responsableId) {
+        List<Tarea> listaADevolver = new ArrayList();
+        for (Proyecto proyecto : findAll()) {
+            List<Tarea> tareasDelProyecto = proyecto.obtenerTareasDelResponsable(responsableId);
+            listaADevolver.addAll(tareasDelProyecto);
+        }
+        return listaADevolver;
+    }
+
 
 }
