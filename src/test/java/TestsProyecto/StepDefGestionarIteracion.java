@@ -196,7 +196,7 @@ public class StepDefGestionarIteracion extends SpringTest {
 
             String id_tarea = idsTareas.get(i);
             url += id_tarea;
-            requestResult = this.mockMvc.perform(post(url)
+            requestResult = this.mockMvc.perform(put(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestJson))
                     .andExpect(status().isOk())

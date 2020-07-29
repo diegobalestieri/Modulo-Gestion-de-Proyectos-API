@@ -229,7 +229,7 @@ public class ProyectoController {
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
-    @PostMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
+    @PutMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
     ResponseEntity<?> agregarTareaAIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
                                              @PathVariable("id_iteracion") Long iteracionId, @RequestParam long id_tarea) {
         try{
@@ -260,6 +260,16 @@ public class ProyectoController {
         return new ResponseEntity<String>("Iteracion finalizada correctamente", HttpStatus.OK);
     }
 
+    //PARA RECURSOS: RESPONSABLE DE TAREAS
+
+    @GetMapping("responsables/{legajo_responsable}/tareas")
+    ResponseEntity<?> obtenerTareasDeResponsable(@PathVariable("legajo_responsable") String responsableId) {
+        try{
+            return new ResponseEntity<List<Tarea>>(servicio.obtenerTareasDeResponsable(responsableId), HttpStatus.OK);
+        } catch (CustomException e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+    }
 
 
 

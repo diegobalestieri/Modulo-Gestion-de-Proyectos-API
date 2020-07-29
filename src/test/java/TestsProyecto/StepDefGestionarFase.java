@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class StepDefCrearFase extends SpringTest{
+public class StepDefGestionarFase extends SpringTest{
 
     private Proyecto proyecto;
     private List<String> ids = new ArrayList<>();
@@ -117,7 +117,7 @@ public class StepDefCrearFase extends SpringTest{
                 proyecto = new Proyecto();
                 proyecto.setTipoDeProyecto("Implementación");
             }
-            proyecto.setNombre(list.get(i).get("nombre"));
+            proyecto.setNombre("Proyecto de Desarrollo");
             proyecto.setDescripcion(list.get(i).get("descripcion"));
             proyecto.setEstado("Activo");
             String requestJson = mapper.writeValueAsString(proyecto);

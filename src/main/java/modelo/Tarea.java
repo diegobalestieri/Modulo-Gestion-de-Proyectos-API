@@ -1,5 +1,6 @@
 package modelo;
 
+import excepciones.ParametrosInvalidosException;
 import modelo.Estado.EstadoTarea;
 
 import javax.persistence.*;
@@ -33,7 +34,10 @@ public class Tarea {
         return registroDeDatos.getNombre();
     }
 
-    public void setNombre(String nombre) { this.registroDeDatos.setNombre(nombre);}
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.equals(""))
+            throw new ParametrosInvalidosException("No se puede crear una tarea sin nombre");
+        this.registroDeDatos.setNombre(nombre);}
     public void setDescripcion(String descripcion) { this.registroDeDatos.setDescripcion(descripcion); }
     public void setFechaDeInicio(Date fechaDeInicio){ registroDeDatos.setFechaDeInicio(fechaDeInicio); }
     public void setFechaDeFinalizacion(Date fechaDeFinalizacion){
@@ -65,6 +69,10 @@ public class Tarea {
     public void setEstado(EstadoTarea estado) {
         this.estado = estado;
     }
+
+    public String getResponsable() { return responsable;}
+
+    public void setResponsable(String nuevoResponsable) { responsable = nuevoResponsable; }
 
     @Override
     public boolean equals(Object o) {

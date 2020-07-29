@@ -57,7 +57,11 @@ public class Proyecto {
         return registroDeDatos.getNombre();
     }
 
-    public void setNombre(String nombre) { registroDeDatos.setNombre(nombre); }
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.equals(""))
+            throw new ParametrosInvalidosException("No se puede crear un proyecto sin nombre");
+        registroDeDatos.setNombre(nombre);
+    }
 
     public TipoProyecto getTipoDeProyecto() {
         return tipoDeProyecto;
@@ -270,5 +274,14 @@ public class Proyecto {
                 nuevaLista.add(tarea);
         }
         return nuevaLista;
+    }
+
+    public List<Tarea> obtenerTareasDelResponsable(String responsableId) {
+        List<Tarea> listaADevolver = new ArrayList();
+        for (Tarea tarea : tareas) {
+            if (responsableId.equals(tarea.getResponsable()))
+                listaADevolver.add(tarea);
+        }
+        return listaADevolver;
     }
 }
