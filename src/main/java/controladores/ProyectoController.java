@@ -229,7 +229,7 @@ public class ProyectoController {
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
     }
-    @PostMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
+    @PutMapping("proyectos/{id_proyecto}/fases/{id_fase}/iteraciones/{id_iteracion}/tareas")
     ResponseEntity<?> agregarTareaAIteracion(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId,
                                              @PathVariable("id_iteracion") Long iteracionId, @RequestParam long id_tarea) {
         try{

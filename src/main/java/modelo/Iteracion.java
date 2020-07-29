@@ -54,7 +54,7 @@ public class Iteracion {
 
     public List<Long> obtenerTareas() { return new ArrayList<>(this.idsTareas);    }
 
-    public boolean contiene(String idDeTarea) { return idsTareas.contains(idDeTarea); }
+    public boolean contieneLaTarea(long idDeTarea) { return idsTareas.contains(idDeTarea); }
 
     public String getNombre() { return registroDeDatos.getNombre(); }
 
@@ -105,11 +105,12 @@ public class Iteracion {
         return listaADevolver;
     }
 
-    public void eliminarTarea(long idTarea,boolean sePasaAOtraIteracion) { // el boolean es para el tema de tickets!
+    public void eliminarTarea(long idTarea) {
         if (!estado.equals(EstadoIteracion.ACTIVA))
             throw new AccionNoPermitidaException("La iteracion no se encuentra activa");
         if (!idsTareas.contains(idTarea))
             throw new TareaNotFoundException("La tarea no se encontraba cargada a esta iteracion");
         idsTareas.remove(idTarea);
     }
+
 }
