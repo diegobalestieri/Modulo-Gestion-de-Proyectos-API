@@ -1,6 +1,7 @@
 package servicio;
 
 import excepciones.*;
+import modelo.Estado.EstadoProyecto;
 import modelo.Iteracion;
 import modelo.Tarea;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,9 @@ public class ProyectoService {
     }
 
     public void deleteById(long id) {
+        Proyecto proyecto = getOne(id);
+        if (!proyecto.getEstado().equals(EstadoProyecto.NO_INICIADO))
+            throw new AccionNoPermitidaException("No se puede eliminar un proyecto que ya ha sido iniciado");
         proyectosRepository.deleteById(id);
     }
 
@@ -78,6 +82,8 @@ public class ProyectoService {
 
     public Fase crearFase(Long proyectoId, Fase fase) throws FechaInvalidaException, ParseException {
         Proyecto proyecto = getOne(proyectoId);
+        if (!proyecto.getEstado().equals(EstadoProyecto.ACTIVO))
+            throw new AccionNoPermitidaException("El proyecto no se encuentra activo");
         proyecto.crearFase(fase);
         Proyecto proyectoGuardado = proyectosRepository.save(proyecto);
         List <Fase> fases = proyectoGuardado.getFases();
@@ -164,9 +170,9 @@ public class ProyectoService {
     public Iteracion crearIteracion(Long proyectoId, Long faseId,Iteracion iteracion) {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
-        List <Iteracion> iteraciones = fase.obtenerIteraciones();
         fase.agregarIteracion(iteracion);
         proyecto = proyectosRepository.save(proyecto);
+        List <Iteracion> iteraciones = fase.obtenerIteraciones();
         return iteraciones.get(iteraciones.size()-1);
     }
 
@@ -197,11 +203,12 @@ public class ProyectoService {
 
     public Iteracion agregarTareaAIteracion(Long proyectoId, Long faseId, Long iteracionId, Long tareaId) {
         Tarea tarea = getOne(proyectoId).obtenerTarea(tareaId);
-        if (tarea.getIteracion() != 0) {
-            throw new AccionNoPermitidaException("La tarea ya está asignada a una iteración");
-        }
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
+        if (tarea.getIteracion() != 0) {
+            Iteracion iteracionAnterior = fase.obtenerIteracion(tarea.getIteracion());
+            iteracionAnterior.eliminarTarea(tareaId,true);
+        }
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
         iteracion.agregarTarea(tareaId);
         tarea.setIteracion(iteracionId);
@@ -214,7 +221,7 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
-        iteracion.eliminarTarea(tareaId);
+        iteracion.eliminarTarea(tareaId,false);
         proyecto.obtenerTarea(tareaId).setIteracion(0);
         save(proyecto);
 
