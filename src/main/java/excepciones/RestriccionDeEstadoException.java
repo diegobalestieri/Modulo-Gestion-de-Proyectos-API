@@ -2,7 +2,7 @@ package excepciones;
 
 import org.springframework.http.HttpStatus;
 
-public class RestriccionDeEstadoException extends RequestException {
+public class RestriccionDeEstadoException extends CustomException {
 
     public RestriccionDeEstadoException(String mensaje) {
         super(mensaje);

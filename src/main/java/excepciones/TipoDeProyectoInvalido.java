@@ -1,6 +1,6 @@
 package excepciones;
 
-public class TipoDeProyectoInvalido extends Exception {
+public class TipoDeProyectoInvalido extends CustomException {
     public TipoDeProyectoInvalido(String mensaje) {
         super(mensaje);
     }
