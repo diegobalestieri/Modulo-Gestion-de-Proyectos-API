@@ -51,6 +51,7 @@ public class StepDefGestionarIteracion extends SpringTest {
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre("Proyecto ERP");
         proyecto.setTipoDeProyecto("Implementación");
+        proyecto.setEstado("Activo");
         String requestJson = mapper.writeValueAsString(proyecto);
         MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -119,6 +119,7 @@ public class StepDefCrearFase extends SpringTest{
             }
             proyecto.setNombre(list.get(i).get("nombre"));
             proyecto.setDescripcion(list.get(i).get("descripcion"));
+            proyecto.setEstado("Activo");
             String requestJson = mapper.writeValueAsString(proyecto);
             System.out.print(requestJson);
             MvcResult requestResult = this.mockMvc.perform(post("/proyectos")

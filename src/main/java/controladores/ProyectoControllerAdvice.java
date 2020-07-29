@@ -1,6 +1,7 @@
 package controladores;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import excepciones.CustomException;
 import excepciones.FechaInvalidaException;
 import modelo.Error;
 import org.springframework.http.HttpStatus;
@@ -11,8 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ProyectoControllerAdvice {
 
-    @ExceptionHandler(FechaInvalidaException.class)
-    public ResponseEntity<Error> handleFechaInvalidaException(FechaInvalidaException e){
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<Error> handleFechaInvalidaException(CustomException e){
         return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
     }
 
