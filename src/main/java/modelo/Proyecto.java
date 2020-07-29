@@ -57,7 +57,11 @@ public class Proyecto {
         return registroDeDatos.getNombre();
     }
 
-    public void setNombre(String nombre) { registroDeDatos.setNombre(nombre); }
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.equals(""))
+            throw new ParametrosInvalidosException("No se puede crear un proyecto sin nombre");
+        registroDeDatos.setNombre(nombre);
+    }
 
     public TipoProyecto getTipoDeProyecto() {
         return tipoDeProyecto;

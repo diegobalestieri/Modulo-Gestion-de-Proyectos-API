@@ -1,6 +1,7 @@
 package modelo;
 
 import excepciones.AccionNoPermitidaException;
+import excepciones.ParametrosInvalidosException;
 import excepciones.RestriccionDeEstadoException;
 import excepciones.TareaNotFoundException;
 import modelo.Estado.EstadoIteracion;
