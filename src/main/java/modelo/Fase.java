@@ -2,6 +2,7 @@ package modelo;
 
 import excepciones.AccionNoPermitidaException;
 import excepciones.IteracionNotFoundException;
+import excepciones.ParametrosInvalidosException;
 import modelo.Estado.EstadoFase;
 import modelo.Estado.EstadoIteracion;
 
@@ -40,7 +41,10 @@ public class Fase {
 
     public String getNombre() { return registroDeDatos.getNombre(); }
 
-    public void setNombre(String nombre) { registroDeDatos.setNombre(nombre);  }
+    public void setNombre(String nombre) {
+        if (nombre == null || nombre.equals(""))
+            throw new ParametrosInvalidosException("No se puede crear una fase sin nombre.");
+        registroDeDatos.setNombre(nombre);  }
 
     public String getDescripcion() { return registroDeDatos.getDescripcion(); }
 

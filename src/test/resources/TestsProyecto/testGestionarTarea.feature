@@ -1,34 +1,25 @@
-Feature: Creacion de Tarea
+Feature: Gestion de tareas
 
-  Background:
-    Given tengo una tarea creada con nombre "Validar requisitos"
+	Background:
+		Given tengo un proyecto creado
 
-  Scenario: Verifico los datos de la tarea
-    When pregunto el nombre y el estado de la tarea
-    Then el nombre de la tarea es "Validar requisitos"
-    And el estado de la tarea es "No iniciada"
+	Scenario: Crear una tarea en el proyect Backlog
+		When creo una tarea con fecha de finalización, nombre, descripción y prioridad
+			| fecha de fin | nombre | descripcion | prioridad |
+			| 2020-10-20 | Implementar fases | Agregar la funcionalidad de crear fases | Muy alta |
+		Then la tarea se agrega al proyect backlog
+		And la tarea contiene los datos correspondientes
+		And su estado es “No iniciado”
+		And su fecha de creación es la del día de la fecha en que fue creada
 
+	Scenario: Modificar datos de una tarea
+		Given cuento con una tarea cargada en el proyecto
+		When modifico los siguientes datos de la tarea
+			| fecha de fin | nombre | descripcion | prioridad |
+			| 2020-09-22 | Definir alcance | Definir el alcance del sprint | Alta |
+		Then la tarea contiene los datos correspondientes
 
-  Scenario: Modifico el estado de la tarea
-    When modifico el estado de la tarea a "En curso"
-    Then el estado de la tarea es "En curso"
-
-  Scenario: Modifico los datos de la tarea
-    When modifico el nombre de la tarea a "Iniciar fase de Desarrollo"
-    And modifico la descripcion de la tarea a "Empieza el desarrollo de codigo"
-    Then el nombre de la tarea es "Iniciar fase de Desarrollo"
-    And la descripcion de la tarea es "Empieza el desarrollo de codigo"
-
-  Scenario: Asigno una fecha de finalizacion valida a una tarea
-    When asigno la fecha de finalizacion de la tarea a "2020-07-25"
-    Then la tarea tiene la fecha de finalizacion correcta
-
-  Scenario: Asigno una fecha de finalizacion erronea a una tarea
-    When asigno la fecha de finalizacion de la tarea a "202x-07-19"
-    Then se lanza un error indicando que la fecha ingresada no es valida
-    And la fecha de finalizacion de la tarea no se modificó
-
-  Scenario: Asigno una fecha de finalizacion a una tarea anterior a la de su creacion
-    When asigno la fecha de finalizacion de la tarea a "2020-07-13"
-    Then se lanza un error indicando que la fecha de finalizacion no puede ser anterior a la de inicio
-    And la fecha de finalizacion de la tarea no se modificó
+	Scenario: Eliminar una tarea
+		Given cuento con una tarea cargada en el proyecto
+		When elimino la tarea
+		Then la tarea ya no se encuentra en el proyecto
