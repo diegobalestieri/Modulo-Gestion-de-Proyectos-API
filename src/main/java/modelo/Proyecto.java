@@ -26,10 +26,9 @@ public class Proyecto {
     private Long id;
     @Enumerated(EnumType.STRING)
     private TipoProyecto tipoDeProyecto;
-
     @Enumerated(EnumType.STRING)
     private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
-
+    private String liderDeProyecto;
     //Solo si es de implementacion
     private String cliente;
     //Solo si es de desarrollo
@@ -289,5 +288,13 @@ public class Proyecto {
     public void rearmarFase(Fase faseAGuardar, Fase faseAnterior) {
         faseAGuardar.setIteraciones(faseAnterior.obtenerIteraciones());
         faseAGuardar.setCantidadDeIteraciones(faseAnterior.getCantidadDeIteraciones());
+    }
+
+    public String getLiderDeProyecto() {
+        return liderDeProyecto;
+    }
+
+    public void setLiderDeProyecto(String liderDeProyecto) {
+        this.liderDeProyecto = liderDeProyecto;
     }
 }
