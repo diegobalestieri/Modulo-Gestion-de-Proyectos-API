@@ -37,7 +37,7 @@ public class Proyecto {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tarea> tareas = new ArrayList<>();
 
     @Embedded
@@ -250,7 +250,6 @@ public class Proyecto {
         for (int i = 0; i < tareas.size(); ++i){
             Tarea tareaActual = tareas.get(i);
             if (tareaActual.getId().equals(tarea.getId())){
-                tarea.setId(tareaActual.getId());
                 tareas.set(i, tarea);
                 return;
             }

@@ -139,13 +139,15 @@ public class Fase {
         if (registroDeDatos.getFechaDeInicio() == null && registroDeDatos.getFechaDeFinalizacion() == null)
             return;
         Date fechaDeInicioDeIteracion = iteracion.getFechaDeInicio();
-        if (fechaDeInicioDeIteracion != null && registroDeDatos.getFechaDeInicio() != null) {
-            if (fechaDeInicioDeIteracion.compareTo(registroDeDatos.getFechaDeInicio()) < 0)
+        Date fechaDeInicioDeFase = registroDeDatos.getFechaDeInicio();
+        if (fechaDeInicioDeIteracion != null && fechaDeInicioDeFase != null) {
+            if (fechaDeInicioDeIteracion.compareTo(fechaDeInicioDeFase) < 0)
                 throw new FechaInvalidaException("La fecha de inicio de una iteración no puede ser anterior a la de la fase que la contiene");
         }
         Date fechaDeFinalizacionDeIteracion = iteracion.getFechaDeFinalizacion();
-        if (fechaDeFinalizacionDeIteracion != null && registroDeDatos.getFechaDeFinalizacion() != null) {
-            if (fechaDeFinalizacionDeIteracion.compareTo(registroDeDatos.getFechaDeInicio()) > 0)
+        Date fechaDeFinalizacionDeFase = registroDeDatos.getFechaDeFinalizacion();
+        if (fechaDeFinalizacionDeIteracion != null && fechaDeFinalizacionDeFase != null) {
+            if (fechaDeFinalizacionDeIteracion.compareTo(fechaDeFinalizacionDeFase) > 0)
                 throw new FechaInvalidaException("La fecha de finalización de una iteración no puede ser posterior a la de la fase que la contiene");
         }
     }

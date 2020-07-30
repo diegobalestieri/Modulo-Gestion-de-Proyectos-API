@@ -26,7 +26,7 @@ public class Tarea {
     private long id_iteracion = 0;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="ids_tickets",joinColumns = @JoinColumn(name="ticket_id"))
+    @CollectionTable(name="ids_tickets",joinColumns = @JoinColumn(name="tarea_id"))
     private List<Long> idsTickets = new ArrayList<>();
 
     public Tarea(){
