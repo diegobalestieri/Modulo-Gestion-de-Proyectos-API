@@ -1,5 +1,6 @@
 package modelo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import excepciones.AccionNoPermitidaException;
 import excepciones.ParametrosInvalidosException;
 import excepciones.RestriccionDeEstadoException;
@@ -22,6 +23,7 @@ public class Iteracion {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="ids_tareas",joinColumns = @JoinColumn(name="iteracion_id"))
+    @JsonIgnore
     private List<Long> idsTareas = new ArrayList<>();
 
     private EstadoIteracion estado = EstadoIteracion.CREADA;
