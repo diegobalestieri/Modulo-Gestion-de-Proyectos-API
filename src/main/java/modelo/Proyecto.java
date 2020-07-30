@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import excepciones.*;
 import modelo.Estado.EstadoFase;
 import modelo.Estado.EstadoProyecto;
+import modelo.Estado.EstadoTarea;
 
 import javax.persistence.*;
 import java.text.DateFormat;
@@ -209,15 +210,15 @@ public class Proyecto {
     }
     public void borrarFase(Long faseId) {
         Fase fase = obtenerFase(faseId);
-        if (!fase.getEstado().equals(EstadoFase.CREADA))
-            throw new AccionNoPermitidaException("No se puede eliminar una fase activa o finalizada");
+        if (!fase.obtenerIteraciones().isEmpty())
+            throw new AccionNoPermitidaException("No se puede eliminar una fase que cuenta con iteraciones cargadas");
         fases.remove(fase);
     }
     public void guardarFase(Fase fase) {
         for (int i = 0; i < fases.size(); ++i){
             Fase faseActual = fases.get(i);
             if (faseActual.getId().equals(fase.getId())){
-                fase.setId(faseActual.getId());
+                rearmarFase(fase,faseActual);
                 fases.set(i, fase);
                 return;
             }
@@ -270,7 +271,7 @@ public class Proyecto {
     public List<Tarea> obtenerTareasSinIteracion() {
         List<Tarea> nuevaLista = new ArrayList();
         for (Tarea tarea : tareas) {
-            if (tarea.getIteracion() == 0)
+            if (tarea.getIteracion() == 0 && !tarea.getEstado().equals(EstadoTarea.FINALIZADA))
                 nuevaLista.add(tarea);
         }
         return nuevaLista;
@@ -283,5 +284,10 @@ public class Proyecto {
                 listaADevolver.add(tarea);
         }
         return listaADevolver;
+    }
+
+    public void rearmarFase(Fase faseAGuardar, Fase faseAnterior) {
+        faseAGuardar.setIteraciones(faseAnterior.obtenerIteraciones());
+        faseAGuardar.setCantidadDeIteraciones(faseAnterior.getCantidadDeIteraciones());
     }
 }

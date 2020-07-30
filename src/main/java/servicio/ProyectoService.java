@@ -206,16 +206,17 @@ public class ProyectoService {
         Tarea tarea = getOne(proyectoId).obtenerTarea(tareaId);
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
-        if (tarea.getIteracion() != 0) {
-            Iteracion iteracionAnterior = fase.obtenerIteracion(tarea.getIteracion());
+        Long idIteracionAnterior = tarea.getIteracion();
+        if (idIteracionAnterior != 0 && !idIteracionAnterior.equals(iteracionId)) {
+            Iteracion iteracionAnterior = fase.obtenerIteracion(idIteracionAnterior);
             iteracionAnterior.eliminarTarea(tareaId);
         }
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
         iteracion.agregarTarea(tareaId);
         tarea.setIteracion(iteracionId);
         Proyecto entidadProyecto = proyectosRepository.save(proyecto);
-        List <Iteracion> iteraciones = entidadProyecto.obtenerFase(faseId).obtenerIteraciones();
-        return iteraciones.get(iteraciones.size()-1);
+        iteracion = entidadProyecto.obtenerFase(faseId).obtenerIteracion(iteracionId);
+        return iteracion;
     }
 
     public void borrarTareaDeIteracion(Long proyectoId, Long faseId,Long iteracionId, Long tareaId) {
