@@ -1,6 +1,5 @@
 package TestsProyecto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -22,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.Long.parseLong;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,12 +33,7 @@ public class StepDefGestionarTarea extends SpringTest{
     private String urlPostTarea = "/proyectos/{id}/tareas";
     private List<Map<String, String>> list;
     private Tarea auxTarea;
-    public void setup() {
-        mapper.setDateFormat(this.df);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
-    }
+
 
     @Given("tengo un proyecto creado")
     public void tengoUnProyectoCreado() throws Exception {
@@ -200,5 +193,56 @@ public class StepDefGestionarTarea extends SpringTest{
         String response = requestResult.getResponse().getContentAsString();
         Tarea nuevaTarea = mapper.readValue(response,Tarea.class);
         assertTrue(nuevaTarea.equals(auxTarea));
+    }
+
+
+    @When("se le asigna un ticket de soporte con codigo {int}")
+    public void seLeAsignaUnTicketDeSoporteConCodigo(int ticket) throws Exception {
+        String url_put = urlPostTarea.replace("{id}", idProyecto) + "/" + auxTarea.getId();
+        auxTarea.agregarTicket((long) ticket);
+        String requestJson = mapper.writeValueAsString(auxTarea);
+        MvcResult requestResult = this.mockMvc.perform(put(url_put)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("puedo ver los ids de los tickets de soporte asociados")
+    public void puedoVerLosIdsDeLosTicketsDeSoporteAsociados() throws Exception {
+        String url_get = urlPostTarea.replace("{id}", idProyecto) + "/" + auxTarea.getId();
+        MvcResult requestResult = this.mockMvc.perform(get(url_get)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = requestResult.getResponse().getContentAsString();
+        Tarea nuevaTarea = mapper.readValue(response,Tarea.class);
+        assertTrue(nuevaTarea.equals(auxTarea));
+    }
+
+    @When("se le desvincula un ticket de soporte con codigo {int}")
+    public void seLeDesvinculaUnTicketDeSoporteConCodigo(int ticket) throws Exception {
+        String url_put = urlPostTarea.replace("{id}", idProyecto) + "/" + auxTarea.getId();
+        auxTarea.eliminarTicket((long) ticket);
+        String requestJson = mapper.writeValueAsString(auxTarea);
+        MvcResult requestResult = this.mockMvc.perform(put(url_put)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("el ticket de codigo {int} ya no se encuentra asociado")
+    public void elTicketDeCodigoYaNoSeEncuentraAsociado(int ticket) throws Exception {
+        String url_get = urlPostTarea.replace("{id}", idProyecto) + "/" + auxTarea.getId();
+        MvcResult requestResult = this.mockMvc.perform(get(url_get)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = requestResult.getResponse().getContentAsString();
+        Tarea nuevaTarea = mapper.readValue(response,Tarea.class);
+        assertFalse(nuevaTarea.getIdsTickets().contains((long)ticket));
     }
 }

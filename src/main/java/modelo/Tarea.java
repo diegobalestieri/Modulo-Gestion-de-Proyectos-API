@@ -5,7 +5,9 @@ import modelo.Estado.EstadoTarea;
 
 import javax.persistence.*;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,10 @@ public class Tarea {
     private int duracionEstimada;
     private EstadoTarea estado = EstadoTarea.NO_INICIADA;
     private long id_iteracion = 0;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="ids_tickets",joinColumns = @JoinColumn(name="ticket_id"))
+    private List<Long> idsTickets = new ArrayList<>();
 
     public Tarea(){
         registroDeDatos.setFechaDeInicio(new Date());
@@ -120,4 +126,19 @@ public class Tarea {
 
     public void setDuracionEstimada(int duracionEstimada) {        this.duracionEstimada = duracionEstimada;    }
 
+    public void agregarTicket(Long ticket) {
+
+    }
+
+    public List<Long> getIdsTickets() {
+        return idsTickets;
+    }
+
+    public void setIdsTickets(List<Long> idsTickets) {
+        this.idsTickets = idsTickets;
+    }
+
+    public void eliminarTicket(long ticket) {
+        idsTickets.remove(ticket);
+    }
 }
