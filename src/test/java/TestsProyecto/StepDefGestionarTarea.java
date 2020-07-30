@@ -1,6 +1,5 @@
 package TestsProyecto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -34,12 +33,7 @@ public class StepDefGestionarTarea extends SpringTest{
     private String urlPostTarea = "/proyectos/{id}/tareas";
     private List<Map<String, String>> list;
     private Tarea auxTarea;
-    public void setup() {
-        mapper.setDateFormat(this.df);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
-    }
+
 
     @Given("tengo un proyecto creado")
     public void tengoUnProyectoCreado() throws Exception {
