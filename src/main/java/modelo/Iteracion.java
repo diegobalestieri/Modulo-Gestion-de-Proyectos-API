@@ -23,7 +23,6 @@ public class Iteracion {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="ids_tareas",joinColumns = @JoinColumn(name="iteracion_id"))
-    @JsonIgnore
     private List<Long> idsTareas = new ArrayList<>();
 
     private EstadoIteracion estado = EstadoIteracion.CREADA;
@@ -46,7 +45,7 @@ public class Iteracion {
 
     public void agregarTarea(long idDeTarea) throws AccionNoPermitidaException {
         if (estado.equals(EstadoIteracion.FINALIZADA))
-            throw new AccionNoPermitidaException("La iteracion no se encuentra activa");
+            throw new AccionNoPermitidaException("La iteracion se encuentra finalizada");
         setEstado(EstadoIteracion.ACTIVA);
         idsTareas.add(idDeTarea);
     }
@@ -109,10 +108,8 @@ public class Iteracion {
     }
 
     public void eliminarTarea(long idTarea) {
-        if (!estado.equals(EstadoIteracion.ACTIVA))
-            throw new AccionNoPermitidaException("La iteracion no se encuentra activa");
         if (!idsTareas.contains(idTarea))
-            throw new TareaNotFoundException("La tarea no se encontraba cargada a esta iteracion");
+            throw new TareaNotFoundException("La tarea no se encontraba cargada en esta iteracion");
         idsTareas.remove(idTarea);
     }
 
