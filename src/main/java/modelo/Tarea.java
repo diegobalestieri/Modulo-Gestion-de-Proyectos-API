@@ -18,6 +18,8 @@ public class Tarea {
     private RegistroDeDatos registroDeDatos = new RegistroDeDatos();
     private String responsable;
     private String prioridad;
+
+    private int duracionEstimada;
     private EstadoTarea estado = EstadoTarea.NO_INICIADA;
     private long id_iteracion = 0;
 
@@ -107,7 +109,6 @@ public class Tarea {
 
     public Date getFechaDeInicio() { return registroDeDatos.getFechaDeInicio();
     }
-
     public Date getFechaDeFinalizacion() {return registroDeDatos.getFechaDeFinalizacion();
     }
 
@@ -115,5 +116,8 @@ public class Tarea {
 
     public long getIteracion() { return id_iteracion;}
 
+    public int getDuracionEstimada() {         return duracionEstimada;    }
+
+    public void setDuracionEstimada(int duracionEstimada) {        this.duracionEstimada = duracionEstimada;    }
 
 }

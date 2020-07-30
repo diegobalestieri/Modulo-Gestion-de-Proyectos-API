@@ -23,3 +23,8 @@ Feature: Gestion de tareas
 		Given cuento con una tarea cargada en el proyecto
 		When elimino la tarea
 		Then la tarea ya no se encuentra en el proyecto
+
+	Scenario: Realizar estimación sobre una tarea
+		Given cuento con una tarea cargada en el proyecto
+		When le asigno una estimación de 3 horas
+		Then la tarea queda con la estimación indicada

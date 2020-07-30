@@ -1,7 +1,6 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -9,6 +8,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import modelo.Estado.EstadoTarea;
+import modelo.Iteracion;
 import modelo.Proyecto;
 import modelo.Tarea;
 
@@ -17,7 +17,6 @@ import modelo.Tarea;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,7 @@ public class StepDefGestionarTarea extends SpringTest{
     private List<Tarea> tareas = new ArrayList<>();
     private String urlPostTarea = "/proyectos/{id}/tareas";
     private List<Map<String, String>> list;
+    private Tarea auxTarea;
     public void setup() {
         mapper.setDateFormat(this.df);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -135,6 +135,8 @@ public class StepDefGestionarTarea extends SpringTest{
                 .andReturn();
         String response = requestResult.getResponse().getContentAsString();
         idsTareas.add(obtenerId(response));
+        tarea.setId(Long.valueOf(obtenerId(response)));
+        auxTarea = tarea;
     }
 
     @When("modifico los siguientes datos de la tarea")
@@ -173,5 +175,30 @@ public class StepDefGestionarTarea extends SpringTest{
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
+    }
+
+    @When("le asigno una estimación de {int} horas")
+    public void leAsignoUnaEstimaciónDeHoras(int horas) throws Exception {
+        String url_put = urlPostTarea.replace("{id}", idProyecto) + "/" + auxTarea.getId();
+        auxTarea.setDuracionEstimada(horas);
+        String requestJson = mapper.writeValueAsString(auxTarea);
+        MvcResult requestResult = this.mockMvc.perform(put(url_put)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("la tarea queda con la estimación indicada")
+    public void laTareaQuedaConLaEstimaciónIndicada() throws Exception {
+        String url_get = urlPostTarea.replace("{id}", idProyecto) + "/" + auxTarea.getId();
+        MvcResult requestResult = this.mockMvc.perform(get(url_get)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String response = requestResult.getResponse().getContentAsString();
+        Tarea nuevaTarea = mapper.readValue(response,Tarea.class);
+        assertTrue(nuevaTarea.equals(auxTarea));
     }
 }
