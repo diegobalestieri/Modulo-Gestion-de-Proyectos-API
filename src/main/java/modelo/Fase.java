@@ -73,6 +73,8 @@ public class Fase {
 
     public EstadoFase getEstado() { return estado; }
 
+    public void setIteraciones(List<Iteracion> nuevaLista) {iteraciones = nuevaLista;}
+
     public void setEstado(EstadoFase nuevoEstado) { estado = nuevoEstado;}
 
     public long getCantidadDeIteraciones() { return cantidadDeIteraciones;}
@@ -80,11 +82,11 @@ public class Fase {
     public void setCantidadDeIteraciones(long nuevaCantidad) { cantidadDeIteraciones = nuevaCantidad; }
 
     public void agregarIteracion(Iteracion iteracion) {
+        if (estado.equals(EstadoFase.FINALIZADA))
+            throw new AccionNoPermitidaException("La fase se encuentra finalizada");
         long indiceDeIteracion = cantidadDeIteraciones+1;
         String nombreIteracion = "Iteracion " + indiceDeIteracion;
         iteracion.setNombre(nombreIteracion);
-        if (estado.equals(EstadoFase.FINALIZADA))
-            throw new AccionNoPermitidaException("La fase se encuentra finalizada");
         setEstado(EstadoFase.ACTIVA);
         this.iteraciones.add(iteracion);
         cantidadDeIteraciones++;
@@ -104,6 +106,7 @@ public class Fase {
         for (int i = 0; i < iteraciones.size(); ++i){
             Iteracion iteracion = iteraciones.get(i);
             if (iteracion.getId().equals(nuevaIteracion.getId())){
+                nuevaIteracion.setIdsTareas(iteracion.getIdsTareas());
                 iteraciones.set(i, nuevaIteracion);
                 return;
             }
@@ -112,11 +115,11 @@ public class Fase {
     }
 
     public void eliminarIteracion(long idIteracion) {
-        if (!estado.equals(EstadoFase.ACTIVA))
-            throw new AccionNoPermitidaException("La fase no se encuentra activa");
+        if (estado.equals(EstadoFase.FINALIZADA))
+            throw new AccionNoPermitidaException("La fase se encuentra finalizada, no se puede eliminar la iteración");
         Iteracion iteracion = obtenerIteracion(idIteracion);
-        if (!iteracion.getEstado().equals(EstadoIteracion.CREADA))
-            throw new AccionNoPermitidaException("No se puede eliminar una iteracion activa o finalizada");
+        if (!iteracion.getIdsTareas().isEmpty())
+            throw new AccionNoPermitidaException("No se puede eliminar una iteracion que cuenta con tareas cargadas");
         iteraciones.remove(iteracion);
     }
     /*
