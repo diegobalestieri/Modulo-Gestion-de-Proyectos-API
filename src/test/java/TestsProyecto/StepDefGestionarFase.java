@@ -11,6 +11,7 @@ import io.cucumber.java.en.When;
 import modelo.Estado.EstadoProyecto;
 import modelo.Fase;
 import modelo.Proyecto;
+import modelo.Tarea;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -174,7 +175,7 @@ public class StepDefGestionarFase extends SpringTest{
             System.out.print('\n' + url_aux + '\n');
             MvcResult requestResult = this.mockMvc.perform(get(url_aux)
                     .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                    .andExpect(status().isCreated())
+                    .andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value(list.get(i).get("nombre")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.descripcion").value(list.get(i).get("descripcion")))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.fechaDeInicio").value(list.get(i).get("fecha de inicio") + "T00:00:00.000+00:00"))
@@ -255,16 +256,19 @@ public class StepDefGestionarFase extends SpringTest{
 
     @When("creo una fase en el proyecto con una fecha de inicio {string}")
     public void creoUnaFaseEnElProyectoYLeAsignoUnaFechaDeInicio(String fecha) throws Exception {
-        Fase fase = new Fase();
+        fase = new Fase();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         fase.setFechaDeInicio(sdf.parse(fecha));
+        fase.setNombre("Fase 1");
         String requestJson = mapper.writeValueAsString(fase);
         String url = "/proyectos/" + proyecto.getId() + "/fases";
         MvcResult requestResult = this.mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestJson))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isCreated())
                 .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        this.fase.setId(Long.valueOf(obtenerId(response)));
     }
 
     @Then("se lanza un error indicando que la fecha de inicio de la fase no puede ser anterior a la del proyecto que la contiene")
@@ -280,5 +284,48 @@ public class StepDefGestionarFase extends SpringTest{
                 .andReturn();
         String response = requestResult.getResponse().getContentAsString();
         assertEquals(response, "[]");
+    }
+
+    @When("modifico la fecha de inicio de la fase a {string}")
+    public void modificoLaFechaDeInicioDeLaFaseA(String fecha) throws Exception {
+        Fase aux = new Fase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        aux.setFechaDeInicio(sdf.parse(fecha));
+        aux.setNombre("Fase 1");
+        String requestJson = mapper.writeValueAsString(aux);
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + fase.getId();
+        MvcResult requestResult = this.mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @And("la fecha de inicio de la fase es {string}")
+    public void laFechaDeInicioDeLaFaseEs(String fecha) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaAux = sdf.parse(fecha);
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + fase.getId();
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        Fase nuevaFase = mapper.readValue(response,Fase.class);
+        assertEquals(fechaAux, nuevaFase.getFechaDeInicio());
+    }
+
+    @When("creo una fase en el proyecto con una fecha de inicio invalida {string}")
+    public void creoUnaFaseEnElProyectoConUnaFechaDeInicioInvalida(String fecha) throws Exception {
+        Fase fase = new Fase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        fase.setFechaDeInicio(sdf.parse(fecha));
+        String requestJson = mapper.writeValueAsString(fase);
+        String url = "/proyectos/" + proyecto.getId() + "/fases";
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isNotFound())
+                .andReturn();
     }
 }

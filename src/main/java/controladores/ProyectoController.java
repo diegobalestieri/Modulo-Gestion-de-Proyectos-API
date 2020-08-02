@@ -86,7 +86,7 @@ public class ProyectoController {
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}")
     ResponseEntity<?> obtenerFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
         try{
-            return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.CREATED);
+            return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.OK);
         }catch (CustomException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }

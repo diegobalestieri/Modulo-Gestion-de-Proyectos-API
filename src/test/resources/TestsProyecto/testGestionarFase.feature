@@ -53,7 +53,13 @@ Feature: Creacion de Fase
 
     Scenario: Asignar fecha de inicio previa a la fecha de inicio del proyecto
 	    Given cuento con un proyecto cargado con fecha de inicio "20/05/2020"
-	    When creo una fase en el proyecto con una fecha de inicio "2020-01-01"
+	    When creo una fase en el proyecto con una fecha de inicio invalida "2020-01-01"
 	    Then se lanza un error indicando que la fecha de inicio de la fase no puede ser anterior a la del proyecto que la contiene
 	    And  la fase no se crea
 
+	Scenario: Reasignar fecha de inicio previa a la fecha de inicio del proyecto
+		Given cuento con un proyecto cargado con fecha de inicio "20/05/2020"
+		And creo una fase en el proyecto con una fecha de inicio "2020-05-20"
+		When modifico la fecha de inicio de la fase a "2020-01-01"
+		Then se lanza un error indicando que la fecha de inicio de la fase no puede ser anterior a la del proyecto que la contiene
+		And  la fecha de inicio de la fase es "2020-05-20"

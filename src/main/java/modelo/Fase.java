@@ -108,6 +108,7 @@ public class Fase {
         for (int i = 0; i < iteraciones.size(); ++i){
             Iteracion iteracion = iteraciones.get(i);
             if (iteracion.getId().equals(nuevaIteracion.getId())){
+                //validarFechasDeIteracion(iteracion);
                 nuevaIteracion.setIdsTareas(iteracion.getIdsTareas());
                 iteraciones.set(i, nuevaIteracion);
                 return;
