@@ -8,6 +8,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import modelo.Estado.EstadoProyecto;
 import modelo.Fase;
 import modelo.Proyecto;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class StepDefGestionarFase extends SpringTest{
 
     private Proyecto proyecto;
+    private Fase fase;
     private List<String> ids = new ArrayList<>();
 
     @When("creo una fase para el proyecto con los siguientes datos y lo guardo")
@@ -229,5 +232,53 @@ public class StepDefGestionarFase extends SpringTest{
             String response = requestResult.getResponse().getContentAsString();
             this.ids.add(obtenerId(response));
         }
+    }
+
+    @Given("cuento con un proyecto cargado con fecha de inicio {string}")
+    public void cuentoConUnProyectoCargadoConFechaDeInicio(String fecha) throws Exception {
+        setup();
+        Proyecto proyecto = new Proyecto();
+        proyecto.setNombre("Proyecto ERP");
+        proyecto.setTipoDeProyecto("Implementación");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        proyecto.setFechaDeInicio(sdf.parse(fecha));
+        proyecto.setEstado(EstadoProyecto.ACTIVO);
+        String requestJson = mapper.writeValueAsString(proyecto);
+        MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        this.proyecto.setId(Long.valueOf(obtenerId(response)));
+    }
+
+    @When("creo una fase en el proyecto con una fecha de inicio {string}")
+    public void creoUnaFaseEnElProyectoYLeAsignoUnaFechaDeInicio(String fecha) throws Exception {
+        Fase fase = new Fase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        fase.setFechaDeInicio(sdf.parse(fecha));
+        String requestJson = mapper.writeValueAsString(fase);
+        String url = "/proyectos/" + proyecto.getId() + "/fases";
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Then("se lanza un error indicando que la fecha de inicio de la fase no puede ser anterior a la del proyecto que la contiene")
+    public void seLanzaUnErrorIndicandoQueLaFechaDeInicioDeLaFaseNoPuedeSerAnteriorALaDelProyectoQueLaContiene() {
+    }
+
+    @And("la fase no se crea")
+    public void laFaseNoSeCrea() throws Exception {
+        String url = "/proyectos/" + proyecto.getId() + "/fases";
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        assertEquals(response, "[]");
     }
 }

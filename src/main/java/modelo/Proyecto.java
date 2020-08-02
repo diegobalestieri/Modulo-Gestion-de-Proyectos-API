@@ -225,6 +225,10 @@ public class Proyecto {
         crearFase(fase);
     }
     public boolean crearFase(Fase fase) {
+        if (fase.getFechaDeInicio() != null && this.getFechaDeInicio() != null) {
+            if (fase.getFechaDeInicio().compareTo(this.getFechaDeInicio()) < 0)
+                throw new FechaInvalidaException("La fecha de inicio de una fase no puede ser anterior a la del proyecto que la contiene");
+        }
         fases.add(fase);
         return true;
     }
