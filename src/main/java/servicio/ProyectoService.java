@@ -1,5 +1,6 @@
 package servicio;
 
+import DTOs.TareaResponsableDTO;
 import excepciones.*;
 import modelo.Estado.EstadoProyecto;
 import modelo.Estado.EstadoTarea;
@@ -248,11 +249,15 @@ public class ProyectoService {
         }
     }
 
-    public List<Tarea> obtenerTareasDeResponsable(String responsableId) {
-        List<Tarea> listaADevolver = new ArrayList();
+    public List<TareaResponsableDTO> obtenerTareasDeResponsable(String responsableId) {
+        List<TareaResponsableDTO> listaADevolver = new ArrayList();
         for (Proyecto proyecto : findAll()) {
             List<Tarea> tareasDelProyecto = proyecto.obtenerTareasDelResponsable(responsableId);
-            listaADevolver.addAll(tareasDelProyecto);
+            for (Tarea tarea : tareasDelProyecto){
+                TareaResponsableDTO aux = new TareaResponsableDTO(tarea);
+                aux.setNombreProyecto(proyecto.getNombre());
+                listaADevolver.add(aux);
+            }
         }
         return listaADevolver;
     }
