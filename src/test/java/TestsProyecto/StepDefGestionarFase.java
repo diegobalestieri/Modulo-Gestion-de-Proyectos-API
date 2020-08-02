@@ -328,4 +328,74 @@ public class StepDefGestionarFase extends SpringTest{
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
+
+    @Given("cuento con un proyecto cargado con fecha de finalizacion {string}")
+    public void cuentoConUnProyectoCargadoConFechaDeFinalizacion(String fecha) throws Exception {
+        setup();
+        Proyecto proyecto = new Proyecto();
+        proyecto.setNombre("Proyecto ERP");
+        proyecto.setTipoDeProyecto("Implementación");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        proyecto.setFechaDeFinalizacion(sdf.parse(fecha));
+        proyecto.setEstado(EstadoProyecto.ACTIVO);
+        String requestJson = mapper.writeValueAsString(proyecto);
+        MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        this.proyecto.setId(Long.valueOf(obtenerId(response)));
+    }
+
+    @And("creo una fase en el proyecto con una fecha de finalizacion {string}")
+    public void creoUnaFaseEnElProyectoConUnaFechaDeFinalizacion(String fecha) throws Exception {
+        fase = new Fase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        fase.setFechaDeFinalizacion(sdf.parse(fecha));
+        fase.setNombre("Fase 1");
+        String requestJson = mapper.writeValueAsString(fase);
+        String url = "/proyectos/" + proyecto.getId() + "/fases";
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        this.fase.setId(Long.valueOf(obtenerId(response)));
+    }
+
+    @When("modifico la fecha de finalizacion de la fase a {string}")
+    public void modificoLaFechaDeFinalizacionDeLaFaseA(String fecha) throws Exception {
+        Fase aux = new Fase();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        aux.setFechaDeFinalizacion(sdf.parse(fecha));
+        aux.setNombre("Fase 1");
+        String requestJson = mapper.writeValueAsString(aux);
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + fase.getId();
+        MvcResult requestResult = this.mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Then("se lanza un error indicando que la fecha de finalizacion de la fase no puede ser posterior a la del proyecto que la contiene")
+    public void seLanzaUnErrorIndicandoQueLaFechaDeFinalizacionDeLaFaseNoPuedeSerPosteriorALaDelProyectoQueLaContiene() {
+
+    }
+
+    @And("la fecha de finalizacion de la fase es {string}")
+    public void laFechaDeFinalizacionDeLaFaseEs(String fecha) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaAux = sdf.parse(fecha);
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + fase.getId();
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        Fase nuevaFase = mapper.readValue(response,Fase.class);
+        assertEquals(fechaAux, nuevaFase.getFechaDeFinalizacion());
+    }
 }

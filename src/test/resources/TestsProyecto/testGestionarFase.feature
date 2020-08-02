@@ -63,3 +63,10 @@ Feature: Creacion de Fase
 		When modifico la fecha de inicio de la fase a "2020-01-01"
 		Then se lanza un error indicando que la fecha de inicio de la fase no puede ser anterior a la del proyecto que la contiene
 		And  la fecha de inicio de la fase es "2020-05-20"
+
+	Scenario: Asignar fecha de finalizacion posterior a la fecha de finalizacion del proyecto
+		Given cuento con un proyecto cargado con fecha de finalizacion "2020-05-05"
+		And creo una fase en el proyecto con una fecha de finalizacion "2020-05-05"
+		When modifico la fecha de finalizacion de la fase a "2020-07-01"
+		Then se lanza un error indicando que la fecha de finalizacion de la fase no puede ser posterior a la del proyecto que la contiene
+		And  la fecha de finalizacion de la fase es "2020-05-05"

@@ -230,6 +230,10 @@ public class Proyecto {
             if (fase.getFechaDeInicio().compareTo(this.getFechaDeInicio()) < 0)
                 throw new FechaInvalidaException("La fecha de inicio de una fase no puede ser anterior a la del proyecto que la contiene");
         }
+        if (fase.getFechaDeFinalizacion() != null && this.getFechaDeFinalizacion() != null) {
+            if (fase.getFechaDeFinalizacion().compareTo(this.getFechaDeFinalizacion()) > 0)
+                throw new FechaInvalidaException("La fecha de finalización de una fase no puede ser posterior a la del proyecto que la contiene");
+        }
     }
     public boolean crearFase(Fase fase) {
         validarFechasDeFase(fase);
