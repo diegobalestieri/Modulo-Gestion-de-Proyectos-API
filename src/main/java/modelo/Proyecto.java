@@ -217,6 +217,7 @@ public class Proyecto {
         for (int i = 0; i < fases.size(); ++i){
             Fase faseActual = fases.get(i);
             if (faseActual.getId().equals(fase.getId())){
+                validarFechasDeFase(fase);
                 rearmarFase(fase,faseActual);
                 fases.set(i, fase);
                 return;
@@ -224,7 +225,18 @@ public class Proyecto {
         }
         crearFase(fase);
     }
+    public void validarFechasDeFase(Fase fase){
+        if (fase.getFechaDeInicio() != null && this.getFechaDeInicio() != null) {
+            if (fase.getFechaDeInicio().compareTo(this.getFechaDeInicio()) < 0)
+                throw new FechaInvalidaException("La fecha de inicio de una fase no puede ser anterior a la del proyecto que la contiene");
+        }
+        if (fase.getFechaDeFinalizacion() != null && this.getFechaDeFinalizacion() != null) {
+            if (fase.getFechaDeFinalizacion().compareTo(this.getFechaDeFinalizacion()) > 0)
+                throw new FechaInvalidaException("La fecha de finalización de una fase no puede ser posterior a la del proyecto que la contiene");
+        }
+    }
     public boolean crearFase(Fase fase) {
+        validarFechasDeFase(fase);
         fases.add(fase);
         return true;
     }
