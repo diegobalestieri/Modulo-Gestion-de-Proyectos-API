@@ -1,6 +1,7 @@
 package modelo;
 
 import excepciones.AccionNoPermitidaException;
+import excepciones.FechaInvalidaException;
 import excepciones.IteracionNotFoundException;
 import excepciones.ParametrosInvalidosException;
 import modelo.Estado.EstadoFase;
@@ -84,6 +85,7 @@ public class Fase {
     public void agregarIteracion(Iteracion iteracion) {
         if (estado.equals(EstadoFase.FINALIZADA))
             throw new AccionNoPermitidaException("La fase se encuentra finalizada");
+        validarFechasDeIteracion(iteracion);
         long indiceDeIteracion = cantidadDeIteraciones+1;
         String nombreIteracion = "Iteracion " + indiceDeIteracion;
         iteracion.setNombre(nombreIteracion);
@@ -132,4 +134,21 @@ public class Fase {
         eliminarIteracion(iteracionId);
     }
     */
+
+    public void validarFechasDeIteracion(Iteracion iteracion) {
+        if (registroDeDatos.getFechaDeInicio() == null && registroDeDatos.getFechaDeFinalizacion() == null)
+            return;
+        Date fechaDeInicioDeIteracion = iteracion.getFechaDeInicio();
+        Date fechaDeInicioDeFase = registroDeDatos.getFechaDeInicio();
+        if (fechaDeInicioDeIteracion != null && fechaDeInicioDeFase != null) {
+            if (fechaDeInicioDeIteracion.compareTo(fechaDeInicioDeFase) < 0)
+                throw new FechaInvalidaException("La fecha de inicio de una iteración no puede ser anterior a la de la fase que la contiene");
+        }
+        Date fechaDeFinalizacionDeIteracion = iteracion.getFechaDeFinalizacion();
+        Date fechaDeFinalizacionDeFase = registroDeDatos.getFechaDeFinalizacion();
+        if (fechaDeFinalizacionDeIteracion != null && fechaDeFinalizacionDeFase != null) {
+            if (fechaDeFinalizacionDeIteracion.compareTo(fechaDeFinalizacionDeFase) > 0)
+                throw new FechaInvalidaException("La fecha de finalización de una iteración no puede ser posterior a la de la fase que la contiene");
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package TestsProyecto;
 
 import aplicacion.Aplicacion;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class SpringTest {
             int inicio = response.indexOf("id");
             int fin = response.indexOf(',',inicio);
         return response.substring(inicio+4,fin);
+    }
+    public void setup() {
+        mapper.setDateFormat(this.df);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
     }
 
 }

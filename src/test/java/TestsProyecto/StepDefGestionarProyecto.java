@@ -7,6 +7,9 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import modelo.Tarea;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import modelo.Proyecto;
@@ -19,6 +22,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 public class StepDefGestionarProyecto extends SpringTest {
 
     private long id;
@@ -26,6 +33,8 @@ public class StepDefGestionarProyecto extends SpringTest {
     private String estado;
     private Map<String,Long> diccionario_nombre_id = new HashMap<>();
     private Exception excepcion;
+    private String url = "/proyectos/";
+    private Proyecto proyecto;
 
     @Given("un listado con proyectos cargados")
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
@@ -218,5 +227,63 @@ public class StepDefGestionarProyecto extends SpringTest {
     public void seLanzaUnErrorIndicandoQueElEstadoNoSePudoCambiar() {
         assertTrue(this.excepcion != null);
         assertEquals(this.excepcion.getClass(),AccionNoPermitidaException.class);
+    }
+
+    @Given("tengo un proyecto sin líder")
+    public void tengoUnProyectoSinLíder() throws Exception {
+        setup();
+        proyecto = new Proyecto();
+        proyecto.setTipoDeProyecto("Desarrollo");
+        String requestJson = mapper.writeValueAsString(proyecto);
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        proyecto.setId(Long.valueOf(obtenerId(response)));
+
+    }
+
+    @When("le asigno un líder de proyecto de legajo {string}")
+    public void leAsignoUnLíderDeProyecto(String legajo) throws Exception {
+        proyecto.setLiderDeProyecto(legajo);
+        String requestJson = mapper.writeValueAsString(proyecto);
+        String urlPut = url + proyecto.getId();
+        MvcResult requestResult = this.mockMvc.perform(put(urlPut)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("el proyecto pasa a tener a ese Líder de Proyecto de legajo {string}")
+    public void elProyectoPasaATenerAEseLíderDeProyecto(String legajo) throws Exception {
+        String urlGet = url + proyecto.getId();
+        String requestJson = mapper.writeValueAsString(proyecto);
+        MvcResult requestResult = this.mockMvc.perform(put(urlGet)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestJson))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        Proyecto nuevoProyecto = mapper.readValue(response,Proyecto.class);
+        assertEquals(nuevoProyecto.getLiderDeProyecto(), legajo);
+    }
+
+    @Given("tengo un proyecto con líder de legajo {string}")
+    public void tengoUnProyectoConLíderDeLegajo(String legajo) throws Exception {
+        setup();
+        proyecto = new Proyecto();
+        proyecto.setTipoDeProyecto("Desarrollo");
+        proyecto.setLiderDeProyecto(legajo);
+        String requestJson = mapper.writeValueAsString(proyecto);
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        proyecto.setId(Long.valueOf(obtenerId(response)));
     }
 }

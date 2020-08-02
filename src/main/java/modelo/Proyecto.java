@@ -26,10 +26,9 @@ public class Proyecto {
     private Long id;
     @Enumerated(EnumType.STRING)
     private TipoProyecto tipoDeProyecto;
-
     @Enumerated(EnumType.STRING)
     private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
-
+    private String liderDeProyecto;
     //Solo si es de implementacion
     private String cliente;
     //Solo si es de desarrollo
@@ -38,7 +37,7 @@ public class Proyecto {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tarea> tareas = new ArrayList<>();
 
     @Embedded
@@ -251,7 +250,6 @@ public class Proyecto {
         for (int i = 0; i < tareas.size(); ++i){
             Tarea tareaActual = tareas.get(i);
             if (tareaActual.getId().equals(tarea.getId())){
-                tarea.setId(tareaActual.getId());
                 tareas.set(i, tarea);
                 return;
             }
@@ -289,5 +287,13 @@ public class Proyecto {
     public void rearmarFase(Fase faseAGuardar, Fase faseAnterior) {
         faseAGuardar.setIteraciones(faseAnterior.obtenerIteraciones());
         faseAGuardar.setCantidadDeIteraciones(faseAnterior.getCantidadDeIteraciones());
+    }
+
+    public String getLiderDeProyecto() {
+        return liderDeProyecto;
+    }
+
+    public void setLiderDeProyecto(String liderDeProyecto) {
+        this.liderDeProyecto = liderDeProyecto;
     }
 }
