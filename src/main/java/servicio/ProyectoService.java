@@ -2,6 +2,7 @@ package servicio;
 
 import DTOs.TareaResponsableDTO;
 import excepciones.*;
+import modelo.Estado.EstadoIteracion;
 import modelo.Estado.EstadoProyecto;
 import modelo.Estado.EstadoTarea;
 import modelo.Iteracion;
@@ -234,9 +235,13 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        if (iteracion.getEstado() != EstadoIteracion.ACTIVA){
+            throw new AccionNoPermitidaException("La iteracion que se quiere finalizar no esta activa");
+        }
         List<Tarea> tareasDeLaIteracion = obtenerTareasDeIteracion(proyectoId,faseId,iteracionId);
         eliminarTareasDeLaIteracion(iteracion,tareasDeLaIteracion);
         iteracion.finalizar();
+        fase.actualizarIteracionActiva();
         save(proyecto);
     }
 
