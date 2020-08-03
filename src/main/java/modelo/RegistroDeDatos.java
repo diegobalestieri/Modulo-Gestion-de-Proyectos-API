@@ -3,6 +3,7 @@ package modelo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import excepciones.AccionNoPermitidaException;
 import excepciones.FechaInvalidaException;
 
 import javax.persistence.Embeddable;
@@ -11,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.TimeZone;
 
 @Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -88,5 +90,12 @@ public class RegistroDeDatos {
         if (fecha_1 == null || fecha_2 == null) { return false; }
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         return (format.format(fecha_1).equals(format.format(fecha_2)));
+    }
+
+    public void validarNuevaFechaDeInicioDeProyecto(String nuevaFechaDeInicio) throws ParseException,FechaInvalidaException {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaDeInicioNueva = format.parse(nuevaFechaDeInicio);
+        if (!lasFechasSonIguales(fechaDeInicioNueva,this.fechaDeInicio))
+            throw new AccionNoPermitidaException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
     }
 }
