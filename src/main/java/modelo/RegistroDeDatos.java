@@ -52,8 +52,11 @@ public class RegistroDeDatos {
         return fechaDeFinalizacion;
     }
 
-    public void setFechaDeInicio(Date fechaDeInicio) {
-        this.fechaDeInicio = fechaDeInicio;
+    public void setFechaDeInicio(Date fechaDeInicioNueva) {
+        if (fechaDeInicioNueva != null && this.fechaDeFinalizacion != null && this.fechaDeFinalizacion.compareTo(fechaDeInicioNueva) < 0) {
+            throw new FechaInvalidaException("La fecha de finalizacion debe ser posterior a la de inicio");
+        }
+        this.fechaDeInicio = fechaDeInicioNueva;
     }
 
     public void setFechaDeFinalizacion(Date fechaDeFinalizacion) throws FechaInvalidaException {
