@@ -181,17 +181,18 @@ public class Proyecto {
                 this.setNombre((String) entrada.getValue());
             } else if (entrada.getKey().equals("descripcion")) {
                 this.setDescripcion((String) entrada.getValue());
-           /* } else if (entrada.getKey().equals("fechaDeInicio")) {
-                this.setFechaDeInicio((String) entrada.getValue());
+            } else if (entrada.getKey().equals("fechaDeInicio")) {
+                this.asignarFechaDeInicio((String) entrada.getValue());
             } else if (entrada.getKey().equals("fechaDeFinalizacion")) {
-                this.setFechaDeFin((String) entrada.getValue());
-            */
+                this.asignarFechaDeFinalizacion((String) entrada.getValue());
             } else if (entrada.getKey().equals("estado")) {
                 this.setEstado((String) entrada.getValue());
             } else if (tipoDeProyecto.equals("Desarrollo") && entrada.getKey().equals("producto")){
                 this.setProducto((String) entrada.getValue());
             } else if (tipoDeProyecto.equals("Implementación") && entrada.getKey().equals("cliente")){
                 this.setCliente((String) entrada.getValue());
+            } else if (entrada.getKey().equals("liderDeProyecto")){
+                this.setLiderDeProyecto((String) entrada.getValue());
             }
 
         }
