@@ -10,10 +10,7 @@ import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Entity
@@ -94,7 +91,7 @@ public class Proyecto {
     }
     public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException,AccionNoPermitidaException {
         if (!estadoProyecto.equals(EstadoProyecto.NO_INICIADO))
-            throw new AccionNoPermitidaException("No se puede cambiar el estado de un proyecto iniciado");
+            registroDeDatos.validarNuevaFechaDeInicioDeProyecto(fechaDeInicio);
         registroDeDatos.asignarFechaDeInicio(fechaDeInicio);
     }
 
@@ -174,17 +171,20 @@ public class Proyecto {
         return true;
     }
 
-    public void actualizar(Map<String, Object> parametros) throws ParseException {
+    public void actualizar(Map<String, Object> parametros) throws ParseException,AccionNoPermitidaException {
         //No se puede cambiar el tipo de proyecto
+        validarTipoDeProyectoCorrecto(parametros.entrySet());
         for (Map.Entry<String, Object> entrada : parametros.entrySet()) {
             if (entrada.getKey().equals("nombre")) {
                 this.setNombre((String) entrada.getValue());
             } else if (entrada.getKey().equals("descripcion")) {
                 this.setDescripcion((String) entrada.getValue());
             } else if (entrada.getKey().equals("fechaDeInicio")) {
-                this.asignarFechaDeInicio((String) entrada.getValue());
+                Date nuevaFechaDeInicio = modificarFechaParaPatch((String) entrada.getValue());
+                this.setFechaDeInicio(nuevaFechaDeInicio);
             } else if (entrada.getKey().equals("fechaDeFinalizacion")) {
-                this.asignarFechaDeFinalizacion((String) entrada.getValue());
+                Date nuevaFechaDeFinalizacion = modificarFechaParaPatch((String) entrada.getValue());
+                this.setFechaDeFinalizacion(nuevaFechaDeFinalizacion);
             } else if (entrada.getKey().equals("estado")) {
                 this.setEstado((String) entrada.getValue());
             } else if (tipoDeProyecto.equals("Desarrollo") && entrada.getKey().equals("producto")){
@@ -309,4 +309,19 @@ public class Proyecto {
     public void setLiderDeProyecto(String liderDeProyecto) {
         this.liderDeProyecto = liderDeProyecto;
     }
+
+    public void validarTipoDeProyectoCorrecto(Set<Map.Entry<String,Object>> entrySet) {
+        for (Map.Entry<String, Object> entrada : entrySet) {
+            if (entrada.getKey().equals("tipoDeProyecto") && !entrada.getValue().equals(tipoDeProyecto.getNombre()))
+                throw new AccionNoPermitidaException("No se puede cambiar el tipo de proyecto");
+        }
+    }
+
+    public Date modificarFechaParaPatch(String fechaOriginal) throws ParseException {
+        DateFormat format_1 = new SimpleDateFormat("yyyy-MM-dd");
+        format_1.setTimeZone(TimeZone.getTimeZone("Argentina"));
+        Date nuevaFecha = format_1.parse(fechaOriginal);
+        return nuevaFecha;
+    }
+
 }
