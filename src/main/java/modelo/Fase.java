@@ -91,6 +91,7 @@ public class Fase {
         iteracion.setNombre(nombreIteracion);
         setEstado(EstadoFase.ACTIVA);
         this.iteraciones.add(iteracion);
+        actualizarIteracionActiva();
         cantidadDeIteraciones++;
     }
 
@@ -111,6 +112,7 @@ public class Fase {
                 validarFechasDeIteracion(nuevaIteracion);
                 nuevaIteracion.setIdsTareas(iteracion.getIdsTareas());
                 iteraciones.set(i, nuevaIteracion);
+
                 return;
             }
         }
@@ -124,6 +126,7 @@ public class Fase {
         if (!iteracion.getIdsTareas().isEmpty())
             throw new AccionNoPermitidaException("No se puede eliminar una iteracion que cuenta con tareas cargadas");
         iteraciones.remove(iteracion);
+        actualizarIteracionActiva();
     }
     /*
     public void borrarIteracion(long iteracionId) throws AccionNoPermitidaException {
@@ -150,6 +153,14 @@ public class Fase {
         if (fechaDeFinalizacionDeIteracion != null && fechaDeFinalizacionDeFase != null) {
             if (fechaDeFinalizacionDeIteracion.compareTo(fechaDeFinalizacionDeFase) > 0)
                 throw new FechaInvalidaException("La fecha de finalización de una iteración no puede ser posterior a la de la fase que la contiene");
+        }
+    }
+    public void actualizarIteracionActiva(){
+        for (Iteracion iteracionActual : iteraciones){
+            if (iteracionActual.getEstado() != EstadoIteracion.FINALIZADA){
+                iteracionActual.setEstado(EstadoIteracion.ACTIVA);
+                return;
+            }
         }
     }
 }
