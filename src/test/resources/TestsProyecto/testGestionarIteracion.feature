@@ -28,6 +28,12 @@ Feature: Creacion de Iteracion
     When borro la iteracion
     Then la fase ya no cuenta con la iteracion
 
+  Scenario: Finalizo una iteracion activa y hay otra siguiente
+    Given tengo un proyecto, con una iteración activa y hay otra iteración siguiente
+    When finalizo la iteracion activa
+    Then la iteracion se finaliza correctamente
+    And la siguiente iteracion pasa a ser la activa
+
  Scenario: Elimino tareas de una iteracion
     Given creo una iteracion y le agrego las tareas del proyecto
     When elimino las tareas de la iteracion
