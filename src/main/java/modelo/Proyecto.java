@@ -10,10 +10,7 @@ import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Entity
@@ -26,10 +23,9 @@ public class Proyecto {
     private Long id;
     @Enumerated(EnumType.STRING)
     private TipoProyecto tipoDeProyecto;
-
     @Enumerated(EnumType.STRING)
     private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
-
+    private String liderDeProyecto;
     //Solo si es de implementacion
     private String cliente;
     //Solo si es de desarrollo
@@ -38,7 +34,7 @@ public class Proyecto {
     @OneToMany(cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Tarea> tareas = new ArrayList<>();
 
     @Embedded
@@ -95,7 +91,7 @@ public class Proyecto {
     }
     public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException,AccionNoPermitidaException {
         if (!estadoProyecto.equals(EstadoProyecto.NO_INICIADO))
-            throw new AccionNoPermitidaException("No se puede cambiar el estado de un proyecto iniciado");
+            registroDeDatos.validarNuevaFechaDeInicioDeProyecto(fechaDeInicio);
         registroDeDatos.asignarFechaDeInicio(fechaDeInicio);
     }
 
@@ -175,24 +171,28 @@ public class Proyecto {
         return true;
     }
 
-    public void actualizar(Map<String, Object> parametros) throws ParseException {
+    public void actualizar(Map<String, Object> parametros) throws ParseException,AccionNoPermitidaException {
         //No se puede cambiar el tipo de proyecto
+        validarTipoDeProyectoCorrecto(parametros.entrySet());
         for (Map.Entry<String, Object> entrada : parametros.entrySet()) {
             if (entrada.getKey().equals("nombre")) {
                 this.setNombre((String) entrada.getValue());
             } else if (entrada.getKey().equals("descripcion")) {
                 this.setDescripcion((String) entrada.getValue());
-           /* } else if (entrada.getKey().equals("fechaDeInicio")) {
-                this.setFechaDeInicio((String) entrada.getValue());
+            } else if (entrada.getKey().equals("fechaDeInicio")) {
+                Date nuevaFechaDeInicio = modificarFechaParaPatch((String) entrada.getValue());
+                this.setFechaDeInicio(nuevaFechaDeInicio);
             } else if (entrada.getKey().equals("fechaDeFinalizacion")) {
-                this.setFechaDeFin((String) entrada.getValue());
-            */
+                Date nuevaFechaDeFinalizacion = modificarFechaParaPatch((String) entrada.getValue());
+                this.setFechaDeFinalizacion(nuevaFechaDeFinalizacion);
             } else if (entrada.getKey().equals("estado")) {
                 this.setEstado((String) entrada.getValue());
             } else if (tipoDeProyecto.equals("Desarrollo") && entrada.getKey().equals("producto")){
                 this.setProducto((String) entrada.getValue());
             } else if (tipoDeProyecto.equals("Implementación") && entrada.getKey().equals("cliente")){
                 this.setCliente((String) entrada.getValue());
+            } else if (entrada.getKey().equals("liderDeProyecto")){
+                this.setLiderDeProyecto((String) entrada.getValue());
             }
 
         }
@@ -218,6 +218,7 @@ public class Proyecto {
         for (int i = 0; i < fases.size(); ++i){
             Fase faseActual = fases.get(i);
             if (faseActual.getId().equals(fase.getId())){
+                validarFechasDeFase(fase);
                 rearmarFase(fase,faseActual);
                 fases.set(i, fase);
                 return;
@@ -225,7 +226,18 @@ public class Proyecto {
         }
         crearFase(fase);
     }
+    public void validarFechasDeFase(Fase fase){
+        if (fase.getFechaDeInicio() != null && this.getFechaDeInicio() != null) {
+            if (fase.getFechaDeInicio().compareTo(this.getFechaDeInicio()) < 0)
+                throw new FechaInvalidaException("La fecha de inicio de una fase no puede ser anterior a la del proyecto que la contiene");
+        }
+        if (fase.getFechaDeFinalizacion() != null && this.getFechaDeFinalizacion() != null) {
+            if (fase.getFechaDeFinalizacion().compareTo(this.getFechaDeFinalizacion()) > 0)
+                throw new FechaInvalidaException("La fecha de finalización de una fase no puede ser posterior a la del proyecto que la contiene");
+        }
+    }
     public boolean crearFase(Fase fase) {
+        validarFechasDeFase(fase);
         fases.add(fase);
         return true;
     }
@@ -251,7 +263,6 @@ public class Proyecto {
         for (int i = 0; i < tareas.size(); ++i){
             Tarea tareaActual = tareas.get(i);
             if (tareaActual.getId().equals(tarea.getId())){
-                tarea.setId(tareaActual.getId());
                 tareas.set(i, tarea);
                 return;
             }
@@ -290,4 +301,27 @@ public class Proyecto {
         faseAGuardar.setIteraciones(faseAnterior.obtenerIteraciones());
         faseAGuardar.setCantidadDeIteraciones(faseAnterior.getCantidadDeIteraciones());
     }
+
+    public String getLiderDeProyecto() {
+        return liderDeProyecto;
+    }
+
+    public void setLiderDeProyecto(String liderDeProyecto) {
+        this.liderDeProyecto = liderDeProyecto;
+    }
+
+    public void validarTipoDeProyectoCorrecto(Set<Map.Entry<String,Object>> entrySet) {
+        for (Map.Entry<String, Object> entrada : entrySet) {
+            if (entrada.getKey().equals("tipoDeProyecto") && !entrada.getValue().equals(tipoDeProyecto.getNombre()))
+                throw new AccionNoPermitidaException("No se puede cambiar el tipo de proyecto");
+        }
+    }
+
+    public Date modificarFechaParaPatch(String fechaOriginal) throws ParseException {
+        DateFormat format_1 = new SimpleDateFormat("yyyy-MM-dd");
+        format_1.setTimeZone(TimeZone.getTimeZone("Argentina"));
+        Date nuevaFecha = format_1.parse(fechaOriginal);
+        return nuevaFecha;
+    }
+
 }

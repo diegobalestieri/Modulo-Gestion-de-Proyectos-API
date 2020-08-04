@@ -1,6 +1,8 @@
 package servicio;
 
+import DTOs.TareaResponsableDTO;
 import excepciones.*;
+import modelo.Estado.EstadoIteracion;
 import modelo.Estado.EstadoProyecto;
 import modelo.Estado.EstadoTarea;
 import modelo.Iteracion;
@@ -233,9 +235,13 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
+        if (iteracion.getEstado() != EstadoIteracion.ACTIVA){
+            throw new AccionNoPermitidaException("La iteracion que se quiere finalizar no esta activa");
+        }
         List<Tarea> tareasDeLaIteracion = obtenerTareasDeIteracion(proyectoId,faseId,iteracionId);
         eliminarTareasDeLaIteracion(iteracion,tareasDeLaIteracion);
         iteracion.finalizar();
+        fase.actualizarIteracionActiva();
         save(proyecto);
     }
 
@@ -248,11 +254,15 @@ public class ProyectoService {
         }
     }
 
-    public List<Tarea> obtenerTareasDeResponsable(String responsableId) {
-        List<Tarea> listaADevolver = new ArrayList();
+    public List<TareaResponsableDTO> obtenerTareasDeResponsable(String responsableId) {
+        List<TareaResponsableDTO> listaADevolver = new ArrayList();
         for (Proyecto proyecto : findAll()) {
             List<Tarea> tareasDelProyecto = proyecto.obtenerTareasDelResponsable(responsableId);
-            listaADevolver.addAll(tareasDelProyecto);
+            for (Tarea tarea : tareasDelProyecto){
+                TareaResponsableDTO aux = new TareaResponsableDTO(tarea);
+                aux.setNombreProyecto(proyecto.getNombre());
+                listaADevolver.add(aux);
+            }
         }
         return listaADevolver;
     }

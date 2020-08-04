@@ -7,6 +7,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import modelo.Estado.EstadoIteracion;
+import modelo.Estado.EstadoProyecto;
 import modelo.Fase;
 import modelo.Iteracion;
 import modelo.Proyecto;
@@ -36,6 +38,7 @@ public class StepDefGestionarIteracion extends SpringTest {
     private Iteracion iteracion_creada;
     private Iteracion iteracion_obtenida;
     private long idIteracion;
+    private long idIteracion2;
     private List<Tarea> tareas_cargadas = new ArrayList();
     private List<Tarea> tareas_obtenidas = new ArrayList();
 
@@ -313,5 +316,81 @@ public class StepDefGestionarIteracion extends SpringTest {
         assertTrue(nuevaIteracion.getIdsTareas().isEmpty());
 
 
+    }
+
+    @Given("tengo un proyecto, con una iteración activa y hay otra iteración siguiente")
+    public void tengoUnProyectoConUnaIteraciónActivaYHayOtraIteraciónSiguiente() throws Exception {
+        proyecto = new Proyecto();
+        proyecto.setTipoDeProyecto("Desarrollo");
+        proyecto.setEstado(EstadoProyecto.ACTIVO);
+        String url = "/proyectos";
+        String requestJson = mapper.writeValueAsString(proyecto);
+        MvcResult requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        proyecto.setId(Long.valueOf(obtenerId(response)));
+        Fase fase = new Fase();
+        url = "/proyectos/" + proyecto.getId() + "/fases";
+        requestJson = mapper.writeValueAsString(fase);
+        requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        response = requestResult.getResponse().getContentAsString();
+        idFase = obtenerId(response);
+        Iteracion iteracion = new Iteracion();
+        url = "/proyectos/" + proyecto.getId() + "/fases/" + idFase + "/iteraciones";
+        requestJson = mapper.writeValueAsString(iteracion);
+        requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        response = requestResult.getResponse().getContentAsString();
+        idIteracion = Long.parseLong(obtenerId(response));
+        requestResult = this.mockMvc.perform(post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .andExpect(status().isCreated())
+                .andReturn();
+        response = requestResult.getResponse().getContentAsString();
+        idIteracion2 = Long.parseLong(obtenerId(response));
+    }
+
+    @When("finalizo la iteracion activa")
+    public void finalizoLaIteracionActiva() throws Exception {
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + idFase + "/iteraciones/" + idIteracion + "/finalizar";
+        MvcResult requestResult = this.mockMvc.perform(put(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Then("la iteracion se finaliza correctamente")
+    public void laIteracionSeFinalizaCorrectamente() throws Exception {
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + idFase + "/iteraciones/" + idIteracion ;
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        Iteracion nuevaIteracion = mapper.readValue(response,Iteracion.class);
+        assertEquals(nuevaIteracion.getEstado(), EstadoIteracion.FINALIZADA);
+    }
+
+    @And("la siguiente iteracion pasa a ser la activa")
+    public void laSiguienteIteracionPasaASerLaActiva() throws Exception {
+        String url = "/proyectos/" + proyecto.getId() + "/fases/" + idFase + "/iteraciones/" + idIteracion2 ;
+        MvcResult requestResult = this.mockMvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = requestResult.getResponse().getContentAsString();
+        Iteracion nuevaIteracion = mapper.readValue(response,Iteracion.class);
+        assertEquals(nuevaIteracion.getEstado(), EstadoIteracion.ACTIVA);
     }
 }

@@ -1,6 +1,7 @@
 package controladores;
 
 
+import DTOs.TareaResponsableDTO;
 import excepciones.*;
 import modelo.*;
 import modelo.Error;
@@ -85,7 +86,7 @@ public class ProyectoController {
     @GetMapping("proyectos/{id_proyecto}/fases/{id_fase}")
     ResponseEntity<?> obtenerFase(@PathVariable("id_proyecto") Long proyectoId, @PathVariable("id_fase") Long faseId){
         try{
-            return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.CREATED);
+            return new ResponseEntity<Fase>(servicio.obtenerFase(proyectoId, faseId), HttpStatus.OK);
         }catch (CustomException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }
@@ -264,7 +265,7 @@ public class ProyectoController {
     @GetMapping("responsables/{legajo_responsable}/tareas")
     ResponseEntity<?> obtenerTareasDeResponsable(@PathVariable("legajo_responsable") String responsableId) {
         try{
-            return new ResponseEntity<List<Tarea>>(servicio.obtenerTareasDeResponsable(responsableId), HttpStatus.OK);
+            return new ResponseEntity<List<TareaResponsableDTO>>(servicio.obtenerTareasDeResponsable(responsableId), HttpStatus.OK);
         } catch (CustomException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
         }

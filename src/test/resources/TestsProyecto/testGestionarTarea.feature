@@ -23,3 +23,19 @@ Feature: Gestion de tareas
 		Given cuento con una tarea cargada en el proyecto
 		When elimino la tarea
 		Then la tarea ya no se encuentra en el proyecto
+
+	Scenario: Realizar estimación sobre una tarea
+		Given cuento con una tarea cargada en el proyecto
+		When le asigno una estimación de 3 horas
+		Then la tarea queda con la estimación indicada
+
+	Scenario: Visualizar tickets asociados a una tarea
+		Given cuento con una tarea cargada en el proyecto
+		When se le asigna un ticket de soporte con codigo 123
+		Then puedo ver los ids de los tickets de soporte asociados
+
+	Scenario: Desvincular un ticket asociado a una tarea
+		Given cuento con una tarea cargada en el proyecto
+		And se le asigna un ticket de soporte con codigo 222
+		When se le desvincula un ticket de soporte con codigo 222
+		Then el ticket de codigo 222 ya no se encuentra asociado
