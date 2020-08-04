@@ -90,8 +90,6 @@ public class Proyecto {
         registroDeDatos.setFechaDeInicio(fechaDeInicio);
     }
     public void asignarFechaDeInicio(String fechaDeInicio) throws ParseException,AccionNoPermitidaException {
-        if (!estadoProyecto.equals(EstadoProyecto.NO_INICIADO))
-            registroDeDatos.validarNuevaFechaDeInicioDeProyecto(fechaDeInicio);
         registroDeDatos.asignarFechaDeInicio(fechaDeInicio);
     }
 
@@ -181,6 +179,7 @@ public class Proyecto {
                 this.setDescripcion((String) entrada.getValue());
             } else if (entrada.getKey().equals("fechaDeInicio")) {
                 Date nuevaFechaDeInicio = modificarFechaParaPatch((String) entrada.getValue());
+                registroDeDatos.validarNuevaFechaDeInicioDeProyecto(nuevaFechaDeInicio);
                 this.setFechaDeInicio(nuevaFechaDeInicio);
             } else if (entrada.getKey().equals("fechaDeFinalizacion")) {
                 Date nuevaFechaDeFinalizacion = modificarFechaParaPatch((String) entrada.getValue());

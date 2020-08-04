@@ -92,10 +92,8 @@ public class RegistroDeDatos {
         return (format.format(fecha_1).equals(format.format(fecha_2)));
     }
 
-    public void validarNuevaFechaDeInicioDeProyecto(String nuevaFechaDeInicio) throws ParseException,FechaInvalidaException {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Date fechaDeInicioNueva = format.parse(nuevaFechaDeInicio);
-        if (!lasFechasSonIguales(fechaDeInicioNueva,this.fechaDeInicio))
+    public void validarNuevaFechaDeInicioDeProyecto(Date nuevaFechaDeInicio) throws ParseException,FechaInvalidaException {
+        if (!lasFechasSonIguales(nuevaFechaDeInicio,this.fechaDeInicio))
             throw new AccionNoPermitidaException("No se puede cambiar la fecha de inicio de un proyecto iniciado");
     }
 }
