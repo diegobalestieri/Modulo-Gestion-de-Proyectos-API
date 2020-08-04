@@ -243,6 +243,9 @@ public class Proyecto {
     }
 
     public void crearTarea(Tarea tarea) {
+        if (tarea.getFechaDeInicio() == null){
+            tarea.setFechaDeInicio(new Date());
+        }
         tareas.add(tarea);
     }
 
