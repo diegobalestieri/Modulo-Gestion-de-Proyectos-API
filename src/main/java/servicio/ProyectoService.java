@@ -18,6 +18,9 @@ import persistencia.IteracionesRepository;
 import persistencia.ProyectosRepository;
 import persistencia.TareasRepository;
 
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,11 +154,12 @@ public class ProyectoService {
         return tareas.get(tareas.size()-1);
     }
 
-    public void borrarTarea(Long proyectoId, Long tareaId) {
+    public void borrarTarea(Long proyectoId, Long tareaId) throws Exception {
         Proyecto proyecto = getOne(proyectoId);
         proyecto.borrarTarea(tareaId);
         save(proyecto);
         tareasRepository.deleteById(tareaId);
+        eliminarTareaDeTickets(tareaId);
     }
 
     public List<Iteracion> obtenerIteraciones(Long proyectoId, Long faseId) {
@@ -277,6 +281,13 @@ public class ProyectoService {
                 return; // la iteracion anterior de la tarea es la misma en la que la estoy queriendo cargar
             iteracionActual.eliminarTarea(tareaId);
         }
+    }
+
+    public void eliminarTareaDeTickets(long idTarea) throws Exception {
+        String urlString = "https://psa-api-support.herokuapp.com/tickets/tareas/" + idTarea;
+        URL url = new URL(urlString);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("DELETE");
     }
 
 
