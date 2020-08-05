@@ -2,7 +2,6 @@ package modelo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import excepciones.*;
-import modelo.Estado.EstadoFase;
 import modelo.Estado.EstadoProyecto;
 import modelo.Estado.EstadoTarea;
 
@@ -64,13 +63,13 @@ public class Proyecto {
         return tipoDeProyecto;
     }
 
-    public void setTipoDeProyecto(String tipoDeProyecto) throws TipoDeProyectoInvalido {
+    public void setTipoDeProyecto(String tipoDeProyecto) throws TipoDeProyectoInvalidoException {
         if (tipoDeProyecto.toLowerCase().equals("desarrollo")){
             this.tipoDeProyecto = TipoProyecto.DESARROLLO;
         } else if (tipoDeProyecto.toLowerCase().equals("implementación") || tipoDeProyecto.toLowerCase().equals("implementacion")){
             this.tipoDeProyecto = TipoProyecto.IMPLEMENTACION;
         } else{
-            throw new TipoDeProyectoInvalido("El tipo " + tipoDeProyecto + " no es un tipo válido de proyecto");
+            throw new TipoDeProyectoInvalidoException("El tipo " + tipoDeProyecto + " no es un tipo válido de proyecto");
         }
     }
 
@@ -187,7 +186,7 @@ public class Proyecto {
                 this.setFechaDeFinalizacion(nuevaFechaDeFinalizacion);
             } else if (entrada.getKey().equals("estado")) {
                 this.setEstado((String) entrada.getValue());
-            } else if (tipoDeProyecto.equals(TipoProyecto.DESARROLLO) && entrada.getKey().equals("producto")){
+            } else if (entrada.getKey().equals("producto")){
                 this.setProducto((String) entrada.getValue());
             } else if (tipoDeProyecto.equals(TipoProyecto.IMPLEMENTACION) && entrada.getKey().equals("cliente")){
                 this.setCliente((String) entrada.getValue());

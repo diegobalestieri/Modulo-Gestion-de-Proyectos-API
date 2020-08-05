@@ -1,7 +1,7 @@
 package TestsProyecto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import excepciones.TipoDeProyectoInvalido;
+import excepciones.TipoDeProyectoInvalidoException;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -11,12 +11,10 @@ import io.cucumber.java.en.When;
 import modelo.Estado.EstadoProyecto;
 import modelo.Fase;
 import modelo.Proyecto;
-import modelo.Tarea;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,7 +91,7 @@ public class StepDefGestionarFase extends SpringTest{
 
 
     @Given("cuento con un proyecto activo")
-    public void cuentoConUnProyectoIniciado() throws TipoDeProyectoInvalido {
+    public void cuentoConUnProyectoIniciado() throws TipoDeProyectoInvalidoException {
         proyecto = new Proyecto();
         proyecto.setTipoDeProyecto("Implementación");
         proyecto.setNombre("Proyecto X");
@@ -297,7 +295,7 @@ public class StepDefGestionarFase extends SpringTest{
         MvcResult requestResult = this.mockMvc.perform(put(url)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestJson))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -325,7 +323,7 @@ public class StepDefGestionarFase extends SpringTest{
         MvcResult requestResult = this.mockMvc.perform(post(url)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestJson))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -376,7 +374,7 @@ public class StepDefGestionarFase extends SpringTest{
         MvcResult requestResult = this.mockMvc.perform(put(url)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestJson))
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
