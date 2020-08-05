@@ -179,7 +179,8 @@ public class Proyecto {
                 this.setDescripcion((String) entrada.getValue());
             } else if (entrada.getKey().equals("fechaDeInicio")) {
                 Date nuevaFechaDeInicio = modificarFechaParaPatch((String) entrada.getValue());
-                registroDeDatos.validarNuevaFechaDeInicioDeProyecto(nuevaFechaDeInicio);
+                if (!estadoProyecto.equals(EstadoProyecto.NO_INICIADO))
+                    registroDeDatos.validarNuevaFechaDeInicioDeProyecto(nuevaFechaDeInicio);
                 this.setFechaDeInicio(nuevaFechaDeInicio);
             } else if (entrada.getKey().equals("fechaDeFinalizacion")) {
                 Date nuevaFechaDeFinalizacion = modificarFechaParaPatch((String) entrada.getValue());
@@ -242,6 +243,9 @@ public class Proyecto {
     }
 
     public void crearTarea(Tarea tarea) {
+        if (tarea.getFechaDeInicio() == null){
+            tarea.setFechaDeInicio(new Date());
+        }
         tareas.add(tarea);
     }
 

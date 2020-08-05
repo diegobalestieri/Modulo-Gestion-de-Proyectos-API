@@ -163,4 +163,12 @@ public class Fase {
             }
         }
     }
+
+    public boolean contieneLaIteracion(long iteracionId) {
+        for (Iteracion iteracion : iteraciones) {
+            if (iteracion.getId().equals(iteracionId))
+                return true;
+        }
+        return false;
+    }
 }

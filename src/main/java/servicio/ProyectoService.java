@@ -209,10 +209,8 @@ public class ProyectoService {
         Proyecto proyecto = getOne(proyectoId);
         Fase fase = proyecto.obtenerFase(faseId);
         Long idIteracionAnterior = tarea.getIteracion();
-        if (idIteracionAnterior != 0 && !idIteracionAnterior.equals(iteracionId)) {
-            Iteracion iteracionAnterior = fase.obtenerIteracion(idIteracionAnterior);
-            iteracionAnterior.eliminarTarea(tareaId);
-        }
+        if (idIteracionAnterior != 0)
+            throw new AccionNoPermitidaException("La tarea se encuentra cargada en otra iteración");
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
         iteracion.agregarTarea(tareaId);
         tarea.setIteracion(iteracionId);
@@ -265,6 +263,20 @@ public class ProyectoService {
             }
         }
         return listaADevolver;
+    }
+
+    public void eliminarTareaDeIteracionAnterior(Proyecto proyecto,long faseId,long iteracionId, long iteracionAnteriorId,long tareaId) {
+        List<Fase> fases = proyecto.getFases();
+        for (Fase faseActual : fases) {
+            if (!faseActual.contieneLaIteracion(iteracionAnteriorId))
+                continue; // la fase ni siquiera contiene ese numero de iteracion
+            Iteracion iteracionActual = faseActual.obtenerIteracion(iteracionAnteriorId);
+            if (!iteracionActual.obtenerTareas().contains(tareaId))
+                continue; // estoy en la fase equivocada
+            if (iteracionActual.getId().equals(iteracionId) && faseActual.getId().equals(faseId))
+                return; // la iteracion anterior de la tarea es la misma en la que la estoy queriendo cargar
+            iteracionActual.eliminarTarea(tareaId);
+        }
     }
 
 
