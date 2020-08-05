@@ -1,6 +1,6 @@
 package TestsProyecto;
 
-import excepciones.TipoDeProyectoInvalido;
+import excepciones.TipoDeProyectoInvalidoException;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -33,7 +33,7 @@ public class StepDefTiposDeProyecto extends SpringTest{
     }
 
     @Given("un listado con proyectos cargados de distinto tipo")
-    public void unListadoConProyectosCargadosDeDistintoTipo(DataTable dt) throws TipoDeProyectoInvalido {
+    public void unListadoConProyectosCargadosDeDistintoTipo(DataTable dt) throws TipoDeProyectoInvalidoException {
         List<Map<String,String>> listaDeMapas = dt.asMaps();
         Proyecto proyecto;
         Proyecto proyecto_guardado;
@@ -72,7 +72,7 @@ public class StepDefTiposDeProyecto extends SpringTest{
     }
 
     @When("agrego al cliente {string} a un proyecto de Implementacion")
-    public void agregoUnClienteAUnProyectoDeImplementacion(String nombreCliente) throws TipoDeProyectoInvalido {
+    public void agregoUnClienteAUnProyectoDeImplementacion(String nombreCliente) throws TipoDeProyectoInvalidoException {
         Proyecto proyecto = new Proyecto();
         proyecto.setTipoDeProyecto("Implementación");
         proyecto.setNombre("Sistema MS");
@@ -86,7 +86,7 @@ public class StepDefTiposDeProyecto extends SpringTest{
     }
 
     @When("agrego al producto {string} a un proyecto de Desarrollo")
-    public void agregoAlProductoAUnProyectoDeImplementacion(String nombreDeProducto) throws TipoDeProyectoInvalido {
+    public void agregoAlProductoAUnProyectoDeImplementacion(String nombreDeProducto) throws TipoDeProyectoInvalidoException {
         this.proyecto = new Proyecto();
         this.proyecto.setTipoDeProyecto("Desarrollo");
         this.proyecto.setNombre("ERP v 1.4");

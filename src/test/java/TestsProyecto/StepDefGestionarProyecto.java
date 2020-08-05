@@ -2,13 +2,11 @@ package TestsProyecto;
 
 import excepciones.AccionNoPermitidaException;
 import excepciones.FechaInvalidaException;
-import excepciones.RestriccionDeEstadoException;
-import excepciones.TipoDeProyectoInvalido;
+import excepciones.TipoDeProyectoInvalidoException;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import modelo.Tarea;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,7 +37,7 @@ public class StepDefGestionarProyecto extends SpringTest {
 
     @Given("un listado con proyectos cargados")
     @Transactional(propagation = Propagation.REQUIRED, noRollbackFor=Exception.class)
-    public void unListadoConProyectosCargados(DataTable dt) throws TipoDeProyectoInvalido {
+    public void unListadoConProyectosCargados(DataTable dt) throws TipoDeProyectoInvalidoException {
         List<Map<String,String>> listaDeMapas = dt.asMaps();
         for (Map<String, String> fila : listaDeMapas) {
             Proyecto proyecto;
@@ -103,7 +101,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
     @Given("selecciono un proyecto y le asigno la fecha de inicio {string}")
-    public void seleccionoUnProyectoYLeAsignoLaFechaDeInicio(String fecha) throws ParseException, TipoDeProyectoInvalido {
+    public void seleccionoUnProyectoYLeAsignoLaFechaDeInicio(String fecha) throws ParseException, TipoDeProyectoInvalidoException {
         Proyecto proyecto = proyectoService.save(new Proyecto());
         proyecto.setTipoDeProyecto("Desarrollo");
         proyecto.setNombre("Proyecto X");
@@ -125,7 +123,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
     @Given("selecciono un proyecto")
-    public void seleccionoUnProyecto() throws TipoDeProyectoInvalido {
+    public void seleccionoUnProyecto() throws TipoDeProyectoInvalidoException {
         Proyecto proyecto = proyectoService.save(new Proyecto());
         proyecto.setNombre("Proyecto X");
         proyecto.setTipoDeProyecto("Desarrollo");
@@ -134,7 +132,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
     @Given("creo un proyecto con fecha de inicio {string}")
-    public void creoUnProyectoConFechaDeInicio(String fecha) throws TipoDeProyectoInvalido {
+    public void creoUnProyectoConFechaDeInicio(String fecha) throws TipoDeProyectoInvalidoException {
         Proyecto proyecto = proyectoService.save(new Proyecto());
         proyecto.setNombre("Proyecto Y");
         proyecto.setTipoDeProyecto("Desarrollo");
@@ -203,7 +201,7 @@ public class StepDefGestionarProyecto extends SpringTest {
     }
 
     @Given("selecciono un proyecto de Desarrollo")
-    public void seleccionoUnProyectoDeDesarrollo() throws TipoDeProyectoInvalido {
+    public void seleccionoUnProyectoDeDesarrollo() throws TipoDeProyectoInvalidoException {
         Proyecto proyecto = proyectoService.save(new Proyecto());
         proyecto.setNombre("Proyecto Y");
         proyecto.setTipoDeProyecto("Desarrollo");
