@@ -187,9 +187,9 @@ public class Proyecto {
                 this.setFechaDeFinalizacion(nuevaFechaDeFinalizacion);
             } else if (entrada.getKey().equals("estado")) {
                 this.setEstado((String) entrada.getValue());
-            } else if (tipoDeProyecto.equals("Desarrollo") && entrada.getKey().equals("producto")){
+            } else if (tipoDeProyecto.equals(TipoProyecto.DESARROLLO) && entrada.getKey().equals("producto")){
                 this.setProducto((String) entrada.getValue());
-            } else if (tipoDeProyecto.equals("Implementación") && entrada.getKey().equals("cliente")){
+            } else if (tipoDeProyecto.equals(TipoProyecto.IMPLEMENTACION) && entrada.getKey().equals("cliente")){
                 this.setCliente((String) entrada.getValue());
             } else if (entrada.getKey().equals("liderDeProyecto")){
                 this.setLiderDeProyecto((String) entrada.getValue());

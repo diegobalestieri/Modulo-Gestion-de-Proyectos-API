@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.pattern.PathPatternRouteMatcher;
 import servicio.ProyectoService;
 
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -160,6 +161,9 @@ public class ProyectoController {
             servicio.borrarTarea(proyectoId, tareaId);
         } catch (CustomException e){
             return new ResponseEntity<Error>(new Error(e.getMessage(), e.getResponseStatus()), e.getResponseStatus());
+        }
+        catch (Exception e){
+            return new ResponseEntity<Error>(new Error(e.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>("Tarea eliminada correctamente", HttpStatus.OK);
     }
