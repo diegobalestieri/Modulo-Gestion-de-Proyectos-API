@@ -210,7 +210,7 @@ public class ProyectoService {
         Fase fase = proyecto.obtenerFase(faseId);
         Long idIteracionAnterior = tarea.getIteracion();
         if (idIteracionAnterior != 0)
-            eliminarTareaDeIteracionAnterior(proyecto,faseId,iteracionId,idIteracionAnterior,tareaId);
+            throw new AccionNoPermitidaException("La tarea se encuentra cargada en otra iteración");
         Iteracion iteracion = fase.obtenerIteracion(iteracionId);
         iteracion.agregarTarea(tareaId);
         tarea.setIteracion(iteracionId);
