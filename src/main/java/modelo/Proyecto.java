@@ -25,10 +25,12 @@ public class Proyecto {
     @Enumerated(EnumType.STRING)
     private EstadoProyecto estadoProyecto = EstadoProyecto.NO_INICIADO;
     private String liderDeProyecto;
+    private String producto;
+
     //Solo si es de implementacion
     private String cliente;
-    //Solo si es de desarrollo
-    private String producto;
+
+
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Fase> fases = new ArrayList<>();
@@ -109,10 +111,10 @@ public class Proyecto {
     }
 
     public void setCliente(String cliente) {
-        if (tipoDeProyecto == TipoProyecto.IMPLEMENTACION){
-            this.cliente = cliente;
-        }
+        if (tipoDeProyecto == null || tipoDeProyecto.equals(TipoProyecto.IMPLEMENTACION))
+        this.cliente = cliente;
     }
+
     public List<Tarea> getTareas() {
         return tareas;
     }
@@ -133,11 +135,7 @@ public class Proyecto {
         return producto;
     }
 
-    public void setProducto(String producto) {
-        if (tipoDeProyecto == TipoProyecto.DESARROLLO){
-            this.producto = producto;
-        }
-    }
+    public void setProducto(String producto) { this.producto = producto; }
     public EstadoProyecto getEstado() {
         return estadoProyecto;
     }
