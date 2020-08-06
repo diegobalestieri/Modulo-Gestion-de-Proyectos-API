@@ -89,9 +89,11 @@ public class Fase {
         long indiceDeIteracion = cantidadDeIteraciones+1;
         String nombreIteracion = "Iteracion " + indiceDeIteracion;
         iteracion.setNombre(nombreIteracion);
+        if (indiceDeIteracion == 1)
+            iteracion.setEstado(EstadoIteracion.ACTIVA);
         setEstado(EstadoFase.ACTIVA);
         this.iteraciones.add(iteracion);
-        actualizarIteracionActiva();
+        //actualizarIteracionActiva();
         cantidadDeIteraciones++;
     }
 
