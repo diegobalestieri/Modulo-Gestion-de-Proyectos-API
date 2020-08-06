@@ -46,7 +46,6 @@ public class Iteracion {
     public void agregarTarea(long idDeTarea) throws AccionNoPermitidaException {
         if (estado.equals(EstadoIteracion.FINALIZADA))
             throw new AccionNoPermitidaException("La iteracion se encuentra finalizada");
-        setEstado(EstadoIteracion.ACTIVA);
         idsTareas.add(idDeTarea);
     }
 
