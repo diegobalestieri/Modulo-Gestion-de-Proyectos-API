@@ -1,5 +1,6 @@
 package modelo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import excepciones.ParametrosInvalidosException;
 import modelo.Estado.EstadoTarea;
 
@@ -27,6 +28,7 @@ public class Tarea {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="ids_tickets",joinColumns = @JoinColumn(name="tarea_id"))
+    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<Long> idsTickets = new ArrayList<>();
 
     public Tarea(){
