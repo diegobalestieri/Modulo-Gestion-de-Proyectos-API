@@ -240,6 +240,8 @@ public class Proyecto {
     }
 
     public void crearTarea(Tarea tarea) {
+        if (!estadoProyecto.equals(EstadoProyecto.ACTIVO))
+            throw new AccionNoPermitidaException("El proyecto no se encuentra activo");
         if (tarea.getFechaDeInicio() == null){
             tarea.setFechaDeInicio(new Date());
         }

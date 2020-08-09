@@ -41,6 +41,7 @@ public class StepDefGestionarTarea extends SpringTest{
         Proyecto proyecto = new Proyecto();
         proyecto.setNombre("Proyecto ERP");
         proyecto.setTipoDeProyecto("Implementación");
+        proyecto.setEstado("Activo");
         String requestJson = mapper.writeValueAsString(proyecto);
         MvcResult requestResult = this.mockMvc.perform(post("/proyectos")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -119,7 +120,7 @@ public class StepDefGestionarTarea extends SpringTest{
         tarea.setNombre("Actualizar documentacion");
         tarea.setDescripcion("Una descripcion generica");
         tarea.setPrioridad("Muy alta");
-        tarea.setFechaDeFinalizacion("2020-08-09");
+        tarea.setFechaDeFinalizacion("2020-08-12");
         String requestJson = mapper.writeValueAsString(tarea);
         MvcResult requestResult = this.mockMvc.perform(post(aux)
                 .contentType(MediaType.APPLICATION_JSON)
